@@ -8,7 +8,7 @@
 from typing import TYPE_CHECKING
 import warnings
 
-from azure.core.exceptions import HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
+from azure.core.exceptions import ClientAuthenticationError, HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
 from azure.core.paging import ItemPaged
 from azure.core.pipeline import PipelineResponse
 from azure.core.pipeline.transport import HttpRequest, HttpResponse
@@ -16,7 +16,7 @@ from azure.core.polling import LROPoller, NoPolling, PollingMethod
 from azure.mgmt.core.exceptions import ARMErrorFormat
 from azure.mgmt.core.polling.arm_polling import ARMPolling
 
-from .. import models
+from .. import models as _models
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,ungrouped-imports
@@ -39,7 +39,7 @@ class VirtualMachineScaleSetVMsOperations(object):
     :param deserializer: An object model deserializer.
     """
 
-    models = models
+    models = _models
 
     def __init__(self, client, config, serializer, deserializer):
         self._client = client
@@ -52,12 +52,14 @@ class VirtualMachineScaleSetVMsOperations(object):
         resource_group_name,  # type: str
         vm_scale_set_name,  # type: str
         instance_id,  # type: str
-        vm_scale_set_vm_reimage_input=None,  # type: Optional["models.VirtualMachineReimageParameters"]
+        vm_scale_set_vm_reimage_input=None,  # type: Optional["_models.VirtualMachineScaleSetVMReimageParameters"]
         **kwargs  # type: Any
     ):
         # type: (...) -> None
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-07-01"
         content_type = kwargs.pop("content_type", "application/json")
@@ -80,15 +82,13 @@ class VirtualMachineScaleSetVMsOperations(object):
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
 
-        # Construct and send request
         body_content_kwargs = {}  # type: Dict[str, Any]
         if vm_scale_set_vm_reimage_input is not None:
-            body_content = self._serialize.body(vm_scale_set_vm_reimage_input, 'VirtualMachineReimageParameters')
+            body_content = self._serialize.body(vm_scale_set_vm_reimage_input, 'VirtualMachineScaleSetVMReimageParameters')
         else:
             body_content = None
         body_content_kwargs['content'] = body_content
         request = self._client.post(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
@@ -106,10 +106,10 @@ class VirtualMachineScaleSetVMsOperations(object):
         resource_group_name,  # type: str
         vm_scale_set_name,  # type: str
         instance_id,  # type: str
-        vm_scale_set_vm_reimage_input=None,  # type: Optional["models.VirtualMachineReimageParameters"]
+        vm_scale_set_vm_reimage_input=None,  # type: Optional["_models.VirtualMachineScaleSetVMReimageParameters"]
         **kwargs  # type: Any
     ):
-        # type: (...) -> LROPoller
+        # type: (...) -> LROPoller[None]
         """Reimages (upgrade the operating system) a specific virtual machine in a VM scale set.
 
         :param resource_group_name: The name of the resource group.
@@ -119,11 +119,11 @@ class VirtualMachineScaleSetVMsOperations(object):
         :param instance_id: The instance ID of the virtual machine.
         :type instance_id: str
         :param vm_scale_set_vm_reimage_input: Parameters for the Reimaging Virtual machine in ScaleSet.
-        :type vm_scale_set_vm_reimage_input: ~azure.mgmt.compute.v2019_07_01.models.VirtualMachineReimageParameters
+        :type vm_scale_set_vm_reimage_input: ~azure.mgmt.compute.v2019_07_01.models.VirtualMachineScaleSetVMReimageParameters
         :keyword callable cls: A custom type or function that will be passed the direct response
         :keyword str continuation_token: A continuation token to restart a poller from a saved state.
-        :keyword polling: True for ARMPolling, False for no polling, or a
-         polling object for personal polling strategy
+        :keyword polling: By default, your polling method will be ARMPolling.
+         Pass in False for this operation to not poll, or pass in your own initialized polling object for a personal polling strategy.
         :paramtype polling: bool or ~azure.core.polling.PollingMethod
         :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
         :return: An instance of LROPoller that returns either None or the result of cls(response)
@@ -154,7 +154,14 @@ class VirtualMachineScaleSetVMsOperations(object):
             if cls:
                 return cls(pipeline_response, None, {})
 
-        if polling is True: polling_method = ARMPolling(lro_delay,  **kwargs)
+        path_format_arguments = {
+            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str'),
+            'vmScaleSetName': self._serialize.url("vm_scale_set_name", vm_scale_set_name, 'str'),
+            'instanceId': self._serialize.url("instance_id", instance_id, 'str'),
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+        }
+
+        if polling is True: polling_method = ARMPolling(lro_delay, path_format_arguments=path_format_arguments,  **kwargs)
         elif polling is False: polling_method = NoPolling()
         else: polling_method = polling
         if cont_token:
@@ -177,7 +184,9 @@ class VirtualMachineScaleSetVMsOperations(object):
     ):
         # type: (...) -> None
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-07-01"
 
@@ -198,7 +207,6 @@ class VirtualMachineScaleSetVMsOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
 
-        # Construct and send request
         request = self._client.post(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -219,9 +227,9 @@ class VirtualMachineScaleSetVMsOperations(object):
         instance_id,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> LROPoller
+        # type: (...) -> LROPoller[None]
         """Allows you to re-image all the disks ( including data disks ) in the a VM scale set instance.
-    This operation is only supported for managed disks.
+        This operation is only supported for managed disks.
 
         :param resource_group_name: The name of the resource group.
         :type resource_group_name: str
@@ -231,8 +239,8 @@ class VirtualMachineScaleSetVMsOperations(object):
         :type instance_id: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :keyword str continuation_token: A continuation token to restart a poller from a saved state.
-        :keyword polling: True for ARMPolling, False for no polling, or a
-         polling object for personal polling strategy
+        :keyword polling: By default, your polling method will be ARMPolling.
+         Pass in False for this operation to not poll, or pass in your own initialized polling object for a personal polling strategy.
         :paramtype polling: bool or ~azure.core.polling.PollingMethod
         :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
         :return: An instance of LROPoller that returns either None or the result of cls(response)
@@ -262,7 +270,14 @@ class VirtualMachineScaleSetVMsOperations(object):
             if cls:
                 return cls(pipeline_response, None, {})
 
-        if polling is True: polling_method = ARMPolling(lro_delay,  **kwargs)
+        path_format_arguments = {
+            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str'),
+            'vmScaleSetName': self._serialize.url("vm_scale_set_name", vm_scale_set_name, 'str'),
+            'instanceId': self._serialize.url("instance_id", instance_id, 'str'),
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+        }
+
+        if polling is True: polling_method = ARMPolling(lro_delay, path_format_arguments=path_format_arguments,  **kwargs)
         elif polling is False: polling_method = NoPolling()
         else: polling_method = polling
         if cont_token:
@@ -285,7 +300,9 @@ class VirtualMachineScaleSetVMsOperations(object):
     ):
         # type: (...) -> None
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-07-01"
 
@@ -306,7 +323,6 @@ class VirtualMachineScaleSetVMsOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
 
-        # Construct and send request
         request = self._client.post(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -327,10 +343,10 @@ class VirtualMachineScaleSetVMsOperations(object):
         instance_id,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> LROPoller
+        # type: (...) -> LROPoller[None]
         """Deallocates a specific virtual machine in a VM scale set. Shuts down the virtual machine and
-    releases the compute resources it uses. You are not billed for the compute resources of this
-    virtual machine once it is deallocated.
+        releases the compute resources it uses. You are not billed for the compute resources of this
+        virtual machine once it is deallocated.
 
         :param resource_group_name: The name of the resource group.
         :type resource_group_name: str
@@ -340,8 +356,8 @@ class VirtualMachineScaleSetVMsOperations(object):
         :type instance_id: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :keyword str continuation_token: A continuation token to restart a poller from a saved state.
-        :keyword polling: True for ARMPolling, False for no polling, or a
-         polling object for personal polling strategy
+        :keyword polling: By default, your polling method will be ARMPolling.
+         Pass in False for this operation to not poll, or pass in your own initialized polling object for a personal polling strategy.
         :paramtype polling: bool or ~azure.core.polling.PollingMethod
         :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
         :return: An instance of LROPoller that returns either None or the result of cls(response)
@@ -371,7 +387,14 @@ class VirtualMachineScaleSetVMsOperations(object):
             if cls:
                 return cls(pipeline_response, None, {})
 
-        if polling is True: polling_method = ARMPolling(lro_delay,  **kwargs)
+        path_format_arguments = {
+            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str'),
+            'vmScaleSetName': self._serialize.url("vm_scale_set_name", vm_scale_set_name, 'str'),
+            'instanceId': self._serialize.url("instance_id", instance_id, 'str'),
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+        }
+
+        if polling is True: polling_method = ARMPolling(lro_delay, path_format_arguments=path_format_arguments,  **kwargs)
         elif polling is False: polling_method = NoPolling()
         else: polling_method = polling
         if cont_token:
@@ -390,15 +413,18 @@ class VirtualMachineScaleSetVMsOperations(object):
         resource_group_name,  # type: str
         vm_scale_set_name,  # type: str
         instance_id,  # type: str
-        parameters,  # type: "models.VirtualMachineScaleSetVM"
+        parameters,  # type: "_models.VirtualMachineScaleSetVM"
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.VirtualMachineScaleSetVM"
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.VirtualMachineScaleSetVM"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        # type: (...) -> "_models.VirtualMachineScaleSetVM"
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.VirtualMachineScaleSetVM"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-07-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self._update_initial.metadata['url']  # type: ignore
@@ -417,14 +443,12 @@ class VirtualMachineScaleSetVMsOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(parameters, 'VirtualMachineScaleSetVM')
         body_content_kwargs['content'] = body_content
         request = self._client.put(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
@@ -432,7 +456,6 @@ class VirtualMachineScaleSetVMsOperations(object):
             map_error(status_code=response.status_code, response=response, error_map=error_map)
             raise HttpResponseError(response=response, error_format=ARMErrorFormat)
 
-        deserialized = None
         if response.status_code == 200:
             deserialized = self._deserialize('VirtualMachineScaleSetVM', pipeline_response)
 
@@ -450,16 +473,16 @@ class VirtualMachineScaleSetVMsOperations(object):
         resource_group_name,  # type: str
         vm_scale_set_name,  # type: str
         instance_id,  # type: str
-        parameters,  # type: "models.VirtualMachineScaleSetVM"
+        parameters,  # type: "_models.VirtualMachineScaleSetVM"
         **kwargs  # type: Any
     ):
-        # type: (...) -> LROPoller
+        # type: (...) -> LROPoller["_models.VirtualMachineScaleSetVM"]
         """Updates a virtual machine of a VM scale set.
 
         :param resource_group_name: The name of the resource group.
         :type resource_group_name: str
         :param vm_scale_set_name: The name of the VM scale set where the extension should be create or
-     updated.
+         updated.
         :type vm_scale_set_name: str
         :param instance_id: The instance ID of the virtual machine.
         :type instance_id: str
@@ -467,8 +490,8 @@ class VirtualMachineScaleSetVMsOperations(object):
         :type parameters: ~azure.mgmt.compute.v2019_07_01.models.VirtualMachineScaleSetVM
         :keyword callable cls: A custom type or function that will be passed the direct response
         :keyword str continuation_token: A continuation token to restart a poller from a saved state.
-        :keyword polling: True for ARMPolling, False for no polling, or a
-         polling object for personal polling strategy
+        :keyword polling: By default, your polling method will be ARMPolling.
+         Pass in False for this operation to not poll, or pass in your own initialized polling object for a personal polling strategy.
         :paramtype polling: bool or ~azure.core.polling.PollingMethod
         :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
         :return: An instance of LROPoller that returns either VirtualMachineScaleSetVM or the result of cls(response)
@@ -476,7 +499,7 @@ class VirtualMachineScaleSetVMsOperations(object):
         :raises ~azure.core.exceptions.HttpResponseError:
         """
         polling = kwargs.pop('polling', True)  # type: Union[bool, PollingMethod]
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.VirtualMachineScaleSetVM"]
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.VirtualMachineScaleSetVM"]
         lro_delay = kwargs.pop(
             'polling_interval',
             self._config.polling_interval
@@ -502,7 +525,14 @@ class VirtualMachineScaleSetVMsOperations(object):
                 return cls(pipeline_response, deserialized, {})
             return deserialized
 
-        if polling is True: polling_method = ARMPolling(lro_delay,  **kwargs)
+        path_format_arguments = {
+            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str'),
+            'vmScaleSetName': self._serialize.url("vm_scale_set_name", vm_scale_set_name, 'str'),
+            'instanceId': self._serialize.url("instance_id", instance_id, 'str'),
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+        }
+
+        if polling is True: polling_method = ARMPolling(lro_delay, path_format_arguments=path_format_arguments,  **kwargs)
         elif polling is False: polling_method = NoPolling()
         else: polling_method = polling
         if cont_token:
@@ -525,7 +555,9 @@ class VirtualMachineScaleSetVMsOperations(object):
     ):
         # type: (...) -> None
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-07-01"
 
@@ -546,7 +578,6 @@ class VirtualMachineScaleSetVMsOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
 
-        # Construct and send request
         request = self._client.delete(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -567,7 +598,7 @@ class VirtualMachineScaleSetVMsOperations(object):
         instance_id,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> LROPoller
+        # type: (...) -> LROPoller[None]
         """Deletes a virtual machine from a VM scale set.
 
         :param resource_group_name: The name of the resource group.
@@ -578,8 +609,8 @@ class VirtualMachineScaleSetVMsOperations(object):
         :type instance_id: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :keyword str continuation_token: A continuation token to restart a poller from a saved state.
-        :keyword polling: True for ARMPolling, False for no polling, or a
-         polling object for personal polling strategy
+        :keyword polling: By default, your polling method will be ARMPolling.
+         Pass in False for this operation to not poll, or pass in your own initialized polling object for a personal polling strategy.
         :paramtype polling: bool or ~azure.core.polling.PollingMethod
         :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
         :return: An instance of LROPoller that returns either None or the result of cls(response)
@@ -609,7 +640,14 @@ class VirtualMachineScaleSetVMsOperations(object):
             if cls:
                 return cls(pipeline_response, None, {})
 
-        if polling is True: polling_method = ARMPolling(lro_delay,  **kwargs)
+        path_format_arguments = {
+            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str'),
+            'vmScaleSetName': self._serialize.url("vm_scale_set_name", vm_scale_set_name, 'str'),
+            'instanceId': self._serialize.url("instance_id", instance_id, 'str'),
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+        }
+
+        if polling is True: polling_method = ARMPolling(lro_delay, path_format_arguments=path_format_arguments,  **kwargs)
         elif polling is False: polling_method = NoPolling()
         else: polling_method = polling
         if cont_token:
@@ -631,7 +669,7 @@ class VirtualMachineScaleSetVMsOperations(object):
         expand="instanceView",  # type: Optional[str]
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.VirtualMachineScaleSetVM"
+        # type: (...) -> "_models.VirtualMachineScaleSetVM"
         """Gets a virtual machine from a VM scale set.
 
         :param resource_group_name: The name of the resource group.
@@ -647,10 +685,13 @@ class VirtualMachineScaleSetVMsOperations(object):
         :rtype: ~azure.mgmt.compute.v2019_07_01.models.VirtualMachineScaleSetVM
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.VirtualMachineScaleSetVM"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.VirtualMachineScaleSetVM"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-07-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.get.metadata['url']  # type: ignore
@@ -670,9 +711,8 @@ class VirtualMachineScaleSetVMsOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -696,7 +736,7 @@ class VirtualMachineScaleSetVMsOperations(object):
         instance_id,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.VirtualMachineScaleSetVMInstanceView"
+        # type: (...) -> "_models.VirtualMachineScaleSetVMInstanceView"
         """Gets the status of a virtual machine from a VM scale set.
 
         :param resource_group_name: The name of the resource group.
@@ -710,10 +750,13 @@ class VirtualMachineScaleSetVMsOperations(object):
         :rtype: ~azure.mgmt.compute.v2019_07_01.models.VirtualMachineScaleSetVMInstanceView
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.VirtualMachineScaleSetVMInstanceView"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.VirtualMachineScaleSetVMInstanceView"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-07-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.get_instance_view.metadata['url']  # type: ignore
@@ -731,9 +774,8 @@ class VirtualMachineScaleSetVMsOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -759,30 +801,40 @@ class VirtualMachineScaleSetVMsOperations(object):
         expand=None,  # type: Optional[str]
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.VirtualMachineScaleSetVMListResult"]
+        # type: (...) -> Iterable["_models.VirtualMachineScaleSetVMListResult"]
         """Gets a list of all virtual machines in a VM scale sets.
 
         :param resource_group_name: The name of the resource group.
         :type resource_group_name: str
         :param virtual_machine_scale_set_name: The name of the VM scale set.
         :type virtual_machine_scale_set_name: str
-        :param filter: The filter to apply to the operation.
+        :param filter: The filter to apply to the operation. Allowed values are
+         'startswith(instanceView/statuses/code, 'PowerState') eq true', 'properties/latestModelApplied
+         eq true', 'properties/latestModelApplied eq false'.
         :type filter: str
-        :param select: The list parameters.
+        :param select: The list parameters. Allowed values are 'instanceView', 'instanceView/statuses'.
         :type select: str
-        :param expand: The expand expression to apply to the operation.
+        :param expand: The expand expression to apply to the operation. Allowed values are
+         'instanceView'.
         :type expand: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :return: An iterator like instance of either VirtualMachineScaleSetVMListResult or the result of cls(response)
         :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.compute.v2019_07_01.models.VirtualMachineScaleSetVMListResult]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.VirtualMachineScaleSetVMListResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.VirtualMachineScaleSetVMListResult"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-07-01"
+        accept = "application/json"
 
         def prepare_request(next_link=None):
+            # Construct headers
+            header_parameters = {}  # type: Dict[str, Any]
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
+
             if not next_link:
                 # Construct URL
                 url = self.list.metadata['url']  # type: ignore
@@ -802,15 +854,11 @@ class VirtualMachineScaleSetVMsOperations(object):
                     query_parameters['$expand'] = self._serialize.query("expand", expand, 'str')
                 query_parameters['api-version'] = self._serialize.query("api_version", api_version, 'str')
 
+                request = self._client.get(url, query_parameters, header_parameters)
             else:
                 url = next_link
                 query_parameters = {}  # type: Dict[str, Any]
-            # Construct headers
-            header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
-
-            # Construct and send request
-            request = self._client.get(url, query_parameters, header_parameters)
+                request = self._client.get(url, query_parameters, header_parameters)
             return request
 
         def extract_data(pipeline_response):
@@ -847,7 +895,9 @@ class VirtualMachineScaleSetVMsOperations(object):
     ):
         # type: (...) -> None
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-07-01"
 
@@ -870,7 +920,6 @@ class VirtualMachineScaleSetVMsOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
 
-        # Construct and send request
         request = self._client.post(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -892,10 +941,10 @@ class VirtualMachineScaleSetVMsOperations(object):
         skip_shutdown=False,  # type: Optional[bool]
         **kwargs  # type: Any
     ):
-        # type: (...) -> LROPoller
+        # type: (...) -> LROPoller[None]
         """Power off (stop) a virtual machine in a VM scale set. Note that resources are still attached
-    and you are getting charged for the resources. Instead, use deallocate to release resources and
-    avoid charges.
+        and you are getting charged for the resources. Instead, use deallocate to release resources and
+        avoid charges.
 
         :param resource_group_name: The name of the resource group.
         :type resource_group_name: str
@@ -904,13 +953,13 @@ class VirtualMachineScaleSetVMsOperations(object):
         :param instance_id: The instance ID of the virtual machine.
         :type instance_id: str
         :param skip_shutdown: The parameter to request non-graceful VM shutdown. True value for this
-     flag indicates non-graceful shutdown whereas false indicates otherwise. Default value for this
-     flag is false if not specified.
+         flag indicates non-graceful shutdown whereas false indicates otherwise. Default value for this
+         flag is false if not specified.
         :type skip_shutdown: bool
         :keyword callable cls: A custom type or function that will be passed the direct response
         :keyword str continuation_token: A continuation token to restart a poller from a saved state.
-        :keyword polling: True for ARMPolling, False for no polling, or a
-         polling object for personal polling strategy
+        :keyword polling: By default, your polling method will be ARMPolling.
+         Pass in False for this operation to not poll, or pass in your own initialized polling object for a personal polling strategy.
         :paramtype polling: bool or ~azure.core.polling.PollingMethod
         :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
         :return: An instance of LROPoller that returns either None or the result of cls(response)
@@ -941,7 +990,14 @@ class VirtualMachineScaleSetVMsOperations(object):
             if cls:
                 return cls(pipeline_response, None, {})
 
-        if polling is True: polling_method = ARMPolling(lro_delay,  **kwargs)
+        path_format_arguments = {
+            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str'),
+            'vmScaleSetName': self._serialize.url("vm_scale_set_name", vm_scale_set_name, 'str'),
+            'instanceId': self._serialize.url("instance_id", instance_id, 'str'),
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+        }
+
+        if polling is True: polling_method = ARMPolling(lro_delay, path_format_arguments=path_format_arguments,  **kwargs)
         elif polling is False: polling_method = NoPolling()
         else: polling_method = polling
         if cont_token:
@@ -964,7 +1020,9 @@ class VirtualMachineScaleSetVMsOperations(object):
     ):
         # type: (...) -> None
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-07-01"
 
@@ -985,7 +1043,6 @@ class VirtualMachineScaleSetVMsOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
 
-        # Construct and send request
         request = self._client.post(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -1006,7 +1063,7 @@ class VirtualMachineScaleSetVMsOperations(object):
         instance_id,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> LROPoller
+        # type: (...) -> LROPoller[None]
         """Restarts a virtual machine in a VM scale set.
 
         :param resource_group_name: The name of the resource group.
@@ -1017,8 +1074,8 @@ class VirtualMachineScaleSetVMsOperations(object):
         :type instance_id: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :keyword str continuation_token: A continuation token to restart a poller from a saved state.
-        :keyword polling: True for ARMPolling, False for no polling, or a
-         polling object for personal polling strategy
+        :keyword polling: By default, your polling method will be ARMPolling.
+         Pass in False for this operation to not poll, or pass in your own initialized polling object for a personal polling strategy.
         :paramtype polling: bool or ~azure.core.polling.PollingMethod
         :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
         :return: An instance of LROPoller that returns either None or the result of cls(response)
@@ -1048,7 +1105,14 @@ class VirtualMachineScaleSetVMsOperations(object):
             if cls:
                 return cls(pipeline_response, None, {})
 
-        if polling is True: polling_method = ARMPolling(lro_delay,  **kwargs)
+        path_format_arguments = {
+            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str'),
+            'vmScaleSetName': self._serialize.url("vm_scale_set_name", vm_scale_set_name, 'str'),
+            'instanceId': self._serialize.url("instance_id", instance_id, 'str'),
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+        }
+
+        if polling is True: polling_method = ARMPolling(lro_delay, path_format_arguments=path_format_arguments,  **kwargs)
         elif polling is False: polling_method = NoPolling()
         else: polling_method = polling
         if cont_token:
@@ -1071,7 +1135,9 @@ class VirtualMachineScaleSetVMsOperations(object):
     ):
         # type: (...) -> None
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-07-01"
 
@@ -1092,7 +1158,6 @@ class VirtualMachineScaleSetVMsOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
 
-        # Construct and send request
         request = self._client.post(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -1113,7 +1178,7 @@ class VirtualMachineScaleSetVMsOperations(object):
         instance_id,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> LROPoller
+        # type: (...) -> LROPoller[None]
         """Starts a virtual machine in a VM scale set.
 
         :param resource_group_name: The name of the resource group.
@@ -1124,8 +1189,8 @@ class VirtualMachineScaleSetVMsOperations(object):
         :type instance_id: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :keyword str continuation_token: A continuation token to restart a poller from a saved state.
-        :keyword polling: True for ARMPolling, False for no polling, or a
-         polling object for personal polling strategy
+        :keyword polling: By default, your polling method will be ARMPolling.
+         Pass in False for this operation to not poll, or pass in your own initialized polling object for a personal polling strategy.
         :paramtype polling: bool or ~azure.core.polling.PollingMethod
         :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
         :return: An instance of LROPoller that returns either None or the result of cls(response)
@@ -1155,7 +1220,14 @@ class VirtualMachineScaleSetVMsOperations(object):
             if cls:
                 return cls(pipeline_response, None, {})
 
-        if polling is True: polling_method = ARMPolling(lro_delay,  **kwargs)
+        path_format_arguments = {
+            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str'),
+            'vmScaleSetName': self._serialize.url("vm_scale_set_name", vm_scale_set_name, 'str'),
+            'instanceId': self._serialize.url("instance_id", instance_id, 'str'),
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+        }
+
+        if polling is True: polling_method = ARMPolling(lro_delay, path_format_arguments=path_format_arguments,  **kwargs)
         elif polling is False: polling_method = NoPolling()
         else: polling_method = polling
         if cont_token:
@@ -1178,7 +1250,9 @@ class VirtualMachineScaleSetVMsOperations(object):
     ):
         # type: (...) -> None
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-07-01"
 
@@ -1199,7 +1273,6 @@ class VirtualMachineScaleSetVMsOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
 
-        # Construct and send request
         request = self._client.post(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -1220,9 +1293,9 @@ class VirtualMachineScaleSetVMsOperations(object):
         instance_id,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> LROPoller
+        # type: (...) -> LROPoller[None]
         """Shuts down the virtual machine in the virtual machine scale set, moves it to a new node, and
-    powers it back on.
+        powers it back on.
 
         :param resource_group_name: The name of the resource group.
         :type resource_group_name: str
@@ -1232,8 +1305,8 @@ class VirtualMachineScaleSetVMsOperations(object):
         :type instance_id: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :keyword str continuation_token: A continuation token to restart a poller from a saved state.
-        :keyword polling: True for ARMPolling, False for no polling, or a
-         polling object for personal polling strategy
+        :keyword polling: By default, your polling method will be ARMPolling.
+         Pass in False for this operation to not poll, or pass in your own initialized polling object for a personal polling strategy.
         :paramtype polling: bool or ~azure.core.polling.PollingMethod
         :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
         :return: An instance of LROPoller that returns either None or the result of cls(response)
@@ -1263,7 +1336,14 @@ class VirtualMachineScaleSetVMsOperations(object):
             if cls:
                 return cls(pipeline_response, None, {})
 
-        if polling is True: polling_method = ARMPolling(lro_delay,  **kwargs)
+        path_format_arguments = {
+            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str'),
+            'vmScaleSetName': self._serialize.url("vm_scale_set_name", vm_scale_set_name, 'str'),
+            'instanceId': self._serialize.url("instance_id", instance_id, 'str'),
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+        }
+
+        if polling is True: polling_method = ARMPolling(lro_delay, path_format_arguments=path_format_arguments,  **kwargs)
         elif polling is False: polling_method = NoPolling()
         else: polling_method = polling
         if cont_token:
@@ -1286,7 +1366,9 @@ class VirtualMachineScaleSetVMsOperations(object):
     ):
         # type: (...) -> None
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-07-01"
 
@@ -1307,7 +1389,6 @@ class VirtualMachineScaleSetVMsOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
 
-        # Construct and send request
         request = self._client.post(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -1328,8 +1409,9 @@ class VirtualMachineScaleSetVMsOperations(object):
         instance_id,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> LROPoller
-        """Performs maintenance on a virtual machine in a VM scale set.
+        # type: (...) -> LROPoller[None]
+        """Shuts down the virtual machine in a VMScaleSet, moves it to an already updated node, and powers
+        it back on during the self-service phase of planned maintenance.
 
         :param resource_group_name: The name of the resource group.
         :type resource_group_name: str
@@ -1339,8 +1421,8 @@ class VirtualMachineScaleSetVMsOperations(object):
         :type instance_id: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :keyword str continuation_token: A continuation token to restart a poller from a saved state.
-        :keyword polling: True for ARMPolling, False for no polling, or a
-         polling object for personal polling strategy
+        :keyword polling: By default, your polling method will be ARMPolling.
+         Pass in False for this operation to not poll, or pass in your own initialized polling object for a personal polling strategy.
         :paramtype polling: bool or ~azure.core.polling.PollingMethod
         :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
         :return: An instance of LROPoller that returns either None or the result of cls(response)
@@ -1370,7 +1452,14 @@ class VirtualMachineScaleSetVMsOperations(object):
             if cls:
                 return cls(pipeline_response, None, {})
 
-        if polling is True: polling_method = ARMPolling(lro_delay,  **kwargs)
+        path_format_arguments = {
+            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str'),
+            'vmScaleSetName': self._serialize.url("vm_scale_set_name", vm_scale_set_name, 'str'),
+            'instanceId': self._serialize.url("instance_id", instance_id, 'str'),
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+        }
+
+        if polling is True: polling_method = ARMPolling(lro_delay, path_format_arguments=path_format_arguments,  **kwargs)
         elif polling is False: polling_method = NoPolling()
         else: polling_method = polling
         if cont_token:
@@ -1389,15 +1478,18 @@ class VirtualMachineScaleSetVMsOperations(object):
         resource_group_name,  # type: str
         vm_scale_set_name,  # type: str
         instance_id,  # type: str
-        parameters,  # type: "models.RunCommandInput"
+        parameters,  # type: "_models.RunCommandInput"
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.RunCommandResult"
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.RunCommandResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        # type: (...) -> Optional["_models.RunCommandResult"]
+        cls = kwargs.pop('cls', None)  # type: ClsType[Optional["_models.RunCommandResult"]]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-07-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json, text/json"
 
         # Construct URL
         url = self._run_command_initial.metadata['url']  # type: ignore
@@ -1416,14 +1508,12 @@ class VirtualMachineScaleSetVMsOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(parameters, 'RunCommandInput')
         body_content_kwargs['content'] = body_content
         request = self._client.post(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
@@ -1446,10 +1536,10 @@ class VirtualMachineScaleSetVMsOperations(object):
         resource_group_name,  # type: str
         vm_scale_set_name,  # type: str
         instance_id,  # type: str
-        parameters,  # type: "models.RunCommandInput"
+        parameters,  # type: "_models.RunCommandInput"
         **kwargs  # type: Any
     ):
-        # type: (...) -> LROPoller
+        # type: (...) -> LROPoller["_models.RunCommandResult"]
         """Run command on a virtual machine in a VM scale set.
 
         :param resource_group_name: The name of the resource group.
@@ -1462,8 +1552,8 @@ class VirtualMachineScaleSetVMsOperations(object):
         :type parameters: ~azure.mgmt.compute.v2019_07_01.models.RunCommandInput
         :keyword callable cls: A custom type or function that will be passed the direct response
         :keyword str continuation_token: A continuation token to restart a poller from a saved state.
-        :keyword polling: True for ARMPolling, False for no polling, or a
-         polling object for personal polling strategy
+        :keyword polling: By default, your polling method will be ARMPolling.
+         Pass in False for this operation to not poll, or pass in your own initialized polling object for a personal polling strategy.
         :paramtype polling: bool or ~azure.core.polling.PollingMethod
         :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
         :return: An instance of LROPoller that returns either RunCommandResult or the result of cls(response)
@@ -1471,7 +1561,7 @@ class VirtualMachineScaleSetVMsOperations(object):
         :raises ~azure.core.exceptions.HttpResponseError:
         """
         polling = kwargs.pop('polling', True)  # type: Union[bool, PollingMethod]
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.RunCommandResult"]
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.RunCommandResult"]
         lro_delay = kwargs.pop(
             'polling_interval',
             self._config.polling_interval
@@ -1497,7 +1587,14 @@ class VirtualMachineScaleSetVMsOperations(object):
                 return cls(pipeline_response, deserialized, {})
             return deserialized
 
-        if polling is True: polling_method = ARMPolling(lro_delay, lro_options={'final-state-via': 'location'},  **kwargs)
+        path_format_arguments = {
+            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str'),
+            'vmScaleSetName': self._serialize.url("vm_scale_set_name", vm_scale_set_name, 'str'),
+            'instanceId': self._serialize.url("instance_id", instance_id, 'str'),
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+        }
+
+        if polling is True: polling_method = ARMPolling(lro_delay, lro_options={'final-state-via': 'location'}, path_format_arguments=path_format_arguments,  **kwargs)
         elif polling is False: polling_method = NoPolling()
         else: polling_method = polling
         if cont_token:

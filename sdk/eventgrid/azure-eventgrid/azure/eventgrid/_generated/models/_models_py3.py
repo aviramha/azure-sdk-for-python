@@ -14,8 +14,1387 @@ import msrest.serialization
 from ._event_grid_publisher_client_enums import *
 
 
+class AcsChatEventBaseProperties(msrest.serialization.Model):
+    """Schema of common properties of all chat events.
+
+    :param recipient_communication_identifier: The communication identifier of the target user.
+    :type recipient_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    :param transaction_id: The transaction id will be used as co-relation vector.
+    :type transaction_id: str
+    :param thread_id: The chat thread id.
+    :type thread_id: str
+    """
+
+    _attribute_map = {
+        'recipient_communication_identifier': {'key': 'recipientCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+        'transaction_id': {'key': 'transactionId', 'type': 'str'},
+        'thread_id': {'key': 'threadId', 'type': 'str'},
+    }
+
+    def __init__(
+        self,
+        *,
+        recipient_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        transaction_id: Optional[str] = None,
+        thread_id: Optional[str] = None,
+        **kwargs
+    ):
+        super(AcsChatEventBaseProperties, self).__init__(**kwargs)
+        self.recipient_communication_identifier = recipient_communication_identifier
+        self.transaction_id = transaction_id
+        self.thread_id = thread_id
+
+
+class AcsChatEventInThreadBaseProperties(msrest.serialization.Model):
+    """Schema of common properties of all thread-level chat events.
+
+    :param transaction_id: The transaction id will be used as co-relation vector.
+    :type transaction_id: str
+    :param thread_id: The chat thread id.
+    :type thread_id: str
+    """
+
+    _attribute_map = {
+        'transaction_id': {'key': 'transactionId', 'type': 'str'},
+        'thread_id': {'key': 'threadId', 'type': 'str'},
+    }
+
+    def __init__(
+        self,
+        *,
+        transaction_id: Optional[str] = None,
+        thread_id: Optional[str] = None,
+        **kwargs
+    ):
+        super(AcsChatEventInThreadBaseProperties, self).__init__(**kwargs)
+        self.transaction_id = transaction_id
+        self.thread_id = thread_id
+
+
+class AcsChatMessageEventBaseProperties(AcsChatEventBaseProperties):
+    """Schema of common properties of all chat message events.
+
+    :param recipient_communication_identifier: The communication identifier of the target user.
+    :type recipient_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    :param transaction_id: The transaction id will be used as co-relation vector.
+    :type transaction_id: str
+    :param thread_id: The chat thread id.
+    :type thread_id: str
+    :param message_id: The chat message id.
+    :type message_id: str
+    :param sender_communication_identifier: The communication identifier of the sender.
+    :type sender_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    :param sender_display_name: The display name of the sender.
+    :type sender_display_name: str
+    :param compose_time: The original compose time of the message.
+    :type compose_time: ~datetime.datetime
+    :param type: The type of the message.
+    :type type: str
+    :param version: The version of the message.
+    :type version: long
+    """
+
+    _attribute_map = {
+        'recipient_communication_identifier': {'key': 'recipientCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+        'transaction_id': {'key': 'transactionId', 'type': 'str'},
+        'thread_id': {'key': 'threadId', 'type': 'str'},
+        'message_id': {'key': 'messageId', 'type': 'str'},
+        'sender_communication_identifier': {'key': 'senderCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+        'sender_display_name': {'key': 'senderDisplayName', 'type': 'str'},
+        'compose_time': {'key': 'composeTime', 'type': 'iso-8601'},
+        'type': {'key': 'type', 'type': 'str'},
+        'version': {'key': 'version', 'type': 'long'},
+    }
+
+    def __init__(
+        self,
+        *,
+        recipient_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        transaction_id: Optional[str] = None,
+        thread_id: Optional[str] = None,
+        message_id: Optional[str] = None,
+        sender_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        sender_display_name: Optional[str] = None,
+        compose_time: Optional[datetime.datetime] = None,
+        type: Optional[str] = None,
+        version: Optional[int] = None,
+        **kwargs
+    ):
+        super(AcsChatMessageEventBaseProperties, self).__init__(recipient_communication_identifier=recipient_communication_identifier, transaction_id=transaction_id, thread_id=thread_id, **kwargs)
+        self.message_id = message_id
+        self.sender_communication_identifier = sender_communication_identifier
+        self.sender_display_name = sender_display_name
+        self.compose_time = compose_time
+        self.type = type
+        self.version = version
+
+
+class AcsChatMessageDeletedEventData(AcsChatMessageEventBaseProperties):
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Communication.ChatMessageDeleted event.
+
+    :param recipient_communication_identifier: The communication identifier of the target user.
+    :type recipient_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    :param transaction_id: The transaction id will be used as co-relation vector.
+    :type transaction_id: str
+    :param thread_id: The chat thread id.
+    :type thread_id: str
+    :param message_id: The chat message id.
+    :type message_id: str
+    :param sender_communication_identifier: The communication identifier of the sender.
+    :type sender_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    :param sender_display_name: The display name of the sender.
+    :type sender_display_name: str
+    :param compose_time: The original compose time of the message.
+    :type compose_time: ~datetime.datetime
+    :param type: The type of the message.
+    :type type: str
+    :param version: The version of the message.
+    :type version: long
+    :param delete_time: The time at which the message was deleted.
+    :type delete_time: ~datetime.datetime
+    """
+
+    _attribute_map = {
+        'recipient_communication_identifier': {'key': 'recipientCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+        'transaction_id': {'key': 'transactionId', 'type': 'str'},
+        'thread_id': {'key': 'threadId', 'type': 'str'},
+        'message_id': {'key': 'messageId', 'type': 'str'},
+        'sender_communication_identifier': {'key': 'senderCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+        'sender_display_name': {'key': 'senderDisplayName', 'type': 'str'},
+        'compose_time': {'key': 'composeTime', 'type': 'iso-8601'},
+        'type': {'key': 'type', 'type': 'str'},
+        'version': {'key': 'version', 'type': 'long'},
+        'delete_time': {'key': 'deleteTime', 'type': 'iso-8601'},
+    }
+
+    def __init__(
+        self,
+        *,
+        recipient_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        transaction_id: Optional[str] = None,
+        thread_id: Optional[str] = None,
+        message_id: Optional[str] = None,
+        sender_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        sender_display_name: Optional[str] = None,
+        compose_time: Optional[datetime.datetime] = None,
+        type: Optional[str] = None,
+        version: Optional[int] = None,
+        delete_time: Optional[datetime.datetime] = None,
+        **kwargs
+    ):
+        super(AcsChatMessageDeletedEventData, self).__init__(recipient_communication_identifier=recipient_communication_identifier, transaction_id=transaction_id, thread_id=thread_id, message_id=message_id, sender_communication_identifier=sender_communication_identifier, sender_display_name=sender_display_name, compose_time=compose_time, type=type, version=version, **kwargs)
+        self.delete_time = delete_time
+
+
+class AcsChatMessageEventInThreadBaseProperties(AcsChatEventInThreadBaseProperties):
+    """Schema of common properties of all thread-level chat message events.
+
+    :param transaction_id: The transaction id will be used as co-relation vector.
+    :type transaction_id: str
+    :param thread_id: The chat thread id.
+    :type thread_id: str
+    :param message_id: The chat message id.
+    :type message_id: str
+    :param sender_communication_identifier: The communication identifier of the sender.
+    :type sender_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    :param sender_display_name: The display name of the sender.
+    :type sender_display_name: str
+    :param compose_time: The original compose time of the message.
+    :type compose_time: ~datetime.datetime
+    :param type: The type of the message.
+    :type type: str
+    :param version: The version of the message.
+    :type version: long
+    """
+
+    _attribute_map = {
+        'transaction_id': {'key': 'transactionId', 'type': 'str'},
+        'thread_id': {'key': 'threadId', 'type': 'str'},
+        'message_id': {'key': 'messageId', 'type': 'str'},
+        'sender_communication_identifier': {'key': 'senderCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+        'sender_display_name': {'key': 'senderDisplayName', 'type': 'str'},
+        'compose_time': {'key': 'composeTime', 'type': 'iso-8601'},
+        'type': {'key': 'type', 'type': 'str'},
+        'version': {'key': 'version', 'type': 'long'},
+    }
+
+    def __init__(
+        self,
+        *,
+        transaction_id: Optional[str] = None,
+        thread_id: Optional[str] = None,
+        message_id: Optional[str] = None,
+        sender_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        sender_display_name: Optional[str] = None,
+        compose_time: Optional[datetime.datetime] = None,
+        type: Optional[str] = None,
+        version: Optional[int] = None,
+        **kwargs
+    ):
+        super(AcsChatMessageEventInThreadBaseProperties, self).__init__(transaction_id=transaction_id, thread_id=thread_id, **kwargs)
+        self.message_id = message_id
+        self.sender_communication_identifier = sender_communication_identifier
+        self.sender_display_name = sender_display_name
+        self.compose_time = compose_time
+        self.type = type
+        self.version = version
+
+
+class AcsChatMessageDeletedInThreadEventData(AcsChatMessageEventInThreadBaseProperties):
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Communication.ChatMessageDeletedInThread event.
+
+    :param transaction_id: The transaction id will be used as co-relation vector.
+    :type transaction_id: str
+    :param thread_id: The chat thread id.
+    :type thread_id: str
+    :param message_id: The chat message id.
+    :type message_id: str
+    :param sender_communication_identifier: The communication identifier of the sender.
+    :type sender_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    :param sender_display_name: The display name of the sender.
+    :type sender_display_name: str
+    :param compose_time: The original compose time of the message.
+    :type compose_time: ~datetime.datetime
+    :param type: The type of the message.
+    :type type: str
+    :param version: The version of the message.
+    :type version: long
+    :param delete_time: The time at which the message was deleted.
+    :type delete_time: ~datetime.datetime
+    """
+
+    _attribute_map = {
+        'transaction_id': {'key': 'transactionId', 'type': 'str'},
+        'thread_id': {'key': 'threadId', 'type': 'str'},
+        'message_id': {'key': 'messageId', 'type': 'str'},
+        'sender_communication_identifier': {'key': 'senderCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+        'sender_display_name': {'key': 'senderDisplayName', 'type': 'str'},
+        'compose_time': {'key': 'composeTime', 'type': 'iso-8601'},
+        'type': {'key': 'type', 'type': 'str'},
+        'version': {'key': 'version', 'type': 'long'},
+        'delete_time': {'key': 'deleteTime', 'type': 'iso-8601'},
+    }
+
+    def __init__(
+        self,
+        *,
+        transaction_id: Optional[str] = None,
+        thread_id: Optional[str] = None,
+        message_id: Optional[str] = None,
+        sender_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        sender_display_name: Optional[str] = None,
+        compose_time: Optional[datetime.datetime] = None,
+        type: Optional[str] = None,
+        version: Optional[int] = None,
+        delete_time: Optional[datetime.datetime] = None,
+        **kwargs
+    ):
+        super(AcsChatMessageDeletedInThreadEventData, self).__init__(transaction_id=transaction_id, thread_id=thread_id, message_id=message_id, sender_communication_identifier=sender_communication_identifier, sender_display_name=sender_display_name, compose_time=compose_time, type=type, version=version, **kwargs)
+        self.delete_time = delete_time
+
+
+class AcsChatMessageEditedEventData(AcsChatMessageEventBaseProperties):
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Communication.ChatMessageEdited event.
+
+    :param recipient_communication_identifier: The communication identifier of the target user.
+    :type recipient_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    :param transaction_id: The transaction id will be used as co-relation vector.
+    :type transaction_id: str
+    :param thread_id: The chat thread id.
+    :type thread_id: str
+    :param message_id: The chat message id.
+    :type message_id: str
+    :param sender_communication_identifier: The communication identifier of the sender.
+    :type sender_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    :param sender_display_name: The display name of the sender.
+    :type sender_display_name: str
+    :param compose_time: The original compose time of the message.
+    :type compose_time: ~datetime.datetime
+    :param type: The type of the message.
+    :type type: str
+    :param version: The version of the message.
+    :type version: long
+    :param message_body: The body of the chat message.
+    :type message_body: str
+    :param edit_time: The time at which the message was edited.
+    :type edit_time: ~datetime.datetime
+    """
+
+    _attribute_map = {
+        'recipient_communication_identifier': {'key': 'recipientCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+        'transaction_id': {'key': 'transactionId', 'type': 'str'},
+        'thread_id': {'key': 'threadId', 'type': 'str'},
+        'message_id': {'key': 'messageId', 'type': 'str'},
+        'sender_communication_identifier': {'key': 'senderCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+        'sender_display_name': {'key': 'senderDisplayName', 'type': 'str'},
+        'compose_time': {'key': 'composeTime', 'type': 'iso-8601'},
+        'type': {'key': 'type', 'type': 'str'},
+        'version': {'key': 'version', 'type': 'long'},
+        'message_body': {'key': 'messageBody', 'type': 'str'},
+        'edit_time': {'key': 'editTime', 'type': 'iso-8601'},
+    }
+
+    def __init__(
+        self,
+        *,
+        recipient_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        transaction_id: Optional[str] = None,
+        thread_id: Optional[str] = None,
+        message_id: Optional[str] = None,
+        sender_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        sender_display_name: Optional[str] = None,
+        compose_time: Optional[datetime.datetime] = None,
+        type: Optional[str] = None,
+        version: Optional[int] = None,
+        message_body: Optional[str] = None,
+        edit_time: Optional[datetime.datetime] = None,
+        **kwargs
+    ):
+        super(AcsChatMessageEditedEventData, self).__init__(recipient_communication_identifier=recipient_communication_identifier, transaction_id=transaction_id, thread_id=thread_id, message_id=message_id, sender_communication_identifier=sender_communication_identifier, sender_display_name=sender_display_name, compose_time=compose_time, type=type, version=version, **kwargs)
+        self.message_body = message_body
+        self.edit_time = edit_time
+
+
+class AcsChatMessageEditedInThreadEventData(AcsChatMessageEventInThreadBaseProperties):
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Communication.ChatMessageEditedInThread event.
+
+    :param transaction_id: The transaction id will be used as co-relation vector.
+    :type transaction_id: str
+    :param thread_id: The chat thread id.
+    :type thread_id: str
+    :param message_id: The chat message id.
+    :type message_id: str
+    :param sender_communication_identifier: The communication identifier of the sender.
+    :type sender_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    :param sender_display_name: The display name of the sender.
+    :type sender_display_name: str
+    :param compose_time: The original compose time of the message.
+    :type compose_time: ~datetime.datetime
+    :param type: The type of the message.
+    :type type: str
+    :param version: The version of the message.
+    :type version: long
+    :param message_body: The body of the chat message.
+    :type message_body: str
+    :param edit_time: The time at which the message was edited.
+    :type edit_time: ~datetime.datetime
+    """
+
+    _attribute_map = {
+        'transaction_id': {'key': 'transactionId', 'type': 'str'},
+        'thread_id': {'key': 'threadId', 'type': 'str'},
+        'message_id': {'key': 'messageId', 'type': 'str'},
+        'sender_communication_identifier': {'key': 'senderCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+        'sender_display_name': {'key': 'senderDisplayName', 'type': 'str'},
+        'compose_time': {'key': 'composeTime', 'type': 'iso-8601'},
+        'type': {'key': 'type', 'type': 'str'},
+        'version': {'key': 'version', 'type': 'long'},
+        'message_body': {'key': 'messageBody', 'type': 'str'},
+        'edit_time': {'key': 'editTime', 'type': 'iso-8601'},
+    }
+
+    def __init__(
+        self,
+        *,
+        transaction_id: Optional[str] = None,
+        thread_id: Optional[str] = None,
+        message_id: Optional[str] = None,
+        sender_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        sender_display_name: Optional[str] = None,
+        compose_time: Optional[datetime.datetime] = None,
+        type: Optional[str] = None,
+        version: Optional[int] = None,
+        message_body: Optional[str] = None,
+        edit_time: Optional[datetime.datetime] = None,
+        **kwargs
+    ):
+        super(AcsChatMessageEditedInThreadEventData, self).__init__(transaction_id=transaction_id, thread_id=thread_id, message_id=message_id, sender_communication_identifier=sender_communication_identifier, sender_display_name=sender_display_name, compose_time=compose_time, type=type, version=version, **kwargs)
+        self.message_body = message_body
+        self.edit_time = edit_time
+
+
+class AcsChatMessageReceivedEventData(AcsChatMessageEventBaseProperties):
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Communication.ChatMessageReceived event.
+
+    :param recipient_communication_identifier: The communication identifier of the target user.
+    :type recipient_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    :param transaction_id: The transaction id will be used as co-relation vector.
+    :type transaction_id: str
+    :param thread_id: The chat thread id.
+    :type thread_id: str
+    :param message_id: The chat message id.
+    :type message_id: str
+    :param sender_communication_identifier: The communication identifier of the sender.
+    :type sender_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    :param sender_display_name: The display name of the sender.
+    :type sender_display_name: str
+    :param compose_time: The original compose time of the message.
+    :type compose_time: ~datetime.datetime
+    :param type: The type of the message.
+    :type type: str
+    :param version: The version of the message.
+    :type version: long
+    :param message_body: The body of the chat message.
+    :type message_body: str
+    """
+
+    _attribute_map = {
+        'recipient_communication_identifier': {'key': 'recipientCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+        'transaction_id': {'key': 'transactionId', 'type': 'str'},
+        'thread_id': {'key': 'threadId', 'type': 'str'},
+        'message_id': {'key': 'messageId', 'type': 'str'},
+        'sender_communication_identifier': {'key': 'senderCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+        'sender_display_name': {'key': 'senderDisplayName', 'type': 'str'},
+        'compose_time': {'key': 'composeTime', 'type': 'iso-8601'},
+        'type': {'key': 'type', 'type': 'str'},
+        'version': {'key': 'version', 'type': 'long'},
+        'message_body': {'key': 'messageBody', 'type': 'str'},
+    }
+
+    def __init__(
+        self,
+        *,
+        recipient_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        transaction_id: Optional[str] = None,
+        thread_id: Optional[str] = None,
+        message_id: Optional[str] = None,
+        sender_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        sender_display_name: Optional[str] = None,
+        compose_time: Optional[datetime.datetime] = None,
+        type: Optional[str] = None,
+        version: Optional[int] = None,
+        message_body: Optional[str] = None,
+        **kwargs
+    ):
+        super(AcsChatMessageReceivedEventData, self).__init__(recipient_communication_identifier=recipient_communication_identifier, transaction_id=transaction_id, thread_id=thread_id, message_id=message_id, sender_communication_identifier=sender_communication_identifier, sender_display_name=sender_display_name, compose_time=compose_time, type=type, version=version, **kwargs)
+        self.message_body = message_body
+
+
+class AcsChatMessageReceivedInThreadEventData(AcsChatMessageEventInThreadBaseProperties):
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Communication.ChatMessageReceivedInThread event.
+
+    :param transaction_id: The transaction id will be used as co-relation vector.
+    :type transaction_id: str
+    :param thread_id: The chat thread id.
+    :type thread_id: str
+    :param message_id: The chat message id.
+    :type message_id: str
+    :param sender_communication_identifier: The communication identifier of the sender.
+    :type sender_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    :param sender_display_name: The display name of the sender.
+    :type sender_display_name: str
+    :param compose_time: The original compose time of the message.
+    :type compose_time: ~datetime.datetime
+    :param type: The type of the message.
+    :type type: str
+    :param version: The version of the message.
+    :type version: long
+    :param message_body: The body of the chat message.
+    :type message_body: str
+    """
+
+    _attribute_map = {
+        'transaction_id': {'key': 'transactionId', 'type': 'str'},
+        'thread_id': {'key': 'threadId', 'type': 'str'},
+        'message_id': {'key': 'messageId', 'type': 'str'},
+        'sender_communication_identifier': {'key': 'senderCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+        'sender_display_name': {'key': 'senderDisplayName', 'type': 'str'},
+        'compose_time': {'key': 'composeTime', 'type': 'iso-8601'},
+        'type': {'key': 'type', 'type': 'str'},
+        'version': {'key': 'version', 'type': 'long'},
+        'message_body': {'key': 'messageBody', 'type': 'str'},
+    }
+
+    def __init__(
+        self,
+        *,
+        transaction_id: Optional[str] = None,
+        thread_id: Optional[str] = None,
+        message_id: Optional[str] = None,
+        sender_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        sender_display_name: Optional[str] = None,
+        compose_time: Optional[datetime.datetime] = None,
+        type: Optional[str] = None,
+        version: Optional[int] = None,
+        message_body: Optional[str] = None,
+        **kwargs
+    ):
+        super(AcsChatMessageReceivedInThreadEventData, self).__init__(transaction_id=transaction_id, thread_id=thread_id, message_id=message_id, sender_communication_identifier=sender_communication_identifier, sender_display_name=sender_display_name, compose_time=compose_time, type=type, version=version, **kwargs)
+        self.message_body = message_body
+
+
+class AcsChatParticipantAddedToThreadEventData(AcsChatEventInThreadBaseProperties):
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Communication.ChatThreadParticipantAdded event.
+
+    :param transaction_id: The transaction id will be used as co-relation vector.
+    :type transaction_id: str
+    :param thread_id: The chat thread id.
+    :type thread_id: str
+    :param time: The time at which the user was added to the thread.
+    :type time: ~datetime.datetime
+    :param added_by_communication_identifier: The communication identifier of the user who added
+     the user.
+    :type added_by_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    :param participant_added: The details of the user who was added.
+    :type participant_added: ~event_grid_publisher_client.models.AcsChatThreadParticipantProperties
+    :param version: The version of the thread.
+    :type version: long
+    """
+
+    _attribute_map = {
+        'transaction_id': {'key': 'transactionId', 'type': 'str'},
+        'thread_id': {'key': 'threadId', 'type': 'str'},
+        'time': {'key': 'time', 'type': 'iso-8601'},
+        'added_by_communication_identifier': {'key': 'addedByCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+        'participant_added': {'key': 'participantAdded', 'type': 'AcsChatThreadParticipantProperties'},
+        'version': {'key': 'version', 'type': 'long'},
+    }
+
+    def __init__(
+        self,
+        *,
+        transaction_id: Optional[str] = None,
+        thread_id: Optional[str] = None,
+        time: Optional[datetime.datetime] = None,
+        added_by_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        participant_added: Optional["AcsChatThreadParticipantProperties"] = None,
+        version: Optional[int] = None,
+        **kwargs
+    ):
+        super(AcsChatParticipantAddedToThreadEventData, self).__init__(transaction_id=transaction_id, thread_id=thread_id, **kwargs)
+        self.time = time
+        self.added_by_communication_identifier = added_by_communication_identifier
+        self.participant_added = participant_added
+        self.version = version
+
+
+class AcsChatThreadEventBaseProperties(AcsChatEventBaseProperties):
+    """Schema of common properties of all chat thread events.
+
+    :param recipient_communication_identifier: The communication identifier of the target user.
+    :type recipient_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    :param transaction_id: The transaction id will be used as co-relation vector.
+    :type transaction_id: str
+    :param thread_id: The chat thread id.
+    :type thread_id: str
+    :param create_time: The original creation time of the thread.
+    :type create_time: ~datetime.datetime
+    :param version: The version of the thread.
+    :type version: long
+    """
+
+    _attribute_map = {
+        'recipient_communication_identifier': {'key': 'recipientCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+        'transaction_id': {'key': 'transactionId', 'type': 'str'},
+        'thread_id': {'key': 'threadId', 'type': 'str'},
+        'create_time': {'key': 'createTime', 'type': 'iso-8601'},
+        'version': {'key': 'version', 'type': 'long'},
+    }
+
+    def __init__(
+        self,
+        *,
+        recipient_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        transaction_id: Optional[str] = None,
+        thread_id: Optional[str] = None,
+        create_time: Optional[datetime.datetime] = None,
+        version: Optional[int] = None,
+        **kwargs
+    ):
+        super(AcsChatThreadEventBaseProperties, self).__init__(recipient_communication_identifier=recipient_communication_identifier, transaction_id=transaction_id, thread_id=thread_id, **kwargs)
+        self.create_time = create_time
+        self.version = version
+
+
+class AcsChatParticipantAddedToThreadWithUserEventData(AcsChatThreadEventBaseProperties):
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Communication.ChatParticipantAddedToThreadWithUser event.
+
+    :param recipient_communication_identifier: The communication identifier of the target user.
+    :type recipient_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    :param transaction_id: The transaction id will be used as co-relation vector.
+    :type transaction_id: str
+    :param thread_id: The chat thread id.
+    :type thread_id: str
+    :param create_time: The original creation time of the thread.
+    :type create_time: ~datetime.datetime
+    :param version: The version of the thread.
+    :type version: long
+    :param time: The time at which the user was added to the thread.
+    :type time: ~datetime.datetime
+    :param added_by_communication_identifier: The communication identifier of the user who added
+     the user.
+    :type added_by_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    :param participant_added: The details of the user who was added.
+    :type participant_added: ~event_grid_publisher_client.models.AcsChatThreadParticipantProperties
+    """
+
+    _attribute_map = {
+        'recipient_communication_identifier': {'key': 'recipientCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+        'transaction_id': {'key': 'transactionId', 'type': 'str'},
+        'thread_id': {'key': 'threadId', 'type': 'str'},
+        'create_time': {'key': 'createTime', 'type': 'iso-8601'},
+        'version': {'key': 'version', 'type': 'long'},
+        'time': {'key': 'time', 'type': 'iso-8601'},
+        'added_by_communication_identifier': {'key': 'addedByCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+        'participant_added': {'key': 'participantAdded', 'type': 'AcsChatThreadParticipantProperties'},
+    }
+
+    def __init__(
+        self,
+        *,
+        recipient_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        transaction_id: Optional[str] = None,
+        thread_id: Optional[str] = None,
+        create_time: Optional[datetime.datetime] = None,
+        version: Optional[int] = None,
+        time: Optional[datetime.datetime] = None,
+        added_by_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        participant_added: Optional["AcsChatThreadParticipantProperties"] = None,
+        **kwargs
+    ):
+        super(AcsChatParticipantAddedToThreadWithUserEventData, self).__init__(recipient_communication_identifier=recipient_communication_identifier, transaction_id=transaction_id, thread_id=thread_id, create_time=create_time, version=version, **kwargs)
+        self.time = time
+        self.added_by_communication_identifier = added_by_communication_identifier
+        self.participant_added = participant_added
+
+
+class AcsChatParticipantRemovedFromThreadEventData(AcsChatEventInThreadBaseProperties):
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Communication.ChatThreadParticipantRemoved event.
+
+    :param transaction_id: The transaction id will be used as co-relation vector.
+    :type transaction_id: str
+    :param thread_id: The chat thread id.
+    :type thread_id: str
+    :param time: The time at which the user was removed to the thread.
+    :type time: ~datetime.datetime
+    :param removed_by_communication_identifier: The communication identifier of the user who
+     removed the user.
+    :type removed_by_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    :param participant_removed: The details of the user who was removed.
+    :type participant_removed:
+     ~event_grid_publisher_client.models.AcsChatThreadParticipantProperties
+    :param version: The version of the thread.
+    :type version: long
+    """
+
+    _attribute_map = {
+        'transaction_id': {'key': 'transactionId', 'type': 'str'},
+        'thread_id': {'key': 'threadId', 'type': 'str'},
+        'time': {'key': 'time', 'type': 'iso-8601'},
+        'removed_by_communication_identifier': {'key': 'removedByCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+        'participant_removed': {'key': 'participantRemoved', 'type': 'AcsChatThreadParticipantProperties'},
+        'version': {'key': 'version', 'type': 'long'},
+    }
+
+    def __init__(
+        self,
+        *,
+        transaction_id: Optional[str] = None,
+        thread_id: Optional[str] = None,
+        time: Optional[datetime.datetime] = None,
+        removed_by_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        participant_removed: Optional["AcsChatThreadParticipantProperties"] = None,
+        version: Optional[int] = None,
+        **kwargs
+    ):
+        super(AcsChatParticipantRemovedFromThreadEventData, self).__init__(transaction_id=transaction_id, thread_id=thread_id, **kwargs)
+        self.time = time
+        self.removed_by_communication_identifier = removed_by_communication_identifier
+        self.participant_removed = participant_removed
+        self.version = version
+
+
+class AcsChatParticipantRemovedFromThreadWithUserEventData(AcsChatThreadEventBaseProperties):
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Communication.ChatParticipantRemovedFromThreadWithUser event.
+
+    :param recipient_communication_identifier: The communication identifier of the target user.
+    :type recipient_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    :param transaction_id: The transaction id will be used as co-relation vector.
+    :type transaction_id: str
+    :param thread_id: The chat thread id.
+    :type thread_id: str
+    :param create_time: The original creation time of the thread.
+    :type create_time: ~datetime.datetime
+    :param version: The version of the thread.
+    :type version: long
+    :param time: The time at which the user was removed to the thread.
+    :type time: ~datetime.datetime
+    :param removed_by_communication_identifier: The communication identifier of the user who
+     removed the user.
+    :type removed_by_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    :param participant_removed: The details of the user who was removed.
+    :type participant_removed:
+     ~event_grid_publisher_client.models.AcsChatThreadParticipantProperties
+    """
+
+    _attribute_map = {
+        'recipient_communication_identifier': {'key': 'recipientCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+        'transaction_id': {'key': 'transactionId', 'type': 'str'},
+        'thread_id': {'key': 'threadId', 'type': 'str'},
+        'create_time': {'key': 'createTime', 'type': 'iso-8601'},
+        'version': {'key': 'version', 'type': 'long'},
+        'time': {'key': 'time', 'type': 'iso-8601'},
+        'removed_by_communication_identifier': {'key': 'removedByCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+        'participant_removed': {'key': 'participantRemoved', 'type': 'AcsChatThreadParticipantProperties'},
+    }
+
+    def __init__(
+        self,
+        *,
+        recipient_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        transaction_id: Optional[str] = None,
+        thread_id: Optional[str] = None,
+        create_time: Optional[datetime.datetime] = None,
+        version: Optional[int] = None,
+        time: Optional[datetime.datetime] = None,
+        removed_by_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        participant_removed: Optional["AcsChatThreadParticipantProperties"] = None,
+        **kwargs
+    ):
+        super(AcsChatParticipantRemovedFromThreadWithUserEventData, self).__init__(recipient_communication_identifier=recipient_communication_identifier, transaction_id=transaction_id, thread_id=thread_id, create_time=create_time, version=version, **kwargs)
+        self.time = time
+        self.removed_by_communication_identifier = removed_by_communication_identifier
+        self.participant_removed = participant_removed
+
+
+class AcsChatThreadEventInThreadBaseProperties(AcsChatEventInThreadBaseProperties):
+    """Schema of common properties of all chat thread events.
+
+    :param transaction_id: The transaction id will be used as co-relation vector.
+    :type transaction_id: str
+    :param thread_id: The chat thread id.
+    :type thread_id: str
+    :param create_time: The original creation time of the thread.
+    :type create_time: ~datetime.datetime
+    :param version: The version of the thread.
+    :type version: long
+    """
+
+    _attribute_map = {
+        'transaction_id': {'key': 'transactionId', 'type': 'str'},
+        'thread_id': {'key': 'threadId', 'type': 'str'},
+        'create_time': {'key': 'createTime', 'type': 'iso-8601'},
+        'version': {'key': 'version', 'type': 'long'},
+    }
+
+    def __init__(
+        self,
+        *,
+        transaction_id: Optional[str] = None,
+        thread_id: Optional[str] = None,
+        create_time: Optional[datetime.datetime] = None,
+        version: Optional[int] = None,
+        **kwargs
+    ):
+        super(AcsChatThreadEventInThreadBaseProperties, self).__init__(transaction_id=transaction_id, thread_id=thread_id, **kwargs)
+        self.create_time = create_time
+        self.version = version
+
+
+class AcsChatThreadCreatedEventData(AcsChatThreadEventInThreadBaseProperties):
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Communication.ChatThreadCreated event.
+
+    :param transaction_id: The transaction id will be used as co-relation vector.
+    :type transaction_id: str
+    :param thread_id: The chat thread id.
+    :type thread_id: str
+    :param create_time: The original creation time of the thread.
+    :type create_time: ~datetime.datetime
+    :param version: The version of the thread.
+    :type version: long
+    :param created_by_communication_identifier: The communication identifier of the user who
+     created the thread.
+    :type created_by_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    :param properties: The thread properties.
+    :type properties: dict[str, object]
+    :param participants: The list of properties of participants who are part of the thread.
+    :type participants:
+     list[~event_grid_publisher_client.models.AcsChatThreadParticipantProperties]
+    """
+
+    _attribute_map = {
+        'transaction_id': {'key': 'transactionId', 'type': 'str'},
+        'thread_id': {'key': 'threadId', 'type': 'str'},
+        'create_time': {'key': 'createTime', 'type': 'iso-8601'},
+        'version': {'key': 'version', 'type': 'long'},
+        'created_by_communication_identifier': {'key': 'createdByCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+        'properties': {'key': 'properties', 'type': '{object}'},
+        'participants': {'key': 'participants', 'type': '[AcsChatThreadParticipantProperties]'},
+    }
+
+    def __init__(
+        self,
+        *,
+        transaction_id: Optional[str] = None,
+        thread_id: Optional[str] = None,
+        create_time: Optional[datetime.datetime] = None,
+        version: Optional[int] = None,
+        created_by_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        properties: Optional[Dict[str, object]] = None,
+        participants: Optional[List["AcsChatThreadParticipantProperties"]] = None,
+        **kwargs
+    ):
+        super(AcsChatThreadCreatedEventData, self).__init__(transaction_id=transaction_id, thread_id=thread_id, create_time=create_time, version=version, **kwargs)
+        self.created_by_communication_identifier = created_by_communication_identifier
+        self.properties = properties
+        self.participants = participants
+
+
+class AcsChatThreadCreatedWithUserEventData(AcsChatThreadEventBaseProperties):
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Communication.ChatThreadCreatedWithUser event.
+
+    :param recipient_communication_identifier: The communication identifier of the target user.
+    :type recipient_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    :param transaction_id: The transaction id will be used as co-relation vector.
+    :type transaction_id: str
+    :param thread_id: The chat thread id.
+    :type thread_id: str
+    :param create_time: The original creation time of the thread.
+    :type create_time: ~datetime.datetime
+    :param version: The version of the thread.
+    :type version: long
+    :param created_by_communication_identifier: The communication identifier of the user who
+     created the thread.
+    :type created_by_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    :param properties: The thread properties.
+    :type properties: dict[str, object]
+    :param participants: The list of properties of participants who are part of the thread.
+    :type participants:
+     list[~event_grid_publisher_client.models.AcsChatThreadParticipantProperties]
+    """
+
+    _attribute_map = {
+        'recipient_communication_identifier': {'key': 'recipientCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+        'transaction_id': {'key': 'transactionId', 'type': 'str'},
+        'thread_id': {'key': 'threadId', 'type': 'str'},
+        'create_time': {'key': 'createTime', 'type': 'iso-8601'},
+        'version': {'key': 'version', 'type': 'long'},
+        'created_by_communication_identifier': {'key': 'createdByCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+        'properties': {'key': 'properties', 'type': '{object}'},
+        'participants': {'key': 'participants', 'type': '[AcsChatThreadParticipantProperties]'},
+    }
+
+    def __init__(
+        self,
+        *,
+        recipient_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        transaction_id: Optional[str] = None,
+        thread_id: Optional[str] = None,
+        create_time: Optional[datetime.datetime] = None,
+        version: Optional[int] = None,
+        created_by_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        properties: Optional[Dict[str, object]] = None,
+        participants: Optional[List["AcsChatThreadParticipantProperties"]] = None,
+        **kwargs
+    ):
+        super(AcsChatThreadCreatedWithUserEventData, self).__init__(recipient_communication_identifier=recipient_communication_identifier, transaction_id=transaction_id, thread_id=thread_id, create_time=create_time, version=version, **kwargs)
+        self.created_by_communication_identifier = created_by_communication_identifier
+        self.properties = properties
+        self.participants = participants
+
+
+class AcsChatThreadDeletedEventData(AcsChatThreadEventInThreadBaseProperties):
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Communication.ChatThreadDeleted event.
+
+    :param transaction_id: The transaction id will be used as co-relation vector.
+    :type transaction_id: str
+    :param thread_id: The chat thread id.
+    :type thread_id: str
+    :param create_time: The original creation time of the thread.
+    :type create_time: ~datetime.datetime
+    :param version: The version of the thread.
+    :type version: long
+    :param deleted_by_communication_identifier: The communication identifier of the user who
+     deleted the thread.
+    :type deleted_by_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    :param delete_time: The deletion time of the thread.
+    :type delete_time: ~datetime.datetime
+    """
+
+    _attribute_map = {
+        'transaction_id': {'key': 'transactionId', 'type': 'str'},
+        'thread_id': {'key': 'threadId', 'type': 'str'},
+        'create_time': {'key': 'createTime', 'type': 'iso-8601'},
+        'version': {'key': 'version', 'type': 'long'},
+        'deleted_by_communication_identifier': {'key': 'deletedByCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+        'delete_time': {'key': 'deleteTime', 'type': 'iso-8601'},
+    }
+
+    def __init__(
+        self,
+        *,
+        transaction_id: Optional[str] = None,
+        thread_id: Optional[str] = None,
+        create_time: Optional[datetime.datetime] = None,
+        version: Optional[int] = None,
+        deleted_by_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        delete_time: Optional[datetime.datetime] = None,
+        **kwargs
+    ):
+        super(AcsChatThreadDeletedEventData, self).__init__(transaction_id=transaction_id, thread_id=thread_id, create_time=create_time, version=version, **kwargs)
+        self.deleted_by_communication_identifier = deleted_by_communication_identifier
+        self.delete_time = delete_time
+
+
+class AcsChatThreadParticipantProperties(msrest.serialization.Model):
+    """Schema of the chat thread participant.
+
+    :param display_name: The name of the user.
+    :type display_name: str
+    :param participant_communication_identifier: The communication identifier of the user.
+    :type participant_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    """
+
+    _attribute_map = {
+        'display_name': {'key': 'displayName', 'type': 'str'},
+        'participant_communication_identifier': {'key': 'participantCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+    }
+
+    def __init__(
+        self,
+        *,
+        display_name: Optional[str] = None,
+        participant_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        **kwargs
+    ):
+        super(AcsChatThreadParticipantProperties, self).__init__(**kwargs)
+        self.display_name = display_name
+        self.participant_communication_identifier = participant_communication_identifier
+
+
+class AcsChatThreadPropertiesUpdatedEventData(AcsChatThreadEventInThreadBaseProperties):
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Communication.ChatThreadPropertiesUpdated event.
+
+    :param transaction_id: The transaction id will be used as co-relation vector.
+    :type transaction_id: str
+    :param thread_id: The chat thread id.
+    :type thread_id: str
+    :param create_time: The original creation time of the thread.
+    :type create_time: ~datetime.datetime
+    :param version: The version of the thread.
+    :type version: long
+    :param edited_by_communication_identifier: The communication identifier of the user who updated
+     the thread properties.
+    :type edited_by_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    :param edit_time: The time at which the properties of the thread were updated.
+    :type edit_time: ~datetime.datetime
+    :param properties: The updated thread properties.
+    :type properties: dict[str, object]
+    """
+
+    _attribute_map = {
+        'transaction_id': {'key': 'transactionId', 'type': 'str'},
+        'thread_id': {'key': 'threadId', 'type': 'str'},
+        'create_time': {'key': 'createTime', 'type': 'iso-8601'},
+        'version': {'key': 'version', 'type': 'long'},
+        'edited_by_communication_identifier': {'key': 'editedByCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+        'edit_time': {'key': 'editTime', 'type': 'iso-8601'},
+        'properties': {'key': 'properties', 'type': '{object}'},
+    }
+
+    def __init__(
+        self,
+        *,
+        transaction_id: Optional[str] = None,
+        thread_id: Optional[str] = None,
+        create_time: Optional[datetime.datetime] = None,
+        version: Optional[int] = None,
+        edited_by_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        edit_time: Optional[datetime.datetime] = None,
+        properties: Optional[Dict[str, object]] = None,
+        **kwargs
+    ):
+        super(AcsChatThreadPropertiesUpdatedEventData, self).__init__(transaction_id=transaction_id, thread_id=thread_id, create_time=create_time, version=version, **kwargs)
+        self.edited_by_communication_identifier = edited_by_communication_identifier
+        self.edit_time = edit_time
+        self.properties = properties
+
+
+class AcsChatThreadPropertiesUpdatedPerUserEventData(AcsChatThreadEventBaseProperties):
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Communication.ChatThreadPropertiesUpdatedPerUser event.
+
+    :param recipient_communication_identifier: The communication identifier of the target user.
+    :type recipient_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    :param transaction_id: The transaction id will be used as co-relation vector.
+    :type transaction_id: str
+    :param thread_id: The chat thread id.
+    :type thread_id: str
+    :param create_time: The original creation time of the thread.
+    :type create_time: ~datetime.datetime
+    :param version: The version of the thread.
+    :type version: long
+    :param edited_by_communication_identifier: The communication identifier of the user who updated
+     the thread properties.
+    :type edited_by_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    :param edit_time: The time at which the properties of the thread were updated.
+    :type edit_time: ~datetime.datetime
+    :param properties: The updated thread properties.
+    :type properties: dict[str, object]
+    """
+
+    _attribute_map = {
+        'recipient_communication_identifier': {'key': 'recipientCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+        'transaction_id': {'key': 'transactionId', 'type': 'str'},
+        'thread_id': {'key': 'threadId', 'type': 'str'},
+        'create_time': {'key': 'createTime', 'type': 'iso-8601'},
+        'version': {'key': 'version', 'type': 'long'},
+        'edited_by_communication_identifier': {'key': 'editedByCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+        'edit_time': {'key': 'editTime', 'type': 'iso-8601'},
+        'properties': {'key': 'properties', 'type': '{object}'},
+    }
+
+    def __init__(
+        self,
+        *,
+        recipient_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        transaction_id: Optional[str] = None,
+        thread_id: Optional[str] = None,
+        create_time: Optional[datetime.datetime] = None,
+        version: Optional[int] = None,
+        edited_by_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        edit_time: Optional[datetime.datetime] = None,
+        properties: Optional[Dict[str, object]] = None,
+        **kwargs
+    ):
+        super(AcsChatThreadPropertiesUpdatedPerUserEventData, self).__init__(recipient_communication_identifier=recipient_communication_identifier, transaction_id=transaction_id, thread_id=thread_id, create_time=create_time, version=version, **kwargs)
+        self.edited_by_communication_identifier = edited_by_communication_identifier
+        self.edit_time = edit_time
+        self.properties = properties
+
+
+class AcsChatThreadWithUserDeletedEventData(AcsChatThreadEventBaseProperties):
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Communication.ChatThreadWithUserDeleted event.
+
+    :param recipient_communication_identifier: The communication identifier of the target user.
+    :type recipient_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    :param transaction_id: The transaction id will be used as co-relation vector.
+    :type transaction_id: str
+    :param thread_id: The chat thread id.
+    :type thread_id: str
+    :param create_time: The original creation time of the thread.
+    :type create_time: ~datetime.datetime
+    :param version: The version of the thread.
+    :type version: long
+    :param deleted_by_communication_identifier: The communication identifier of the user who
+     deleted the thread.
+    :type deleted_by_communication_identifier:
+     ~event_grid_publisher_client.models.CommunicationIdentifierModel
+    :param delete_time: The deletion time of the thread.
+    :type delete_time: ~datetime.datetime
+    """
+
+    _attribute_map = {
+        'recipient_communication_identifier': {'key': 'recipientCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+        'transaction_id': {'key': 'transactionId', 'type': 'str'},
+        'thread_id': {'key': 'threadId', 'type': 'str'},
+        'create_time': {'key': 'createTime', 'type': 'iso-8601'},
+        'version': {'key': 'version', 'type': 'long'},
+        'deleted_by_communication_identifier': {'key': 'deletedByCommunicationIdentifier', 'type': 'CommunicationIdentifierModel'},
+        'delete_time': {'key': 'deleteTime', 'type': 'iso-8601'},
+    }
+
+    def __init__(
+        self,
+        *,
+        recipient_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        transaction_id: Optional[str] = None,
+        thread_id: Optional[str] = None,
+        create_time: Optional[datetime.datetime] = None,
+        version: Optional[int] = None,
+        deleted_by_communication_identifier: Optional["CommunicationIdentifierModel"] = None,
+        delete_time: Optional[datetime.datetime] = None,
+        **kwargs
+    ):
+        super(AcsChatThreadWithUserDeletedEventData, self).__init__(recipient_communication_identifier=recipient_communication_identifier, transaction_id=transaction_id, thread_id=thread_id, create_time=create_time, version=version, **kwargs)
+        self.deleted_by_communication_identifier = deleted_by_communication_identifier
+        self.delete_time = delete_time
+
+
+class AcsRecordingChunkInfoProperties(msrest.serialization.Model):
+    """Schema for all properties of  Recording Chunk Information.
+
+    :param document_id: The documentId of the recording chunk.
+    :type document_id: str
+    :param index: The index of the recording chunk.
+    :type index: long
+    :param end_reason: The reason for ending the recording chunk.
+    :type end_reason: str
+    :param metadata_location: The location of the metadata for this chunk.
+    :type metadata_location: str
+    :param content_location: The location of the content for this chunk.
+    :type content_location: str
+    """
+
+    _attribute_map = {
+        'document_id': {'key': 'documentId', 'type': 'str'},
+        'index': {'key': 'index', 'type': 'long'},
+        'end_reason': {'key': 'endReason', 'type': 'str'},
+        'metadata_location': {'key': 'metadataLocation', 'type': 'str'},
+        'content_location': {'key': 'contentLocation', 'type': 'str'},
+    }
+
+    def __init__(
+        self,
+        *,
+        document_id: Optional[str] = None,
+        index: Optional[int] = None,
+        end_reason: Optional[str] = None,
+        metadata_location: Optional[str] = None,
+        content_location: Optional[str] = None,
+        **kwargs
+    ):
+        super(AcsRecordingChunkInfoProperties, self).__init__(**kwargs)
+        self.document_id = document_id
+        self.index = index
+        self.end_reason = end_reason
+        self.metadata_location = metadata_location
+        self.content_location = content_location
+
+
+class AcsRecordingFileStatusUpdatedEventData(msrest.serialization.Model):
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Communication.RecordingFileStatusUpdated event.
+
+    :param recording_storage_info: The details of recording storage information.
+    :type recording_storage_info:
+     ~event_grid_publisher_client.models.AcsRecordingStorageInfoProperties
+    :param recording_start_time: The time at which the recording started.
+    :type recording_start_time: ~datetime.datetime
+    :param recording_duration_ms: The recording duration in milliseconds.
+    :type recording_duration_ms: long
+    :param session_end_reason: The reason for ending recording session.
+    :type session_end_reason: str
+    """
+
+    _attribute_map = {
+        'recording_storage_info': {'key': 'recordingStorageInfo', 'type': 'AcsRecordingStorageInfoProperties'},
+        'recording_start_time': {'key': 'recordingStartTime', 'type': 'iso-8601'},
+        'recording_duration_ms': {'key': 'recordingDurationMs', 'type': 'long'},
+        'session_end_reason': {'key': 'sessionEndReason', 'type': 'str'},
+    }
+
+    def __init__(
+        self,
+        *,
+        recording_storage_info: Optional["AcsRecordingStorageInfoProperties"] = None,
+        recording_start_time: Optional[datetime.datetime] = None,
+        recording_duration_ms: Optional[int] = None,
+        session_end_reason: Optional[str] = None,
+        **kwargs
+    ):
+        super(AcsRecordingFileStatusUpdatedEventData, self).__init__(**kwargs)
+        self.recording_storage_info = recording_storage_info
+        self.recording_start_time = recording_start_time
+        self.recording_duration_ms = recording_duration_ms
+        self.session_end_reason = session_end_reason
+
+
+class AcsRecordingStorageInfoProperties(msrest.serialization.Model):
+    """Schema for all properties of Recording Storage Information.
+
+    :param recording_chunks: List of details of recording chunks information.
+    :type recording_chunks:
+     list[~event_grid_publisher_client.models.AcsRecordingChunkInfoProperties]
+    """
+
+    _attribute_map = {
+        'recording_chunks': {'key': 'recordingChunks', 'type': '[AcsRecordingChunkInfoProperties]'},
+    }
+
+    def __init__(
+        self,
+        *,
+        recording_chunks: Optional[List["AcsRecordingChunkInfoProperties"]] = None,
+        **kwargs
+    ):
+        super(AcsRecordingStorageInfoProperties, self).__init__(**kwargs)
+        self.recording_chunks = recording_chunks
+
+
+class AcsSmsDeliveryAttemptProperties(msrest.serialization.Model):
+    """Schema for details of a delivery attempt.
+
+    :param timestamp: TimeStamp when delivery was attempted.
+    :type timestamp: ~datetime.datetime
+    :param segments_succeeded: Number of segments that were successfully delivered.
+    :type segments_succeeded: int
+    :param segments_failed: Number of segments whose delivery failed.
+    :type segments_failed: int
+    """
+
+    _attribute_map = {
+        'timestamp': {'key': 'timestamp', 'type': 'iso-8601'},
+        'segments_succeeded': {'key': 'segmentsSucceeded', 'type': 'int'},
+        'segments_failed': {'key': 'segmentsFailed', 'type': 'int'},
+    }
+
+    def __init__(
+        self,
+        *,
+        timestamp: Optional[datetime.datetime] = None,
+        segments_succeeded: Optional[int] = None,
+        segments_failed: Optional[int] = None,
+        **kwargs
+    ):
+        super(AcsSmsDeliveryAttemptProperties, self).__init__(**kwargs)
+        self.timestamp = timestamp
+        self.segments_succeeded = segments_succeeded
+        self.segments_failed = segments_failed
+
+
+class AcsSmsEventBaseProperties(msrest.serialization.Model):
+    """Schema of common properties of all SMS events.
+
+    :param message_id: The identity of the SMS message.
+    :type message_id: str
+    :param from_property: The identity of SMS message sender.
+    :type from_property: str
+    :param to: The identity of SMS message receiver.
+    :type to: str
+    """
+
+    _attribute_map = {
+        'message_id': {'key': 'messageId', 'type': 'str'},
+        'from_property': {'key': 'from', 'type': 'str'},
+        'to': {'key': 'to', 'type': 'str'},
+    }
+
+    def __init__(
+        self,
+        *,
+        message_id: Optional[str] = None,
+        from_property: Optional[str] = None,
+        to: Optional[str] = None,
+        **kwargs
+    ):
+        super(AcsSmsEventBaseProperties, self).__init__(**kwargs)
+        self.message_id = message_id
+        self.from_property = from_property
+        self.to = to
+
+
+class AcsSmsDeliveryReportReceivedEventData(AcsSmsEventBaseProperties):
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Communication.SMSDeliveryReportReceived event.
+
+    :param message_id: The identity of the SMS message.
+    :type message_id: str
+    :param from_property: The identity of SMS message sender.
+    :type from_property: str
+    :param to: The identity of SMS message receiver.
+    :type to: str
+    :param delivery_status: Status of Delivery.
+    :type delivery_status: str
+    :param delivery_status_details: Details about Delivery Status.
+    :type delivery_status_details: str
+    :param delivery_attempts: List of details of delivery attempts made.
+    :type delivery_attempts:
+     list[~event_grid_publisher_client.models.AcsSmsDeliveryAttemptProperties]
+    :param received_timestamp: The time at which the SMS delivery report was received.
+    :type received_timestamp: ~datetime.datetime
+    :param tag: Customer Content.
+    :type tag: str
+    """
+
+    _attribute_map = {
+        'message_id': {'key': 'messageId', 'type': 'str'},
+        'from_property': {'key': 'from', 'type': 'str'},
+        'to': {'key': 'to', 'type': 'str'},
+        'delivery_status': {'key': 'deliveryStatus', 'type': 'str'},
+        'delivery_status_details': {'key': 'deliveryStatusDetails', 'type': 'str'},
+        'delivery_attempts': {'key': 'deliveryAttempts', 'type': '[AcsSmsDeliveryAttemptProperties]'},
+        'received_timestamp': {'key': 'receivedTimestamp', 'type': 'iso-8601'},
+        'tag': {'key': 'tag', 'type': 'str'},
+    }
+
+    def __init__(
+        self,
+        *,
+        message_id: Optional[str] = None,
+        from_property: Optional[str] = None,
+        to: Optional[str] = None,
+        delivery_status: Optional[str] = None,
+        delivery_status_details: Optional[str] = None,
+        delivery_attempts: Optional[List["AcsSmsDeliveryAttemptProperties"]] = None,
+        received_timestamp: Optional[datetime.datetime] = None,
+        tag: Optional[str] = None,
+        **kwargs
+    ):
+        super(AcsSmsDeliveryReportReceivedEventData, self).__init__(message_id=message_id, from_property=from_property, to=to, **kwargs)
+        self.delivery_status = delivery_status
+        self.delivery_status_details = delivery_status_details
+        self.delivery_attempts = delivery_attempts
+        self.received_timestamp = received_timestamp
+        self.tag = tag
+
+
+class AcsSmsReceivedEventData(AcsSmsEventBaseProperties):
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Communication.SMSReceived event.
+
+    :param message_id: The identity of the SMS message.
+    :type message_id: str
+    :param from_property: The identity of SMS message sender.
+    :type from_property: str
+    :param to: The identity of SMS message receiver.
+    :type to: str
+    :param message: The SMS content.
+    :type message: str
+    :param received_timestamp: The time at which the SMS was received.
+    :type received_timestamp: ~datetime.datetime
+    """
+
+    _attribute_map = {
+        'message_id': {'key': 'messageId', 'type': 'str'},
+        'from_property': {'key': 'from', 'type': 'str'},
+        'to': {'key': 'to', 'type': 'str'},
+        'message': {'key': 'message', 'type': 'str'},
+        'received_timestamp': {'key': 'receivedTimestamp', 'type': 'iso-8601'},
+    }
+
+    def __init__(
+        self,
+        *,
+        message_id: Optional[str] = None,
+        from_property: Optional[str] = None,
+        to: Optional[str] = None,
+        message: Optional[str] = None,
+        received_timestamp: Optional[datetime.datetime] = None,
+        **kwargs
+    ):
+        super(AcsSmsReceivedEventData, self).__init__(message_id=message_id, from_property=from_property, to=to, **kwargs)
+        self.message = message
+        self.received_timestamp = received_timestamp
+
+
 class AppConfigurationKeyValueDeletedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.AppConfiguration.KeyValueDeleted event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.AppConfiguration.KeyValueDeleted event.
 
     :param key: The key used to identify the key-value that was deleted.
     :type key: str
@@ -23,12 +1402,15 @@ class AppConfigurationKeyValueDeletedEventData(msrest.serialization.Model):
     :type label: str
     :param etag: The etag representing the key-value that was deleted.
     :type etag: str
+    :param sync_token: The sync token representing the server state after the event.
+    :type sync_token: str
     """
 
     _attribute_map = {
         'key': {'key': 'key', 'type': 'str'},
         'label': {'key': 'label', 'type': 'str'},
         'etag': {'key': 'etag', 'type': 'str'},
+        'sync_token': {'key': 'syncToken', 'type': 'str'},
     }
 
     def __init__(
@@ -37,16 +1419,18 @@ class AppConfigurationKeyValueDeletedEventData(msrest.serialization.Model):
         key: Optional[str] = None,
         label: Optional[str] = None,
         etag: Optional[str] = None,
+        sync_token: Optional[str] = None,
         **kwargs
     ):
         super(AppConfigurationKeyValueDeletedEventData, self).__init__(**kwargs)
         self.key = key
         self.label = label
         self.etag = etag
+        self.sync_token = sync_token
 
 
 class AppConfigurationKeyValueModifiedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.AppConfiguration.KeyValueModified event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.AppConfiguration.KeyValueModified event.
 
     :param key: The key used to identify the key-value that was modified.
     :type key: str
@@ -54,12 +1438,15 @@ class AppConfigurationKeyValueModifiedEventData(msrest.serialization.Model):
     :type label: str
     :param etag: The etag representing the new state of the key-value.
     :type etag: str
+    :param sync_token: The sync token representing the server state after the event.
+    :type sync_token: str
     """
 
     _attribute_map = {
         'key': {'key': 'key', 'type': 'str'},
         'label': {'key': 'label', 'type': 'str'},
         'etag': {'key': 'etag', 'type': 'str'},
+        'sync_token': {'key': 'syncToken', 'type': 'str'},
     }
 
     def __init__(
@@ -68,12 +1455,14 @@ class AppConfigurationKeyValueModifiedEventData(msrest.serialization.Model):
         key: Optional[str] = None,
         label: Optional[str] = None,
         etag: Optional[str] = None,
+        sync_token: Optional[str] = None,
         **kwargs
     ):
         super(AppConfigurationKeyValueModifiedEventData, self).__init__(**kwargs)
         self.key = key
         self.label = label
         self.etag = etag
+        self.sync_token = sync_token
 
 
 class AppEventTypeDetail(msrest.serialization.Model):
@@ -129,624 +1518,6 @@ class AppServicePlanEventTypeDetail(msrest.serialization.Model):
         self.stamp_kind = stamp_kind
         self.action = action
         self.status = status
-
-
-class ChatEventBaseProperties(msrest.serialization.Model):
-    """Schema of common properties of all chat events.
-
-    :param recipient_id: The MRI of the target user.
-    :type recipient_id: str
-    :param transaction_id: The transaction id will be used as co-relation vector.
-    :type transaction_id: str
-    :param thread_id: The chat thread id.
-    :type thread_id: str
-    """
-
-    _attribute_map = {
-        'recipient_id': {'key': 'recipientId', 'type': 'str'},
-        'transaction_id': {'key': 'transactionId', 'type': 'str'},
-        'thread_id': {'key': 'threadId', 'type': 'str'},
-    }
-
-    def __init__(
-        self,
-        *,
-        recipient_id: Optional[str] = None,
-        transaction_id: Optional[str] = None,
-        thread_id: Optional[str] = None,
-        **kwargs
-    ):
-        super(ChatEventBaseProperties, self).__init__(**kwargs)
-        self.recipient_id = recipient_id
-        self.transaction_id = transaction_id
-        self.thread_id = thread_id
-
-
-class ChatThreadEventBaseProperties(ChatEventBaseProperties):
-    """Schema of common properties of all chat thread events.
-
-    :param recipient_id: The MRI of the target user.
-    :type recipient_id: str
-    :param transaction_id: The transaction id will be used as co-relation vector.
-    :type transaction_id: str
-    :param thread_id: The chat thread id.
-    :type thread_id: str
-    :param create_time: The original creation time of the thread.
-    :type create_time: ~datetime.datetime
-    :param version: The version of the thread.
-    :type version: int
-    """
-
-    _attribute_map = {
-        'recipient_id': {'key': 'recipientId', 'type': 'str'},
-        'transaction_id': {'key': 'transactionId', 'type': 'str'},
-        'thread_id': {'key': 'threadId', 'type': 'str'},
-        'create_time': {'key': 'createTime', 'type': 'iso-8601'},
-        'version': {'key': 'version', 'type': 'int'},
-    }
-
-    def __init__(
-        self,
-        *,
-        recipient_id: Optional[str] = None,
-        transaction_id: Optional[str] = None,
-        thread_id: Optional[str] = None,
-        create_time: Optional[datetime.datetime] = None,
-        version: Optional[int] = None,
-        **kwargs
-    ):
-        super(ChatThreadEventBaseProperties, self).__init__(recipient_id=recipient_id, transaction_id=transaction_id, thread_id=thread_id, **kwargs)
-        self.create_time = create_time
-        self.version = version
-
-
-class ChatMemberAddedToThreadWithUserEventData(ChatThreadEventBaseProperties):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Communication.ChatMemberAddedToThreadWithUser event.
-
-    :param recipient_id: The MRI of the target user.
-    :type recipient_id: str
-    :param transaction_id: The transaction id will be used as co-relation vector.
-    :type transaction_id: str
-    :param thread_id: The chat thread id.
-    :type thread_id: str
-    :param create_time: The original creation time of the thread.
-    :type create_time: ~datetime.datetime
-    :param version: The version of the thread.
-    :type version: int
-    :param time: The time at which the user was added to the thread.
-    :type time: ~datetime.datetime
-    :param added_by: The MRI of the user who added the user.
-    :type added_by: str
-    :param member: The details of the user who was added.
-    :type member: ~event_grid_publisher_client.models.ChatThreadMemberProperties
-    """
-
-    _attribute_map = {
-        'recipient_id': {'key': 'recipientId', 'type': 'str'},
-        'transaction_id': {'key': 'transactionId', 'type': 'str'},
-        'thread_id': {'key': 'threadId', 'type': 'str'},
-        'create_time': {'key': 'createTime', 'type': 'iso-8601'},
-        'version': {'key': 'version', 'type': 'int'},
-        'time': {'key': 'time', 'type': 'iso-8601'},
-        'added_by': {'key': 'addedBy', 'type': 'str'},
-        'member': {'key': 'member', 'type': 'ChatThreadMemberProperties'},
-    }
-
-    def __init__(
-        self,
-        *,
-        recipient_id: Optional[str] = None,
-        transaction_id: Optional[str] = None,
-        thread_id: Optional[str] = None,
-        create_time: Optional[datetime.datetime] = None,
-        version: Optional[int] = None,
-        time: Optional[datetime.datetime] = None,
-        added_by: Optional[str] = None,
-        member: Optional["ChatThreadMemberProperties"] = None,
-        **kwargs
-    ):
-        super(ChatMemberAddedToThreadWithUserEventData, self).__init__(recipient_id=recipient_id, transaction_id=transaction_id, thread_id=thread_id, create_time=create_time, version=version, **kwargs)
-        self.time = time
-        self.added_by = added_by
-        self.member = member
-
-
-class ChatMemberRemovedFromThreadForWithUserEventData(ChatThreadEventBaseProperties):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Communication.ChatMemberRemovedFromThreadForWithUser event.
-
-    :param recipient_id: The MRI of the target user.
-    :type recipient_id: str
-    :param transaction_id: The transaction id will be used as co-relation vector.
-    :type transaction_id: str
-    :param thread_id: The chat thread id.
-    :type thread_id: str
-    :param create_time: The original creation time of the thread.
-    :type create_time: ~datetime.datetime
-    :param version: The version of the thread.
-    :type version: int
-    :param time: The time at which the user was removed to the thread.
-    :type time: ~datetime.datetime
-    :param removed_by: The MRI of the user who removed the user.
-    :type removed_by: str
-    :param member: The details of the user who was removed.
-    :type member: ~event_grid_publisher_client.models.ChatThreadMemberProperties
-    """
-
-    _attribute_map = {
-        'recipient_id': {'key': 'recipientId', 'type': 'str'},
-        'transaction_id': {'key': 'transactionId', 'type': 'str'},
-        'thread_id': {'key': 'threadId', 'type': 'str'},
-        'create_time': {'key': 'createTime', 'type': 'iso-8601'},
-        'version': {'key': 'version', 'type': 'int'},
-        'time': {'key': 'time', 'type': 'iso-8601'},
-        'removed_by': {'key': 'removedBy', 'type': 'str'},
-        'member': {'key': 'member', 'type': 'ChatThreadMemberProperties'},
-    }
-
-    def __init__(
-        self,
-        *,
-        recipient_id: Optional[str] = None,
-        transaction_id: Optional[str] = None,
-        thread_id: Optional[str] = None,
-        create_time: Optional[datetime.datetime] = None,
-        version: Optional[int] = None,
-        time: Optional[datetime.datetime] = None,
-        removed_by: Optional[str] = None,
-        member: Optional["ChatThreadMemberProperties"] = None,
-        **kwargs
-    ):
-        super(ChatMemberRemovedFromThreadForWithUserEventData, self).__init__(recipient_id=recipient_id, transaction_id=transaction_id, thread_id=thread_id, create_time=create_time, version=version, **kwargs)
-        self.time = time
-        self.removed_by = removed_by
-        self.member = member
-
-
-class ChatMessageEventBaseProperties(ChatEventBaseProperties):
-    """Schema of common properties of all chat message events.
-
-    :param recipient_id: The MRI of the target user.
-    :type recipient_id: str
-    :param transaction_id: The transaction id will be used as co-relation vector.
-    :type transaction_id: str
-    :param thread_id: The chat thread id.
-    :type thread_id: str
-    :param message_id: The chat message id.
-    :type message_id: str
-    :param collapse_id: The collapse id is used to identify the message threads.
-    :type collapse_id: str
-    :param client_message_id: The messaged Id generated by the sending client.
-    :type client_message_id: str
-    :param sender_id: The MRI of the sender.
-    :type sender_id: str
-    :param sender_display_name: The display name of the sender.
-    :type sender_display_name: str
-    :param compose_time: The original compose time of the message.
-    :type compose_time: ~datetime.datetime
-    :param message_type: The type of the message.
-    :type message_type: str
-    :param version: The version of the message.
-    :type version: int
-    """
-
-    _attribute_map = {
-        'recipient_id': {'key': 'recipientId', 'type': 'str'},
-        'transaction_id': {'key': 'transactionId', 'type': 'str'},
-        'thread_id': {'key': 'threadId', 'type': 'str'},
-        'message_id': {'key': 'messageId', 'type': 'str'},
-        'collapse_id': {'key': 'collapseId', 'type': 'str'},
-        'client_message_id': {'key': 'clientMessageId', 'type': 'str'},
-        'sender_id': {'key': 'senderId', 'type': 'str'},
-        'sender_display_name': {'key': 'senderDisplayName', 'type': 'str'},
-        'compose_time': {'key': 'composeTime', 'type': 'iso-8601'},
-        'message_type': {'key': 'messageType', 'type': 'str'},
-        'version': {'key': 'version', 'type': 'int'},
-    }
-
-    def __init__(
-        self,
-        *,
-        recipient_id: Optional[str] = None,
-        transaction_id: Optional[str] = None,
-        thread_id: Optional[str] = None,
-        message_id: Optional[str] = None,
-        collapse_id: Optional[str] = None,
-        client_message_id: Optional[str] = None,
-        sender_id: Optional[str] = None,
-        sender_display_name: Optional[str] = None,
-        compose_time: Optional[datetime.datetime] = None,
-        message_type: Optional[str] = None,
-        version: Optional[int] = None,
-        **kwargs
-    ):
-        super(ChatMessageEventBaseProperties, self).__init__(recipient_id=recipient_id, transaction_id=transaction_id, thread_id=thread_id, **kwargs)
-        self.message_id = message_id
-        self.collapse_id = collapse_id
-        self.client_message_id = client_message_id
-        self.sender_id = sender_id
-        self.sender_display_name = sender_display_name
-        self.compose_time = compose_time
-        self.message_type = message_type
-        self.version = version
-
-
-class ChatMessageDeletedEventData(ChatMessageEventBaseProperties):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Communication.ChatMessageDeleted event.
-
-    :param recipient_id: The MRI of the target user.
-    :type recipient_id: str
-    :param transaction_id: The transaction id will be used as co-relation vector.
-    :type transaction_id: str
-    :param thread_id: The chat thread id.
-    :type thread_id: str
-    :param message_id: The chat message id.
-    :type message_id: str
-    :param collapse_id: The collapse id is used to identify the message threads.
-    :type collapse_id: str
-    :param client_message_id: The messaged Id generated by the sending client.
-    :type client_message_id: str
-    :param sender_id: The MRI of the sender.
-    :type sender_id: str
-    :param sender_display_name: The display name of the sender.
-    :type sender_display_name: str
-    :param compose_time: The original compose time of the message.
-    :type compose_time: ~datetime.datetime
-    :param message_type: The type of the message.
-    :type message_type: str
-    :param version: The version of the message.
-    :type version: int
-    :param delete_time: The time at which the message was deleted.
-    :type delete_time: ~datetime.datetime
-    """
-
-    _attribute_map = {
-        'recipient_id': {'key': 'recipientId', 'type': 'str'},
-        'transaction_id': {'key': 'transactionId', 'type': 'str'},
-        'thread_id': {'key': 'threadId', 'type': 'str'},
-        'message_id': {'key': 'messageId', 'type': 'str'},
-        'collapse_id': {'key': 'collapseId', 'type': 'str'},
-        'client_message_id': {'key': 'clientMessageId', 'type': 'str'},
-        'sender_id': {'key': 'senderId', 'type': 'str'},
-        'sender_display_name': {'key': 'senderDisplayName', 'type': 'str'},
-        'compose_time': {'key': 'composeTime', 'type': 'iso-8601'},
-        'message_type': {'key': 'messageType', 'type': 'str'},
-        'version': {'key': 'version', 'type': 'int'},
-        'delete_time': {'key': 'deleteTime', 'type': 'iso-8601'},
-    }
-
-    def __init__(
-        self,
-        *,
-        recipient_id: Optional[str] = None,
-        transaction_id: Optional[str] = None,
-        thread_id: Optional[str] = None,
-        message_id: Optional[str] = None,
-        collapse_id: Optional[str] = None,
-        client_message_id: Optional[str] = None,
-        sender_id: Optional[str] = None,
-        sender_display_name: Optional[str] = None,
-        compose_time: Optional[datetime.datetime] = None,
-        message_type: Optional[str] = None,
-        version: Optional[int] = None,
-        delete_time: Optional[datetime.datetime] = None,
-        **kwargs
-    ):
-        super(ChatMessageDeletedEventData, self).__init__(recipient_id=recipient_id, transaction_id=transaction_id, thread_id=thread_id, message_id=message_id, collapse_id=collapse_id, client_message_id=client_message_id, sender_id=sender_id, sender_display_name=sender_display_name, compose_time=compose_time, message_type=message_type, version=version, **kwargs)
-        self.delete_time = delete_time
-
-
-class ChatMessageEditedEventData(ChatMessageEventBaseProperties):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Communication.ChatMessageEdited event.
-
-    :param recipient_id: The MRI of the target user.
-    :type recipient_id: str
-    :param transaction_id: The transaction id will be used as co-relation vector.
-    :type transaction_id: str
-    :param thread_id: The chat thread id.
-    :type thread_id: str
-    :param message_id: The chat message id.
-    :type message_id: str
-    :param collapse_id: The collapse id is used to identify the message threads.
-    :type collapse_id: str
-    :param client_message_id: The messaged Id generated by the sending client.
-    :type client_message_id: str
-    :param sender_id: The MRI of the sender.
-    :type sender_id: str
-    :param sender_display_name: The display name of the sender.
-    :type sender_display_name: str
-    :param compose_time: The original compose time of the message.
-    :type compose_time: ~datetime.datetime
-    :param message_type: The type of the message.
-    :type message_type: str
-    :param version: The version of the message.
-    :type version: int
-    :param message_body: The body of the chat message.
-    :type message_body: str
-    :param edit_time: The time at which the message was edited.
-    :type edit_time: ~datetime.datetime
-    """
-
-    _attribute_map = {
-        'recipient_id': {'key': 'recipientId', 'type': 'str'},
-        'transaction_id': {'key': 'transactionId', 'type': 'str'},
-        'thread_id': {'key': 'threadId', 'type': 'str'},
-        'message_id': {'key': 'messageId', 'type': 'str'},
-        'collapse_id': {'key': 'collapseId', 'type': 'str'},
-        'client_message_id': {'key': 'clientMessageId', 'type': 'str'},
-        'sender_id': {'key': 'senderId', 'type': 'str'},
-        'sender_display_name': {'key': 'senderDisplayName', 'type': 'str'},
-        'compose_time': {'key': 'composeTime', 'type': 'iso-8601'},
-        'message_type': {'key': 'messageType', 'type': 'str'},
-        'version': {'key': 'version', 'type': 'int'},
-        'message_body': {'key': 'messageBody', 'type': 'str'},
-        'edit_time': {'key': 'editTime', 'type': 'iso-8601'},
-    }
-
-    def __init__(
-        self,
-        *,
-        recipient_id: Optional[str] = None,
-        transaction_id: Optional[str] = None,
-        thread_id: Optional[str] = None,
-        message_id: Optional[str] = None,
-        collapse_id: Optional[str] = None,
-        client_message_id: Optional[str] = None,
-        sender_id: Optional[str] = None,
-        sender_display_name: Optional[str] = None,
-        compose_time: Optional[datetime.datetime] = None,
-        message_type: Optional[str] = None,
-        version: Optional[int] = None,
-        message_body: Optional[str] = None,
-        edit_time: Optional[datetime.datetime] = None,
-        **kwargs
-    ):
-        super(ChatMessageEditedEventData, self).__init__(recipient_id=recipient_id, transaction_id=transaction_id, thread_id=thread_id, message_id=message_id, collapse_id=collapse_id, client_message_id=client_message_id, sender_id=sender_id, sender_display_name=sender_display_name, compose_time=compose_time, message_type=message_type, version=version, **kwargs)
-        self.message_body = message_body
-        self.edit_time = edit_time
-
-
-class ChatMessageReceivedEventData(ChatMessageEventBaseProperties):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Communication.ChatMessageReceived event.
-
-    :param recipient_id: The MRI of the target user.
-    :type recipient_id: str
-    :param transaction_id: The transaction id will be used as co-relation vector.
-    :type transaction_id: str
-    :param thread_id: The chat thread id.
-    :type thread_id: str
-    :param message_id: The chat message id.
-    :type message_id: str
-    :param collapse_id: The collapse id is used to identify the message threads.
-    :type collapse_id: str
-    :param client_message_id: The messaged Id generated by the sending client.
-    :type client_message_id: str
-    :param sender_id: The MRI of the sender.
-    :type sender_id: str
-    :param sender_display_name: The display name of the sender.
-    :type sender_display_name: str
-    :param compose_time: The original compose time of the message.
-    :type compose_time: ~datetime.datetime
-    :param message_type: The type of the message.
-    :type message_type: str
-    :param version: The version of the message.
-    :type version: int
-    :param message_body: The body of the chat message.
-    :type message_body: str
-    """
-
-    _attribute_map = {
-        'recipient_id': {'key': 'recipientId', 'type': 'str'},
-        'transaction_id': {'key': 'transactionId', 'type': 'str'},
-        'thread_id': {'key': 'threadId', 'type': 'str'},
-        'message_id': {'key': 'messageId', 'type': 'str'},
-        'collapse_id': {'key': 'collapseId', 'type': 'str'},
-        'client_message_id': {'key': 'clientMessageId', 'type': 'str'},
-        'sender_id': {'key': 'senderId', 'type': 'str'},
-        'sender_display_name': {'key': 'senderDisplayName', 'type': 'str'},
-        'compose_time': {'key': 'composeTime', 'type': 'iso-8601'},
-        'message_type': {'key': 'messageType', 'type': 'str'},
-        'version': {'key': 'version', 'type': 'int'},
-        'message_body': {'key': 'messageBody', 'type': 'str'},
-    }
-
-    def __init__(
-        self,
-        *,
-        recipient_id: Optional[str] = None,
-        transaction_id: Optional[str] = None,
-        thread_id: Optional[str] = None,
-        message_id: Optional[str] = None,
-        collapse_id: Optional[str] = None,
-        client_message_id: Optional[str] = None,
-        sender_id: Optional[str] = None,
-        sender_display_name: Optional[str] = None,
-        compose_time: Optional[datetime.datetime] = None,
-        message_type: Optional[str] = None,
-        version: Optional[int] = None,
-        message_body: Optional[str] = None,
-        **kwargs
-    ):
-        super(ChatMessageReceivedEventData, self).__init__(recipient_id=recipient_id, transaction_id=transaction_id, thread_id=thread_id, message_id=message_id, collapse_id=collapse_id, client_message_id=client_message_id, sender_id=sender_id, sender_display_name=sender_display_name, compose_time=compose_time, message_type=message_type, version=version, **kwargs)
-        self.message_body = message_body
-
-
-class ChatThreadCreatedWithUserEventData(ChatThreadEventBaseProperties):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Communication.ChatThreadCreatedWithUser event.
-
-    :param recipient_id: The MRI of the target user.
-    :type recipient_id: str
-    :param transaction_id: The transaction id will be used as co-relation vector.
-    :type transaction_id: str
-    :param thread_id: The chat thread id.
-    :type thread_id: str
-    :param create_time: The original creation time of the thread.
-    :type create_time: ~datetime.datetime
-    :param version: The version of the thread.
-    :type version: int
-    :param created_by: The MRI of the creator of the thread.
-    :type created_by: str
-    :param thread_type: The type of the thread.
-    :type thread_type: str
-    :param properties: The thread properties.
-    :type properties: dict[str, object]
-    :param members: The list of properties of users who are part of the thread.
-    :type members: list[~event_grid_publisher_client.models.ChatThreadMemberProperties]
-    """
-
-    _attribute_map = {
-        'recipient_id': {'key': 'recipientId', 'type': 'str'},
-        'transaction_id': {'key': 'transactionId', 'type': 'str'},
-        'thread_id': {'key': 'threadId', 'type': 'str'},
-        'create_time': {'key': 'createTime', 'type': 'iso-8601'},
-        'version': {'key': 'version', 'type': 'int'},
-        'created_by': {'key': 'createdBy', 'type': 'str'},
-        'thread_type': {'key': 'threadType', 'type': 'str'},
-        'properties': {'key': 'properties', 'type': '{object}'},
-        'members': {'key': 'members', 'type': '[ChatThreadMemberProperties]'},
-    }
-
-    def __init__(
-        self,
-        *,
-        recipient_id: Optional[str] = None,
-        transaction_id: Optional[str] = None,
-        thread_id: Optional[str] = None,
-        create_time: Optional[datetime.datetime] = None,
-        version: Optional[int] = None,
-        created_by: Optional[str] = None,
-        thread_type: Optional[str] = None,
-        properties: Optional[Dict[str, object]] = None,
-        members: Optional[List["ChatThreadMemberProperties"]] = None,
-        **kwargs
-    ):
-        super(ChatThreadCreatedWithUserEventData, self).__init__(recipient_id=recipient_id, transaction_id=transaction_id, thread_id=thread_id, create_time=create_time, version=version, **kwargs)
-        self.created_by = created_by
-        self.thread_type = thread_type
-        self.properties = properties
-        self.members = members
-
-
-class ChatThreadMemberProperties(msrest.serialization.Model):
-    """Schema of the chat thread member.
-
-    :param friendly_name: The name of the user.
-    :type friendly_name: str
-    :param member_id: The MRI of the user.
-    :type member_id: str
-    """
-
-    _attribute_map = {
-        'friendly_name': {'key': 'friendlyName', 'type': 'str'},
-        'member_id': {'key': 'memberId', 'type': 'str'},
-    }
-
-    def __init__(
-        self,
-        *,
-        friendly_name: Optional[str] = None,
-        member_id: Optional[str] = None,
-        **kwargs
-    ):
-        super(ChatThreadMemberProperties, self).__init__(**kwargs)
-        self.friendly_name = friendly_name
-        self.member_id = member_id
-
-
-class ChatThreadPropertiesUpdatedPerUserEventData(ChatThreadEventBaseProperties):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Communication.ChatThreadPropertiesUpdatedPerUser event.
-
-    :param recipient_id: The MRI of the target user.
-    :type recipient_id: str
-    :param transaction_id: The transaction id will be used as co-relation vector.
-    :type transaction_id: str
-    :param thread_id: The chat thread id.
-    :type thread_id: str
-    :param create_time: The original creation time of the thread.
-    :type create_time: ~datetime.datetime
-    :param version: The version of the thread.
-    :type version: int
-    :param edited_by: The MRI of the user who updated the thread properties.
-    :type edited_by: str
-    :param edit_time: The time at which the properties of the thread were updated.
-    :type edit_time: ~datetime.datetime
-    :param properties: The updated thread properties.
-    :type properties: dict[str, object]
-    """
-
-    _attribute_map = {
-        'recipient_id': {'key': 'recipientId', 'type': 'str'},
-        'transaction_id': {'key': 'transactionId', 'type': 'str'},
-        'thread_id': {'key': 'threadId', 'type': 'str'},
-        'create_time': {'key': 'createTime', 'type': 'iso-8601'},
-        'version': {'key': 'version', 'type': 'int'},
-        'edited_by': {'key': 'editedBy', 'type': 'str'},
-        'edit_time': {'key': 'editTime', 'type': 'iso-8601'},
-        'properties': {'key': 'properties', 'type': '{object}'},
-    }
-
-    def __init__(
-        self,
-        *,
-        recipient_id: Optional[str] = None,
-        transaction_id: Optional[str] = None,
-        thread_id: Optional[str] = None,
-        create_time: Optional[datetime.datetime] = None,
-        version: Optional[int] = None,
-        edited_by: Optional[str] = None,
-        edit_time: Optional[datetime.datetime] = None,
-        properties: Optional[Dict[str, object]] = None,
-        **kwargs
-    ):
-        super(ChatThreadPropertiesUpdatedPerUserEventData, self).__init__(recipient_id=recipient_id, transaction_id=transaction_id, thread_id=thread_id, create_time=create_time, version=version, **kwargs)
-        self.edited_by = edited_by
-        self.edit_time = edit_time
-        self.properties = properties
-
-
-class ChatThreadWithUserDeletedEventData(ChatThreadEventBaseProperties):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Communication.ChatThreadWithUserDeleted event.
-
-    :param recipient_id: The MRI of the target user.
-    :type recipient_id: str
-    :param transaction_id: The transaction id will be used as co-relation vector.
-    :type transaction_id: str
-    :param thread_id: The chat thread id.
-    :type thread_id: str
-    :param create_time: The original creation time of the thread.
-    :type create_time: ~datetime.datetime
-    :param version: The version of the thread.
-    :type version: int
-    :param deleted_by: The MRI of the user who deleted the thread.
-    :type deleted_by: str
-    :param delete_time: The deletion time of the thread.
-    :type delete_time: ~datetime.datetime
-    """
-
-    _attribute_map = {
-        'recipient_id': {'key': 'recipientId', 'type': 'str'},
-        'transaction_id': {'key': 'transactionId', 'type': 'str'},
-        'thread_id': {'key': 'threadId', 'type': 'str'},
-        'create_time': {'key': 'createTime', 'type': 'iso-8601'},
-        'version': {'key': 'version', 'type': 'int'},
-        'deleted_by': {'key': 'deletedBy', 'type': 'str'},
-        'delete_time': {'key': 'deleteTime', 'type': 'iso-8601'},
-    }
-
-    def __init__(
-        self,
-        *,
-        recipient_id: Optional[str] = None,
-        transaction_id: Optional[str] = None,
-        thread_id: Optional[str] = None,
-        create_time: Optional[datetime.datetime] = None,
-        version: Optional[int] = None,
-        deleted_by: Optional[str] = None,
-        delete_time: Optional[datetime.datetime] = None,
-        **kwargs
-    ):
-        super(ChatThreadWithUserDeletedEventData, self).__init__(recipient_id=recipient_id, transaction_id=transaction_id, thread_id=thread_id, create_time=create_time, version=version, **kwargs)
-        self.deleted_by = deleted_by
-        self.delete_time = delete_time
 
 
 class CloudEvent(msrest.serialization.Model):
@@ -832,6 +1603,70 @@ class CloudEvent(msrest.serialization.Model):
         self.dataschema = dataschema
         self.datacontenttype = datacontenttype
         self.subject = subject
+
+
+class CommunicationIdentifierModel(msrest.serialization.Model):
+    """Identifies a participant in Azure Communication services. A participant is, for example, a phone number or an Azure communication user. This model must be interpreted as a union: Apart from rawId, at most one further property may be set.
+
+    :param raw_id: Raw Id of the identifier. Optional in requests, required in responses.
+    :type raw_id: str
+    :param communication_user: The communication user.
+    :type communication_user: ~event_grid_publisher_client.models.CommunicationUserIdentifierModel
+    :param phone_number: The phone number.
+    :type phone_number: ~event_grid_publisher_client.models.PhoneNumberIdentifierModel
+    :param microsoft_teams_user: The Microsoft Teams user.
+    :type microsoft_teams_user:
+     ~event_grid_publisher_client.models.MicrosoftTeamsUserIdentifierModel
+    """
+
+    _attribute_map = {
+        'raw_id': {'key': 'rawId', 'type': 'str'},
+        'communication_user': {'key': 'communicationUser', 'type': 'CommunicationUserIdentifierModel'},
+        'phone_number': {'key': 'phoneNumber', 'type': 'PhoneNumberIdentifierModel'},
+        'microsoft_teams_user': {'key': 'microsoftTeamsUser', 'type': 'MicrosoftTeamsUserIdentifierModel'},
+    }
+
+    def __init__(
+        self,
+        *,
+        raw_id: Optional[str] = None,
+        communication_user: Optional["CommunicationUserIdentifierModel"] = None,
+        phone_number: Optional["PhoneNumberIdentifierModel"] = None,
+        microsoft_teams_user: Optional["MicrosoftTeamsUserIdentifierModel"] = None,
+        **kwargs
+    ):
+        super(CommunicationIdentifierModel, self).__init__(**kwargs)
+        self.raw_id = raw_id
+        self.communication_user = communication_user
+        self.phone_number = phone_number
+        self.microsoft_teams_user = microsoft_teams_user
+
+
+class CommunicationUserIdentifierModel(msrest.serialization.Model):
+    """A user that got created with an Azure Communication Services resource.
+
+    All required parameters must be populated in order to send to Azure.
+
+    :param id: Required. The Id of the communication user.
+    :type id: str
+    """
+
+    _validation = {
+        'id': {'required': True},
+    }
+
+    _attribute_map = {
+        'id': {'key': 'id', 'type': 'str'},
+    }
+
+    def __init__(
+        self,
+        *,
+        id: str,
+        **kwargs
+    ):
+        super(CommunicationUserIdentifierModel, self).__init__(**kwargs)
+        self.id = id
 
 
 class ContainerRegistryArtifactEventData(msrest.serialization.Model):
@@ -1650,7 +2485,7 @@ class EventGridEvent(msrest.serialization.Model):
 
 
 class EventHubCaptureFileCreatedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.EventHub.CaptureFileCreated event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.EventHub.CaptureFileCreated event.
 
     :param fileurl: The path to the capture file.
     :type fileurl: str
@@ -1875,8 +2710,59 @@ class IotHubDeviceTelemetryEventData(DeviceTelemetryEventProperties):
         super(IotHubDeviceTelemetryEventData, self).__init__(body=body, properties=properties, system_properties=system_properties, **kwargs)
 
 
+class KeyVaultAccessPolicyChangedEventData(msrest.serialization.Model):
+    """Schema of the Data property of an EventGridEvent for a Microsoft.KeyVault.VaultAccessPolicyChanged event.
+
+    :param id: The id of the object that triggered this event.
+    :type id: str
+    :param vault_name: Key vault name of the object that triggered this event.
+    :type vault_name: str
+    :param object_type: The type of the object that triggered this event.
+    :type object_type: str
+    :param object_name: The name of the object that triggered this event.
+    :type object_name: str
+    :param version: The version of the object that triggered this event.
+    :type version: str
+    :param nbf: Not before date of the object that triggered this event.
+    :type nbf: float
+    :param exp: The expiration date of the object that triggered this event.
+    :type exp: float
+    """
+
+    _attribute_map = {
+        'id': {'key': 'id', 'type': 'str'},
+        'vault_name': {'key': 'vaultName', 'type': 'str'},
+        'object_type': {'key': 'objectType', 'type': 'str'},
+        'object_name': {'key': 'objectName', 'type': 'str'},
+        'version': {'key': 'version', 'type': 'str'},
+        'nbf': {'key': 'nbf', 'type': 'float'},
+        'exp': {'key': 'exp', 'type': 'float'},
+    }
+
+    def __init__(
+        self,
+        *,
+        id: Optional[str] = None,
+        vault_name: Optional[str] = None,
+        object_type: Optional[str] = None,
+        object_name: Optional[str] = None,
+        version: Optional[str] = None,
+        nbf: Optional[float] = None,
+        exp: Optional[float] = None,
+        **kwargs
+    ):
+        super(KeyVaultAccessPolicyChangedEventData, self).__init__(**kwargs)
+        self.id = id
+        self.vault_name = vault_name
+        self.object_type = object_type
+        self.object_name = object_name
+        self.version = version
+        self.nbf = nbf
+        self.exp = exp
+
+
 class KeyVaultCertificateExpiredEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an CertificateExpired event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.KeyVault.CertificateExpired event.
 
     :param id: The id of the object that triggered this event.
     :type id: str
@@ -1927,7 +2813,7 @@ class KeyVaultCertificateExpiredEventData(msrest.serialization.Model):
 
 
 class KeyVaultCertificateNearExpiryEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an CertificateNearExpiry event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.KeyVault.CertificateNearExpiry event.
 
     :param id: The id of the object that triggered this event.
     :type id: str
@@ -1978,7 +2864,7 @@ class KeyVaultCertificateNearExpiryEventData(msrest.serialization.Model):
 
 
 class KeyVaultCertificateNewVersionCreatedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an CertificateNewVersionCreated event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.KeyVault.CertificateNewVersionCreated event.
 
     :param id: The id of the object that triggered this event.
     :type id: str
@@ -2029,7 +2915,7 @@ class KeyVaultCertificateNewVersionCreatedEventData(msrest.serialization.Model):
 
 
 class KeyVaultKeyExpiredEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an KeyExpired event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.KeyVault.KeyExpired event.
 
     :param id: The id of the object that triggered this event.
     :type id: str
@@ -2080,7 +2966,7 @@ class KeyVaultKeyExpiredEventData(msrest.serialization.Model):
 
 
 class KeyVaultKeyNearExpiryEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an KeyNearExpiry event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.KeyVault.KeyNearExpiry event.
 
     :param id: The id of the object that triggered this event.
     :type id: str
@@ -2131,7 +3017,7 @@ class KeyVaultKeyNearExpiryEventData(msrest.serialization.Model):
 
 
 class KeyVaultKeyNewVersionCreatedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an KeyNewVersionCreated event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.KeyVault.KeyNewVersionCreated event.
 
     :param id: The id of the object that triggered this event.
     :type id: str
@@ -2182,7 +3068,7 @@ class KeyVaultKeyNewVersionCreatedEventData(msrest.serialization.Model):
 
 
 class KeyVaultSecretExpiredEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an SecretExpired event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.KeyVault.SecretExpired event.
 
     :param id: The id of the object that triggered this event.
     :type id: str
@@ -2233,7 +3119,7 @@ class KeyVaultSecretExpiredEventData(msrest.serialization.Model):
 
 
 class KeyVaultSecretNearExpiryEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an SecretNearExpiry event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.KeyVault.SecretNearExpiry event.
 
     :param id: The id of the object that triggered this event.
     :type id: str
@@ -2284,7 +3170,7 @@ class KeyVaultSecretNearExpiryEventData(msrest.serialization.Model):
 
 
 class KeyVaultSecretNewVersionCreatedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an SecretNewVersionCreated event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.KeyVault.SecretNewVersionCreated event.
 
     :param id: The id of the object that triggered this event.
     :type id: str
@@ -2335,7 +3221,7 @@ class KeyVaultSecretNewVersionCreatedEventData(msrest.serialization.Model):
 
 
 class MachineLearningServicesDatasetDriftDetectedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.MachineLearningServices.DatasetDriftDetected event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.MachineLearningServices.DatasetDriftDetected event.
 
     :param data_drift_id: The ID of the data drift monitor that triggered the event.
     :type data_drift_id: str
@@ -2393,7 +3279,7 @@ class MachineLearningServicesDatasetDriftDetectedEventData(msrest.serialization.
 
 
 class MachineLearningServicesModelDeployedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.MachineLearningServices.ModelDeployed event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.MachineLearningServices.ModelDeployed event.
 
     :param service_name: The name of the deployed service.
     :type service_name: str
@@ -2435,7 +3321,7 @@ class MachineLearningServicesModelDeployedEventData(msrest.serialization.Model):
 
 
 class MachineLearningServicesModelRegisteredEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.MachineLearningServices.ModelRegistered event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.MachineLearningServices.ModelRegistered event.
 
     :param model_name: The name of the model that was registered.
     :type model_name: str
@@ -2471,7 +3357,7 @@ class MachineLearningServicesModelRegisteredEventData(msrest.serialization.Model
 
 
 class MachineLearningServicesRunCompletedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.MachineLearningServices.RunCompleted event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.MachineLearningServices.RunCompleted event.
 
     :param experiment_id: The ID of the experiment that the run belongs to.
     :type experiment_id: str
@@ -2517,7 +3403,7 @@ class MachineLearningServicesRunCompletedEventData(msrest.serialization.Model):
 
 
 class MachineLearningServicesRunStatusChangedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.MachineLearningServices.RunStatusChanged event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.MachineLearningServices.RunStatusChanged event.
 
     :param experiment_id: The ID of the experiment that the Machine Learning Run belongs to.
     :type experiment_id: str
@@ -2808,7 +3694,7 @@ class MediaJobStateChangeEventData(msrest.serialization.Model):
 
 
 class MediaJobCanceledEventData(MediaJobStateChangeEventData):
-    """Job canceled event data.
+    """Job canceled event data. Schema of the data property of an EventGridEvent for a Microsoft.Media.JobCanceled event.
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
@@ -2848,7 +3734,7 @@ class MediaJobCanceledEventData(MediaJobStateChangeEventData):
 
 
 class MediaJobCancelingEventData(MediaJobStateChangeEventData):
-    """Job canceling event data.
+    """Job canceling event data. Schema of the data property of an EventGridEvent for a Microsoft.Media.JobCanceling event.
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
@@ -2964,7 +3850,7 @@ class MediaJobErrorDetail(msrest.serialization.Model):
 
 
 class MediaJobErroredEventData(MediaJobStateChangeEventData):
-    """Job error state event data.
+    """Job error state event data. Schema of the data property of an EventGridEvent for a Microsoft.Media.JobErrored event.
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
@@ -3004,7 +3890,7 @@ class MediaJobErroredEventData(MediaJobStateChangeEventData):
 
 
 class MediaJobFinishedEventData(MediaJobStateChangeEventData):
-    """Job finished event data.
+    """Job finished event data. Schema of the data property of an EventGridEvent for a Microsoft.Media.JobFinished event.
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
@@ -3185,7 +4071,7 @@ class MediaJobOutputStateChangeEventData(msrest.serialization.Model):
 
 
 class MediaJobOutputCanceledEventData(MediaJobOutputStateChangeEventData):
-    """Job output canceled event data.
+    """Job output canceled event data. Schema of the data property of an EventGridEvent for a Microsoft.Media.JobOutputCanceled event.
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
@@ -3219,7 +4105,7 @@ class MediaJobOutputCanceledEventData(MediaJobOutputStateChangeEventData):
 
 
 class MediaJobOutputCancelingEventData(MediaJobOutputStateChangeEventData):
-    """Job output canceling event data.
+    """Job output canceling event data. Schema of the data property of an EventGridEvent for a Microsoft.Media.JobOutputCanceling event.
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
@@ -3253,7 +4139,7 @@ class MediaJobOutputCancelingEventData(MediaJobOutputStateChangeEventData):
 
 
 class MediaJobOutputErroredEventData(MediaJobOutputStateChangeEventData):
-    """Job output error event data.
+    """Job output error event data. Schema of the data property of an EventGridEvent for a Microsoft.Media.JobOutputErrored event.
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
@@ -3287,7 +4173,7 @@ class MediaJobOutputErroredEventData(MediaJobOutputStateChangeEventData):
 
 
 class MediaJobOutputFinishedEventData(MediaJobOutputStateChangeEventData):
-    """Job output finished event data.
+    """Job output finished event data. Schema of the data property of an EventGridEvent for a Microsoft.Media.JobOutputFinished event.
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
@@ -3321,7 +4207,7 @@ class MediaJobOutputFinishedEventData(MediaJobOutputStateChangeEventData):
 
 
 class MediaJobOutputProcessingEventData(MediaJobOutputStateChangeEventData):
-    """Job output processing event data.
+    """Job output processing event data. Schema of the data property of an EventGridEvent for a Microsoft.Media.JobOutputProcessing event.
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
@@ -3355,7 +4241,7 @@ class MediaJobOutputProcessingEventData(MediaJobOutputStateChangeEventData):
 
 
 class MediaJobOutputProgressEventData(msrest.serialization.Model):
-    """Job Output Progress Event Data.
+    """Job Output Progress Event Data. Schema of the Data property of an EventGridEvent for a Microsoft.Media.JobOutputProgress event.
 
     :param label: Gets the Job output label.
     :type label: str
@@ -3386,7 +4272,7 @@ class MediaJobOutputProgressEventData(msrest.serialization.Model):
 
 
 class MediaJobOutputScheduledEventData(MediaJobOutputStateChangeEventData):
-    """Job output scheduled event data.
+    """Job output scheduled event data. Schema of the data property of an EventGridEvent for a Microsoft.Media.JobOutputScheduled event.
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
@@ -3420,7 +4306,7 @@ class MediaJobOutputScheduledEventData(MediaJobOutputStateChangeEventData):
 
 
 class MediaJobProcessingEventData(MediaJobStateChangeEventData):
-    """Job processing event data.
+    """Job processing event data. Schema of the data property of an EventGridEvent for a Microsoft.Media.JobProcessing event.
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
@@ -3455,7 +4341,7 @@ class MediaJobProcessingEventData(MediaJobStateChangeEventData):
 
 
 class MediaJobScheduledEventData(MediaJobStateChangeEventData):
-    """Job scheduled event data.
+    """Job scheduled event data. Schema of the data property of an EventGridEvent for a Microsoft.Media.JobScheduled event.
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
@@ -3490,7 +4376,7 @@ class MediaJobScheduledEventData(MediaJobStateChangeEventData):
 
 
 class MediaLiveEventConnectionRejectedEventData(msrest.serialization.Model):
-    """Encoder connection rejected event data.
+    """Encoder connection rejected event data. Schema of the data property of an EventGridEvent for a Microsoft.Media.LiveEventConnectionRejected event.
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
@@ -3535,7 +4421,7 @@ class MediaLiveEventConnectionRejectedEventData(msrest.serialization.Model):
 
 
 class MediaLiveEventEncoderConnectedEventData(msrest.serialization.Model):
-    """Encoder connect event data.
+    """Encoder connect event data. Schema of the data property of an EventGridEvent for a Microsoft.Media.LiveEventEncoderConnected event.
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
@@ -3575,7 +4461,7 @@ class MediaLiveEventEncoderConnectedEventData(msrest.serialization.Model):
 
 
 class MediaLiveEventEncoderDisconnectedEventData(msrest.serialization.Model):
-    """Encoder disconnected event data.
+    """Encoder disconnected event data. Schema of the Data property of an EventGridEvent for a Microsoft.Media.LiveEventEncoderDisconnected event.
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
@@ -3620,7 +4506,7 @@ class MediaLiveEventEncoderDisconnectedEventData(msrest.serialization.Model):
 
 
 class MediaLiveEventIncomingDataChunkDroppedEventData(msrest.serialization.Model):
-    """Ingest fragment dropped event data.
+    """Ingest fragment dropped event data. Schema of the data property of an EventGridEvent for a Microsoft.Media.LiveEventIncomingDataChunkDropped event.
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
@@ -3670,7 +4556,7 @@ class MediaLiveEventIncomingDataChunkDroppedEventData(msrest.serialization.Model
 
 
 class MediaLiveEventIncomingStreamReceivedEventData(msrest.serialization.Model):
-    """Encoder connect event data.
+    """Encoder connect event data. Schema of the data property of an EventGridEvent for a Microsoft.Media.LiveEventIncomingStreamReceived event.
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
@@ -3735,7 +4621,7 @@ class MediaLiveEventIncomingStreamReceivedEventData(msrest.serialization.Model):
 
 
 class MediaLiveEventIncomingStreamsOutOfSyncEventData(msrest.serialization.Model):
-    """Incoming streams out of sync event data.
+    """Incoming streams out of sync event data. Schema of the data property of an EventGridEvent for a Microsoft.Media.LiveEventIncomingStreamsOutOfSync event.
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
@@ -3789,7 +4675,7 @@ class MediaLiveEventIncomingStreamsOutOfSyncEventData(msrest.serialization.Model
 
 
 class MediaLiveEventIncomingVideoStreamsOutOfSyncEventData(msrest.serialization.Model):
-    """Incoming video stream out of synch event data.
+    """Incoming video stream out of synch event data. Schema of the data property of an EventGridEvent for a Microsoft.Media.LiveEventIncomingVideoStreamsOutOfSync event.
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
@@ -3834,7 +4720,7 @@ class MediaLiveEventIncomingVideoStreamsOutOfSyncEventData(msrest.serialization.
 
 
 class MediaLiveEventIngestHeartbeatEventData(msrest.serialization.Model):
-    """Ingest fragment dropped event data.
+    """Ingest fragment dropped event data. Schema of the data property of an EventGridEvent for a Microsoft.Media.LiveEventIngestHeartbeat event.
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
@@ -3914,7 +4800,7 @@ class MediaLiveEventIngestHeartbeatEventData(msrest.serialization.Model):
 
 
 class MediaLiveEventTrackDiscontinuityDetectedEventData(msrest.serialization.Model):
-    """Ingest track discontinuity detected event data.
+    """Ingest track discontinuity detected event data. Schema of the data property of an EventGridEvent for a Microsoft.Media.LiveEventTrackDiscontinuityDetected event.
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
@@ -3969,8 +4855,237 @@ class MediaLiveEventTrackDiscontinuityDetectedEventData(msrest.serialization.Mod
         self.discontinuity_gap = None
 
 
+class MicrosoftTeamsUserIdentifierModel(msrest.serialization.Model):
+    """A Microsoft Teams user.
+
+    All required parameters must be populated in order to send to Azure.
+
+    :param user_id: Required. The Id of the Microsoft Teams user. If not anonymous, this is the AAD
+     object Id of the user.
+    :type user_id: str
+    :param is_anonymous: True if the Microsoft Teams user is anonymous. By default false if
+     missing.
+    :type is_anonymous: bool
+    :param cloud: The cloud that the Microsoft Teams user belongs to. By default 'public' if
+     missing. Possible values include: "public", "dod", "gcch".
+    :type cloud: str or ~event_grid_publisher_client.models.CommunicationCloudEnvironmentModel
+    """
+
+    _validation = {
+        'user_id': {'required': True},
+    }
+
+    _attribute_map = {
+        'user_id': {'key': 'userId', 'type': 'str'},
+        'is_anonymous': {'key': 'isAnonymous', 'type': 'bool'},
+        'cloud': {'key': 'cloud', 'type': 'str'},
+    }
+
+    def __init__(
+        self,
+        *,
+        user_id: str,
+        is_anonymous: Optional[bool] = None,
+        cloud: Optional[Union[str, "CommunicationCloudEnvironmentModel"]] = None,
+        **kwargs
+    ):
+        super(MicrosoftTeamsUserIdentifierModel, self).__init__(**kwargs)
+        self.user_id = user_id
+        self.is_anonymous = is_anonymous
+        self.cloud = cloud
+
+
+class PhoneNumberIdentifierModel(msrest.serialization.Model):
+    """A phone number.
+
+    All required parameters must be populated in order to send to Azure.
+
+    :param value: Required. The phone number in E.164 format.
+    :type value: str
+    """
+
+    _validation = {
+        'value': {'required': True},
+    }
+
+    _attribute_map = {
+        'value': {'key': 'value', 'type': 'str'},
+    }
+
+    def __init__(
+        self,
+        *,
+        value: str,
+        **kwargs
+    ):
+        super(PhoneNumberIdentifierModel, self).__init__(**kwargs)
+        self.value = value
+
+
+class PolicyInsightsPolicyStateChangedEventData(msrest.serialization.Model):
+    """Schema of the Data property of an EventGridEvent for a Microsoft.PolicyInsights.PolicyStateChanged event.
+
+    :param timestamp: The time that the resource was scanned by Azure Policy in the Universal ISO
+     8601 DateTime format yyyy-MM-ddTHH:mm:ss.fffffffZ.
+    :type timestamp: ~datetime.datetime
+    :param policy_assignment_id: The resource ID of the policy assignment.
+    :type policy_assignment_id: str
+    :param policy_definition_id: The resource ID of the policy definition.
+    :type policy_definition_id: str
+    :param policy_definition_reference_id: The reference ID for the policy definition inside the
+     initiative definition, if the policy assignment is for an initiative. May be empty.
+    :type policy_definition_reference_id: str
+    :param compliance_state: The compliance state of the resource with respect to the policy
+     assignment.
+    :type compliance_state: str
+    :param subscription_id: The subscription ID of the resource.
+    :type subscription_id: str
+    :param compliance_reason_code: The compliance reason code. May be empty.
+    :type compliance_reason_code: str
+    """
+
+    _attribute_map = {
+        'timestamp': {'key': 'timestamp', 'type': 'iso-8601'},
+        'policy_assignment_id': {'key': 'policyAssignmentId', 'type': 'str'},
+        'policy_definition_id': {'key': 'policyDefinitionId', 'type': 'str'},
+        'policy_definition_reference_id': {'key': 'policyDefinitionReferenceId', 'type': 'str'},
+        'compliance_state': {'key': 'complianceState', 'type': 'str'},
+        'subscription_id': {'key': 'subscriptionId', 'type': 'str'},
+        'compliance_reason_code': {'key': 'complianceReasonCode', 'type': 'str'},
+    }
+
+    def __init__(
+        self,
+        *,
+        timestamp: Optional[datetime.datetime] = None,
+        policy_assignment_id: Optional[str] = None,
+        policy_definition_id: Optional[str] = None,
+        policy_definition_reference_id: Optional[str] = None,
+        compliance_state: Optional[str] = None,
+        subscription_id: Optional[str] = None,
+        compliance_reason_code: Optional[str] = None,
+        **kwargs
+    ):
+        super(PolicyInsightsPolicyStateChangedEventData, self).__init__(**kwargs)
+        self.timestamp = timestamp
+        self.policy_assignment_id = policy_assignment_id
+        self.policy_definition_id = policy_definition_id
+        self.policy_definition_reference_id = policy_definition_reference_id
+        self.compliance_state = compliance_state
+        self.subscription_id = subscription_id
+        self.compliance_reason_code = compliance_reason_code
+
+
+class PolicyInsightsPolicyStateCreatedEventData(msrest.serialization.Model):
+    """Schema of the Data property of an EventGridEvent for a Microsoft.PolicyInsights.PolicyStateCreated event.
+
+    :param timestamp: The time that the resource was scanned by Azure Policy in the Universal ISO
+     8601 DateTime format yyyy-MM-ddTHH:mm:ss.fffffffZ.
+    :type timestamp: ~datetime.datetime
+    :param policy_assignment_id: The resource ID of the policy assignment.
+    :type policy_assignment_id: str
+    :param policy_definition_id: The resource ID of the policy definition.
+    :type policy_definition_id: str
+    :param policy_definition_reference_id: The reference ID for the policy definition inside the
+     initiative definition, if the policy assignment is for an initiative. May be empty.
+    :type policy_definition_reference_id: str
+    :param compliance_state: The compliance state of the resource with respect to the policy
+     assignment.
+    :type compliance_state: str
+    :param subscription_id: The subscription ID of the resource.
+    :type subscription_id: str
+    :param compliance_reason_code: The compliance reason code. May be empty.
+    :type compliance_reason_code: str
+    """
+
+    _attribute_map = {
+        'timestamp': {'key': 'timestamp', 'type': 'iso-8601'},
+        'policy_assignment_id': {'key': 'policyAssignmentId', 'type': 'str'},
+        'policy_definition_id': {'key': 'policyDefinitionId', 'type': 'str'},
+        'policy_definition_reference_id': {'key': 'policyDefinitionReferenceId', 'type': 'str'},
+        'compliance_state': {'key': 'complianceState', 'type': 'str'},
+        'subscription_id': {'key': 'subscriptionId', 'type': 'str'},
+        'compliance_reason_code': {'key': 'complianceReasonCode', 'type': 'str'},
+    }
+
+    def __init__(
+        self,
+        *,
+        timestamp: Optional[datetime.datetime] = None,
+        policy_assignment_id: Optional[str] = None,
+        policy_definition_id: Optional[str] = None,
+        policy_definition_reference_id: Optional[str] = None,
+        compliance_state: Optional[str] = None,
+        subscription_id: Optional[str] = None,
+        compliance_reason_code: Optional[str] = None,
+        **kwargs
+    ):
+        super(PolicyInsightsPolicyStateCreatedEventData, self).__init__(**kwargs)
+        self.timestamp = timestamp
+        self.policy_assignment_id = policy_assignment_id
+        self.policy_definition_id = policy_definition_id
+        self.policy_definition_reference_id = policy_definition_reference_id
+        self.compliance_state = compliance_state
+        self.subscription_id = subscription_id
+        self.compliance_reason_code = compliance_reason_code
+
+
+class PolicyInsightsPolicyStateDeletedEventData(msrest.serialization.Model):
+    """Schema of the Data property of an EventGridEvent for a Microsoft.PolicyInsights.PolicyStateDeleted event.
+
+    :param timestamp: The time that the resource was scanned by Azure Policy in the Universal ISO
+     8601 DateTime format yyyy-MM-ddTHH:mm:ss.fffffffZ.
+    :type timestamp: ~datetime.datetime
+    :param policy_assignment_id: The resource ID of the policy assignment.
+    :type policy_assignment_id: str
+    :param policy_definition_id: The resource ID of the policy definition.
+    :type policy_definition_id: str
+    :param policy_definition_reference_id: The reference ID for the policy definition inside the
+     initiative definition, if the policy assignment is for an initiative. May be empty.
+    :type policy_definition_reference_id: str
+    :param compliance_state: The compliance state of the resource with respect to the policy
+     assignment.
+    :type compliance_state: str
+    :param subscription_id: The subscription ID of the resource.
+    :type subscription_id: str
+    :param compliance_reason_code: The compliance reason code. May be empty.
+    :type compliance_reason_code: str
+    """
+
+    _attribute_map = {
+        'timestamp': {'key': 'timestamp', 'type': 'iso-8601'},
+        'policy_assignment_id': {'key': 'policyAssignmentId', 'type': 'str'},
+        'policy_definition_id': {'key': 'policyDefinitionId', 'type': 'str'},
+        'policy_definition_reference_id': {'key': 'policyDefinitionReferenceId', 'type': 'str'},
+        'compliance_state': {'key': 'complianceState', 'type': 'str'},
+        'subscription_id': {'key': 'subscriptionId', 'type': 'str'},
+        'compliance_reason_code': {'key': 'complianceReasonCode', 'type': 'str'},
+    }
+
+    def __init__(
+        self,
+        *,
+        timestamp: Optional[datetime.datetime] = None,
+        policy_assignment_id: Optional[str] = None,
+        policy_definition_id: Optional[str] = None,
+        policy_definition_reference_id: Optional[str] = None,
+        compliance_state: Optional[str] = None,
+        subscription_id: Optional[str] = None,
+        compliance_reason_code: Optional[str] = None,
+        **kwargs
+    ):
+        super(PolicyInsightsPolicyStateDeletedEventData, self).__init__(**kwargs)
+        self.timestamp = timestamp
+        self.policy_assignment_id = policy_assignment_id
+        self.policy_definition_id = policy_definition_id
+        self.policy_definition_reference_id = policy_definition_reference_id
+        self.compliance_state = compliance_state
+        self.subscription_id = subscription_id
+        self.compliance_reason_code = compliance_reason_code
+
+
 class RedisExportRDBCompletedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Cache.ExportRDBCompleted event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Cache.ExportRDBCompleted event.
 
     :param timestamp: The time at which the event occurred.
     :type timestamp: ~datetime.datetime
@@ -4001,7 +5116,7 @@ class RedisExportRDBCompletedEventData(msrest.serialization.Model):
 
 
 class RedisImportRDBCompletedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Cache.ImportRDBCompleted event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Cache.ImportRDBCompleted event.
 
     :param timestamp: The time at which the event occurred.
     :type timestamp: ~datetime.datetime
@@ -4032,7 +5147,7 @@ class RedisImportRDBCompletedEventData(msrest.serialization.Model):
 
 
 class RedisPatchingCompletedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Cache.PatchingCompleted event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Cache.PatchingCompleted event.
 
     :param timestamp: The time at which the event occurred.
     :type timestamp: ~datetime.datetime
@@ -4063,7 +5178,7 @@ class RedisPatchingCompletedEventData(msrest.serialization.Model):
 
 
 class RedisScalingCompletedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Cache.ScalingCompleted event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Cache.ScalingCompleted event.
 
     :param timestamp: The time at which the event occurred.
     :type timestamp: ~datetime.datetime
@@ -4094,7 +5209,7 @@ class RedisScalingCompletedEventData(msrest.serialization.Model):
 
 
 class ResourceActionCancelData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Resources.ResourceActionCancel event. This is raised when a resource action operation is canceled.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Resources.ResourceActionCancel event. This is raised when a resource action operation is canceled.
 
     :param tenant_id: The tenant ID of the resource.
     :type tenant_id: str
@@ -4307,7 +5422,7 @@ class ResourceActionSuccessData(msrest.serialization.Model):
 
 
 class ResourceDeleteCancelData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Resources.ResourceDeleteCancel event. This is raised when a resource delete operation is canceled.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Resources.ResourceDeleteCancel event. This is raised when a resource delete operation is canceled.
 
     :param tenant_id: The tenant ID of the resource.
     :type tenant_id: str
@@ -4732,6 +5847,56 @@ class ResourceWriteSuccessData(msrest.serialization.Model):
         self.http_request = http_request
 
 
+class ServiceBusActiveMessagesAvailablePeriodicNotificationsEventData(msrest.serialization.Model):
+    """Schema of the Data property of an EventGridEvent for a Microsoft.ServiceBus.ActiveMessagesAvailablePeriodicNotifications event.
+
+    :param namespace_name: The namespace name of the Microsoft.ServiceBus resource.
+    :type namespace_name: str
+    :param request_uri: The endpoint of the Microsoft.ServiceBus resource.
+    :type request_uri: str
+    :param entity_type: The entity type of the Microsoft.ServiceBus resource. Could be one of
+     'queue' or 'subscriber'.
+    :type entity_type: str
+    :param queue_name: The name of the Microsoft.ServiceBus queue. If the entity type is of type
+     'subscriber', then this value will be null.
+    :type queue_name: str
+    :param topic_name: The name of the Microsoft.ServiceBus topic. If the entity type is of type
+     'queue', then this value will be null.
+    :type topic_name: str
+    :param subscription_name: The name of the Microsoft.ServiceBus topic's subscription. If the
+     entity type is of type 'queue', then this value will be null.
+    :type subscription_name: str
+    """
+
+    _attribute_map = {
+        'namespace_name': {'key': 'namespaceName', 'type': 'str'},
+        'request_uri': {'key': 'requestUri', 'type': 'str'},
+        'entity_type': {'key': 'entityType', 'type': 'str'},
+        'queue_name': {'key': 'queueName', 'type': 'str'},
+        'topic_name': {'key': 'topicName', 'type': 'str'},
+        'subscription_name': {'key': 'subscriptionName', 'type': 'str'},
+    }
+
+    def __init__(
+        self,
+        *,
+        namespace_name: Optional[str] = None,
+        request_uri: Optional[str] = None,
+        entity_type: Optional[str] = None,
+        queue_name: Optional[str] = None,
+        topic_name: Optional[str] = None,
+        subscription_name: Optional[str] = None,
+        **kwargs
+    ):
+        super(ServiceBusActiveMessagesAvailablePeriodicNotificationsEventData, self).__init__(**kwargs)
+        self.namespace_name = namespace_name
+        self.request_uri = request_uri
+        self.entity_type = entity_type
+        self.queue_name = queue_name
+        self.topic_name = topic_name
+        self.subscription_name = subscription_name
+
+
 class ServiceBusActiveMessagesAvailableWithNoListenersEventData(msrest.serialization.Model):
     """Schema of the Data property of an EventGridEvent for a Microsoft.ServiceBus.ActiveMessagesAvailableWithNoListeners event.
 
@@ -4782,8 +5947,58 @@ class ServiceBusActiveMessagesAvailableWithNoListenersEventData(msrest.serializa
         self.subscription_name = subscription_name
 
 
+class ServiceBusDeadletterMessagesAvailablePeriodicNotificationsEventData(msrest.serialization.Model):
+    """Schema of the Data property of an EventGridEvent for a Microsoft.ServiceBus.DeadletterMessagesAvailablePeriodicNotifications event.
+
+    :param namespace_name: The namespace name of the Microsoft.ServiceBus resource.
+    :type namespace_name: str
+    :param request_uri: The endpoint of the Microsoft.ServiceBus resource.
+    :type request_uri: str
+    :param entity_type: The entity type of the Microsoft.ServiceBus resource. Could be one of
+     'queue' or 'subscriber'.
+    :type entity_type: str
+    :param queue_name: The name of the Microsoft.ServiceBus queue. If the entity type is of type
+     'subscriber', then this value will be null.
+    :type queue_name: str
+    :param topic_name: The name of the Microsoft.ServiceBus topic. If the entity type is of type
+     'queue', then this value will be null.
+    :type topic_name: str
+    :param subscription_name: The name of the Microsoft.ServiceBus topic's subscription. If the
+     entity type is of type 'queue', then this value will be null.
+    :type subscription_name: str
+    """
+
+    _attribute_map = {
+        'namespace_name': {'key': 'namespaceName', 'type': 'str'},
+        'request_uri': {'key': 'requestUri', 'type': 'str'},
+        'entity_type': {'key': 'entityType', 'type': 'str'},
+        'queue_name': {'key': 'queueName', 'type': 'str'},
+        'topic_name': {'key': 'topicName', 'type': 'str'},
+        'subscription_name': {'key': 'subscriptionName', 'type': 'str'},
+    }
+
+    def __init__(
+        self,
+        *,
+        namespace_name: Optional[str] = None,
+        request_uri: Optional[str] = None,
+        entity_type: Optional[str] = None,
+        queue_name: Optional[str] = None,
+        topic_name: Optional[str] = None,
+        subscription_name: Optional[str] = None,
+        **kwargs
+    ):
+        super(ServiceBusDeadletterMessagesAvailablePeriodicNotificationsEventData, self).__init__(**kwargs)
+        self.namespace_name = namespace_name
+        self.request_uri = request_uri
+        self.entity_type = entity_type
+        self.queue_name = queue_name
+        self.topic_name = topic_name
+        self.subscription_name = subscription_name
+
+
 class ServiceBusDeadletterMessagesAvailableWithNoListenersEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for a Microsoft.ServiceBus.DeadletterMessagesAvailableWithNoListenersEvent event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.ServiceBus.DeadletterMessagesAvailableWithNoListeners event.
 
     :param namespace_name: The namespace name of the Microsoft.ServiceBus resource.
     :type namespace_name: str
@@ -4909,151 +6124,81 @@ class SignalRServiceClientConnectionDisconnectedEventData(msrest.serialization.M
         self.error_message = error_message
 
 
-class SMSDeliveryAttemptProperties(msrest.serialization.Model):
-    """Schema for details of a delivery attempt.
+class StorageAsyncOperationInitiatedEventData(msrest.serialization.Model):
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Storage.AsyncOperationInitiated event.
 
-    :param timestamp: TimeStamp when delivery was attempted.
-    :type timestamp: ~datetime.datetime
-    :param segments_succeeded: Number of segments that were successfully delivered.
-    :type segments_succeeded: int
-    :param segments_failed: Number of segments whose delivery failed.
-    :type segments_failed: int
+    :param api: The name of the API/operation that triggered this event.
+    :type api: str
+    :param client_request_id: A request id provided by the client of the storage API operation that
+     triggered this event.
+    :type client_request_id: str
+    :param request_id: The request id generated by the Storage service for the storage API
+     operation that triggered this event.
+    :type request_id: str
+    :param content_type: The content type of the blob. This is the same as what would be returned
+     in the Content-Type header from the blob.
+    :type content_type: str
+    :param content_length: The size of the blob in bytes. This is the same as what would be
+     returned in the Content-Length header from the blob.
+    :type content_length: long
+    :param blob_type: The type of blob.
+    :type blob_type: str
+    :param url: The path to the blob.
+    :type url: str
+    :param sequencer: An opaque string value representing the logical sequence of events for any
+     particular blob name. Users can use standard string comparison to understand the relative
+     sequence of two events on the same blob name.
+    :type sequencer: str
+    :param identity: The identity of the requester that triggered this event.
+    :type identity: str
+    :param storage_diagnostics: For service use only. Diagnostic data occasionally included by the
+     Azure Storage service. This property should be ignored by event consumers.
+    :type storage_diagnostics: object
     """
 
     _attribute_map = {
-        'timestamp': {'key': 'timestamp', 'type': 'iso-8601'},
-        'segments_succeeded': {'key': 'segmentsSucceeded', 'type': 'int'},
-        'segments_failed': {'key': 'segmentsFailed', 'type': 'int'},
+        'api': {'key': 'api', 'type': 'str'},
+        'client_request_id': {'key': 'clientRequestId', 'type': 'str'},
+        'request_id': {'key': 'requestId', 'type': 'str'},
+        'content_type': {'key': 'contentType', 'type': 'str'},
+        'content_length': {'key': 'contentLength', 'type': 'long'},
+        'blob_type': {'key': 'blobType', 'type': 'str'},
+        'url': {'key': 'url', 'type': 'str'},
+        'sequencer': {'key': 'sequencer', 'type': 'str'},
+        'identity': {'key': 'identity', 'type': 'str'},
+        'storage_diagnostics': {'key': 'storageDiagnostics', 'type': 'object'},
     }
 
     def __init__(
         self,
         *,
-        timestamp: Optional[datetime.datetime] = None,
-        segments_succeeded: Optional[int] = None,
-        segments_failed: Optional[int] = None,
+        api: Optional[str] = None,
+        client_request_id: Optional[str] = None,
+        request_id: Optional[str] = None,
+        content_type: Optional[str] = None,
+        content_length: Optional[int] = None,
+        blob_type: Optional[str] = None,
+        url: Optional[str] = None,
+        sequencer: Optional[str] = None,
+        identity: Optional[str] = None,
+        storage_diagnostics: Optional[object] = None,
         **kwargs
     ):
-        super(SMSDeliveryAttemptProperties, self).__init__(**kwargs)
-        self.timestamp = timestamp
-        self.segments_succeeded = segments_succeeded
-        self.segments_failed = segments_failed
-
-
-class SMSEventBaseProperties(msrest.serialization.Model):
-    """Schema of common properties of all SMS events.
-
-    :param message_id: The identity of the SMS message.
-    :type message_id: str
-    :param from_property: The identity of SMS message sender.
-    :type from_property: str
-    :param to: The identity of SMS message receiver.
-    :type to: str
-    """
-
-    _attribute_map = {
-        'message_id': {'key': 'messageId', 'type': 'str'},
-        'from_property': {'key': 'from', 'type': 'str'},
-        'to': {'key': 'to', 'type': 'str'},
-    }
-
-    def __init__(
-        self,
-        *,
-        message_id: Optional[str] = None,
-        from_property: Optional[str] = None,
-        to: Optional[str] = None,
-        **kwargs
-    ):
-        super(SMSEventBaseProperties, self).__init__(**kwargs)
-        self.message_id = message_id
-        self.from_property = from_property
-        self.to = to
-
-
-class SMSDeliveryReportReceivedEventData(SMSEventBaseProperties):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Communication.SMSDeliveryReportReceived event.
-
-    :param message_id: The identity of the SMS message.
-    :type message_id: str
-    :param from_property: The identity of SMS message sender.
-    :type from_property: str
-    :param to: The identity of SMS message receiver.
-    :type to: str
-    :param delivery_status: Status of Delivery.
-    :type delivery_status: str
-    :param delivery_status_details: Details about Delivery Status.
-    :type delivery_status_details: str
-    :param delivery_attempts: List of details of delivery attempts made.
-    :type delivery_attempts: list[~event_grid_publisher_client.models.SMSDeliveryAttemptProperties]
-    """
-
-    _attribute_map = {
-        'message_id': {'key': 'messageId', 'type': 'str'},
-        'from_property': {'key': 'from', 'type': 'str'},
-        'to': {'key': 'to', 'type': 'str'},
-        'delivery_status': {'key': 'deliveryStatus', 'type': 'str'},
-        'delivery_status_details': {'key': 'deliveryStatusDetails', 'type': 'str'},
-        'delivery_attempts': {'key': 'deliveryAttempts', 'type': '[SMSDeliveryAttemptProperties]'},
-    }
-
-    def __init__(
-        self,
-        *,
-        message_id: Optional[str] = None,
-        from_property: Optional[str] = None,
-        to: Optional[str] = None,
-        delivery_status: Optional[str] = None,
-        delivery_status_details: Optional[str] = None,
-        delivery_attempts: Optional[List["SMSDeliveryAttemptProperties"]] = None,
-        **kwargs
-    ):
-        super(SMSDeliveryReportReceivedEventData, self).__init__(message_id=message_id, from_property=from_property, to=to, **kwargs)
-        self.delivery_status = delivery_status
-        self.delivery_status_details = delivery_status_details
-        self.delivery_attempts = delivery_attempts
-
-
-class SMSReceivedEventData(SMSEventBaseProperties):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Communication.SMSReceived event.
-
-    :param message_id: The identity of the SMS message.
-    :type message_id: str
-    :param from_property: The identity of SMS message sender.
-    :type from_property: str
-    :param to: The identity of SMS message receiver.
-    :type to: str
-    :param message: The SMS content.
-    :type message: str
-    :param received_timestamp: The time at which the SMS was received.
-    :type received_timestamp: ~datetime.datetime
-    """
-
-    _attribute_map = {
-        'message_id': {'key': 'messageId', 'type': 'str'},
-        'from_property': {'key': 'from', 'type': 'str'},
-        'to': {'key': 'to', 'type': 'str'},
-        'message': {'key': 'message', 'type': 'str'},
-        'received_timestamp': {'key': 'receivedTimestamp', 'type': 'iso-8601'},
-    }
-
-    def __init__(
-        self,
-        *,
-        message_id: Optional[str] = None,
-        from_property: Optional[str] = None,
-        to: Optional[str] = None,
-        message: Optional[str] = None,
-        received_timestamp: Optional[datetime.datetime] = None,
-        **kwargs
-    ):
-        super(SMSReceivedEventData, self).__init__(message_id=message_id, from_property=from_property, to=to, **kwargs)
-        self.message = message
-        self.received_timestamp = received_timestamp
+        super(StorageAsyncOperationInitiatedEventData, self).__init__(**kwargs)
+        self.api = api
+        self.client_request_id = client_request_id
+        self.request_id = request_id
+        self.content_type = content_type
+        self.content_length = content_length
+        self.blob_type = blob_type
+        self.url = url
+        self.sequencer = sequencer
+        self.identity = identity
+        self.storage_diagnostics = storage_diagnostics
 
 
 class StorageBlobCreatedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Storage.BlobCreated event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Storage.BlobCreated event.
 
     :param api: The name of the API/operation that triggered this event.
     :type api: str
@@ -5136,7 +6281,7 @@ class StorageBlobCreatedEventData(msrest.serialization.Model):
 
 
 class StorageBlobDeletedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Storage.BlobDeleted event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Storage.BlobDeleted event.
 
     :param api: The name of the API/operation that triggered this event.
     :type api: str
@@ -5202,8 +6347,60 @@ class StorageBlobDeletedEventData(msrest.serialization.Model):
         self.storage_diagnostics = storage_diagnostics
 
 
+class StorageBlobInventoryPolicyCompletedEventData(msrest.serialization.Model):
+    """Schema of the Data property of an EventGridEvent for an Microsoft.Storage.BlobInventoryPolicyCompleted event.
+
+    :param schedule_date_time: The time at which inventory policy was scheduled.
+    :type schedule_date_time: ~datetime.datetime
+    :param account_name: The account name for which inventory policy is registered.
+    :type account_name: str
+    :param rule_name: The rule name for inventory policy.
+    :type rule_name: str
+    :param policy_run_status: The status of inventory run, it can be
+     Succeeded/PartiallySucceeded/Failed.
+    :type policy_run_status: str
+    :param policy_run_status_message: The status message for inventory run.
+    :type policy_run_status_message: str
+    :param policy_run_id: The policy run id for inventory run.
+    :type policy_run_id: str
+    :param manifest_blob_url: The blob URL for manifest file for inventory run.
+    :type manifest_blob_url: str
+    """
+
+    _attribute_map = {
+        'schedule_date_time': {'key': 'scheduleDateTime', 'type': 'iso-8601'},
+        'account_name': {'key': 'accountName', 'type': 'str'},
+        'rule_name': {'key': 'ruleName', 'type': 'str'},
+        'policy_run_status': {'key': 'policyRunStatus', 'type': 'str'},
+        'policy_run_status_message': {'key': 'policyRunStatusMessage', 'type': 'str'},
+        'policy_run_id': {'key': 'policyRunId', 'type': 'str'},
+        'manifest_blob_url': {'key': 'manifestBlobUrl', 'type': 'str'},
+    }
+
+    def __init__(
+        self,
+        *,
+        schedule_date_time: Optional[datetime.datetime] = None,
+        account_name: Optional[str] = None,
+        rule_name: Optional[str] = None,
+        policy_run_status: Optional[str] = None,
+        policy_run_status_message: Optional[str] = None,
+        policy_run_id: Optional[str] = None,
+        manifest_blob_url: Optional[str] = None,
+        **kwargs
+    ):
+        super(StorageBlobInventoryPolicyCompletedEventData, self).__init__(**kwargs)
+        self.schedule_date_time = schedule_date_time
+        self.account_name = account_name
+        self.rule_name = rule_name
+        self.policy_run_status = policy_run_status
+        self.policy_run_status_message = policy_run_status_message
+        self.policy_run_id = policy_run_id
+        self.manifest_blob_url = manifest_blob_url
+
+
 class StorageBlobRenamedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Storage.BlobRenamed event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Storage.BlobRenamed event.
 
     :param api: The name of the API/operation that triggered this event.
     :type api: str
@@ -5263,8 +6460,81 @@ class StorageBlobRenamedEventData(msrest.serialization.Model):
         self.storage_diagnostics = storage_diagnostics
 
 
+class StorageBlobTierChangedEventData(msrest.serialization.Model):
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Storage.BlobTierChanged event.
+
+    :param api: The name of the API/operation that triggered this event.
+    :type api: str
+    :param client_request_id: A request id provided by the client of the storage API operation that
+     triggered this event.
+    :type client_request_id: str
+    :param request_id: The request id generated by the Storage service for the storage API
+     operation that triggered this event.
+    :type request_id: str
+    :param content_type: The content type of the blob. This is the same as what would be returned
+     in the Content-Type header from the blob.
+    :type content_type: str
+    :param content_length: The size of the blob in bytes. This is the same as what would be
+     returned in the Content-Length header from the blob.
+    :type content_length: long
+    :param blob_type: The type of blob.
+    :type blob_type: str
+    :param url: The path to the blob.
+    :type url: str
+    :param sequencer: An opaque string value representing the logical sequence of events for any
+     particular blob name. Users can use standard string comparison to understand the relative
+     sequence of two events on the same blob name.
+    :type sequencer: str
+    :param identity: The identity of the requester that triggered this event.
+    :type identity: str
+    :param storage_diagnostics: For service use only. Diagnostic data occasionally included by the
+     Azure Storage service. This property should be ignored by event consumers.
+    :type storage_diagnostics: object
+    """
+
+    _attribute_map = {
+        'api': {'key': 'api', 'type': 'str'},
+        'client_request_id': {'key': 'clientRequestId', 'type': 'str'},
+        'request_id': {'key': 'requestId', 'type': 'str'},
+        'content_type': {'key': 'contentType', 'type': 'str'},
+        'content_length': {'key': 'contentLength', 'type': 'long'},
+        'blob_type': {'key': 'blobType', 'type': 'str'},
+        'url': {'key': 'url', 'type': 'str'},
+        'sequencer': {'key': 'sequencer', 'type': 'str'},
+        'identity': {'key': 'identity', 'type': 'str'},
+        'storage_diagnostics': {'key': 'storageDiagnostics', 'type': 'object'},
+    }
+
+    def __init__(
+        self,
+        *,
+        api: Optional[str] = None,
+        client_request_id: Optional[str] = None,
+        request_id: Optional[str] = None,
+        content_type: Optional[str] = None,
+        content_length: Optional[int] = None,
+        blob_type: Optional[str] = None,
+        url: Optional[str] = None,
+        sequencer: Optional[str] = None,
+        identity: Optional[str] = None,
+        storage_diagnostics: Optional[object] = None,
+        **kwargs
+    ):
+        super(StorageBlobTierChangedEventData, self).__init__(**kwargs)
+        self.api = api
+        self.client_request_id = client_request_id
+        self.request_id = request_id
+        self.content_type = content_type
+        self.content_length = content_length
+        self.blob_type = blob_type
+        self.url = url
+        self.sequencer = sequencer
+        self.identity = identity
+        self.storage_diagnostics = storage_diagnostics
+
+
 class StorageDirectoryCreatedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Storage.DirectoryCreated event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Storage.DirectoryCreated event.
 
     :param api: The name of the API/operation that triggered this event.
     :type api: str
@@ -5325,7 +6595,7 @@ class StorageDirectoryCreatedEventData(msrest.serialization.Model):
 
 
 class StorageDirectoryDeletedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Storage.DirectoryDeleted event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Storage.DirectoryDeleted event.
 
     :param api: The name of the API/operation that triggered this event.
     :type api: str
@@ -5386,7 +6656,7 @@ class StorageDirectoryDeletedEventData(msrest.serialization.Model):
 
 
 class StorageDirectoryRenamedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Storage.DirectoryRenamed event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Storage.DirectoryRenamed event.
 
     :param api: The name of the API/operation that triggered this event.
     :type api: str
@@ -5478,7 +6748,7 @@ class StorageLifecyclePolicyActionSummaryDetail(msrest.serialization.Model):
 
 
 class StorageLifecyclePolicyCompletedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Storage.LifecyclePolicyCompleted event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Storage.LifecyclePolicyCompleted event.
 
     :param schedule_time: The time the policy task was scheduled.
     :type schedule_time: str
@@ -5520,7 +6790,7 @@ class StorageLifecyclePolicyCompletedEventData(msrest.serialization.Model):
 
 
 class SubscriptionDeletedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for a Microsoft.EventGrid.SubscriptionDeletedEvent.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.EventGrid.SubscriptionDeletedEvent event.
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
@@ -5545,7 +6815,7 @@ class SubscriptionDeletedEventData(msrest.serialization.Model):
 
 
 class SubscriptionValidationEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for a Microsoft.EventGrid.SubscriptionValidationEvent.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.EventGrid.SubscriptionValidationEvent event.
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
@@ -5603,7 +6873,7 @@ class SubscriptionValidationResponse(msrest.serialization.Model):
 
 
 class WebAppServicePlanUpdatedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Web.AppServicePlanUpdated event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Web.AppServicePlanUpdated event.
 
     :param app_service_plan_event_type_detail: Detail of action on the app service plan.
     :type app_service_plan_event_type_detail:
@@ -5704,7 +6974,7 @@ class WebAppServicePlanUpdatedEventDataSku(msrest.serialization.Model):
 
 
 class WebAppUpdatedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Web.AppUpdated event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Web.AppUpdated event.
 
     :param app_event_type_detail: Detail of action on the app.
     :type app_event_type_detail: ~event_grid_publisher_client.models.AppEventTypeDetail
@@ -5758,7 +7028,7 @@ class WebAppUpdatedEventData(msrest.serialization.Model):
 
 
 class WebBackupOperationCompletedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Web.BackupOperationCompleted event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Web.BackupOperationCompleted event.
 
     :param app_event_type_detail: Detail of action on the app.
     :type app_event_type_detail: ~event_grid_publisher_client.models.AppEventTypeDetail
@@ -5812,7 +7082,7 @@ class WebBackupOperationCompletedEventData(msrest.serialization.Model):
 
 
 class WebBackupOperationFailedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Web.BackupOperationFailed event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Web.BackupOperationFailed event.
 
     :param app_event_type_detail: Detail of action on the app.
     :type app_event_type_detail: ~event_grid_publisher_client.models.AppEventTypeDetail
@@ -5866,7 +7136,7 @@ class WebBackupOperationFailedEventData(msrest.serialization.Model):
 
 
 class WebBackupOperationStartedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Web.BackupOperationStarted event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Web.BackupOperationStarted event.
 
     :param app_event_type_detail: Detail of action on the app.
     :type app_event_type_detail: ~event_grid_publisher_client.models.AppEventTypeDetail
@@ -5920,7 +7190,7 @@ class WebBackupOperationStartedEventData(msrest.serialization.Model):
 
 
 class WebRestoreOperationCompletedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Web.RestoreOperationCompleted event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Web.RestoreOperationCompleted event.
 
     :param app_event_type_detail: Detail of action on the app.
     :type app_event_type_detail: ~event_grid_publisher_client.models.AppEventTypeDetail
@@ -5974,7 +7244,7 @@ class WebRestoreOperationCompletedEventData(msrest.serialization.Model):
 
 
 class WebRestoreOperationFailedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Web.RestoreOperationFailed event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Web.RestoreOperationFailed event.
 
     :param app_event_type_detail: Detail of action on the app.
     :type app_event_type_detail: ~event_grid_publisher_client.models.AppEventTypeDetail
@@ -6028,7 +7298,7 @@ class WebRestoreOperationFailedEventData(msrest.serialization.Model):
 
 
 class WebRestoreOperationStartedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Web.RestoreOperationStarted event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Web.RestoreOperationStarted event.
 
     :param app_event_type_detail: Detail of action on the app.
     :type app_event_type_detail: ~event_grid_publisher_client.models.AppEventTypeDetail
@@ -6082,7 +7352,7 @@ class WebRestoreOperationStartedEventData(msrest.serialization.Model):
 
 
 class WebSlotSwapCompletedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Web.SlotSwapCompleted event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Web.SlotSwapCompleted event.
 
     :param app_event_type_detail: Detail of action on the app.
     :type app_event_type_detail: ~event_grid_publisher_client.models.AppEventTypeDetail
@@ -6136,7 +7406,7 @@ class WebSlotSwapCompletedEventData(msrest.serialization.Model):
 
 
 class WebSlotSwapFailedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Web.SlotSwapFailed event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Web.SlotSwapFailed event.
 
     :param app_event_type_detail: Detail of action on the app.
     :type app_event_type_detail: ~event_grid_publisher_client.models.AppEventTypeDetail
@@ -6190,7 +7460,7 @@ class WebSlotSwapFailedEventData(msrest.serialization.Model):
 
 
 class WebSlotSwapStartedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Web.SlotSwapStarted event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Web.SlotSwapStarted event.
 
     :param app_event_type_detail: Detail of action on the app.
     :type app_event_type_detail: ~event_grid_publisher_client.models.AppEventTypeDetail
@@ -6244,7 +7514,7 @@ class WebSlotSwapStartedEventData(msrest.serialization.Model):
 
 
 class WebSlotSwapWithPreviewCancelledEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Web.SlotSwapWithPreviewCancelled event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Web.SlotSwapWithPreviewCancelled event.
 
     :param app_event_type_detail: Detail of action on the app.
     :type app_event_type_detail: ~event_grid_publisher_client.models.AppEventTypeDetail
@@ -6298,7 +7568,7 @@ class WebSlotSwapWithPreviewCancelledEventData(msrest.serialization.Model):
 
 
 class WebSlotSwapWithPreviewStartedEventData(msrest.serialization.Model):
-    """Schema of the Data property of an EventGridEvent for an Microsoft.Web.SlotSwapWithPreviewStarted event.
+    """Schema of the Data property of an EventGridEvent for a Microsoft.Web.SlotSwapWithPreviewStarted event.
 
     :param app_event_type_detail: Detail of action on the app.
     :type app_event_type_detail: ~event_grid_publisher_client.models.AppEventTypeDetail

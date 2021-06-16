@@ -13,8 +13,9 @@ from datetime import datetime, timedelta
 
 from devtools_testutils import AzureMgmtTestCase, RandomNameResourceGroupPreparer, CachedResourceGroupPreparer
 
-from azure.servicebus import ServiceBusClient, ServiceBusSharedKeyCredential
-from azure.servicebus._common.message import Message
+from azure.servicebus import ServiceBusClient
+from azure.servicebus._base_handler import ServiceBusSharedKeyCredential
+from azure.servicebus._common.message import ServiceBusMessage
 from servicebus_preparer import (
     ServiceBusNamespacePreparer,
     ServiceBusTopicPreparer,
@@ -39,7 +40,7 @@ class ServiceBusTopicsTests(AzureMgmtTestCase):
             logging_enable=False
         ) as sb_client:
             with sb_client.get_topic_sender(servicebus_topic.name) as sender:
-                message = Message(b"Sample topic message")
+                message = ServiceBusMessage(b"Sample topic message")
                 sender.send_messages(message)
 
     @pytest.mark.liveTest
@@ -58,7 +59,7 @@ class ServiceBusTopicsTests(AzureMgmtTestCase):
             logging_enable=False
         ) as sb_client:
             with sb_client.get_topic_sender(servicebus_topic.name) as sender:
-                message = Message(b"Sample topic message")
+                message = ServiceBusMessage(b"Sample topic message")
                 sender.send_messages(message)
 
     @pytest.mark.skip(reason="Pending management apis")

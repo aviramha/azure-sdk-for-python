@@ -6232,8 +6232,8 @@ class PacketCaptureStorageLocation(msrest.serialization.Model):
     :param storage_id: The ID of the storage account to save the packet capture session. Required
      if no local file path is provided.
     :type storage_id: str
-    :param storage_path: The URI of the storage path to save the packet capture. Must be a well-
-     formed URI describing the location to save the packet capture.
+    :param storage_path: The URI of the storage path to save the packet capture. Must be a
+     well-formed URI describing the location to save the packet capture.
     :type storage_path: str
     :param file_path: A valid local path on the targeting VM. Must include the name of the capture
      file (*.cap). For linux virtual machine it must start with /var/captures. Required if no
@@ -6329,9 +6329,9 @@ class PatchRouteFilterRule(SubResource):
     :param access: The access type of the rule. Valid values are: 'Allow', 'Deny'. Possible values
      include: "Allow", "Deny".
     :type access: str or ~azure.mgmt.network.v2018_01_01.models.Access
-    :ivar route_filter_rule_type: The rule type of the rule. Valid value is: 'Community'. Default
-     value: "Community".
-    :vartype route_filter_rule_type: str
+    :param route_filter_rule_type: The rule type of the rule. Valid value is: 'Community'. Possible
+     values include: "Community".
+    :type route_filter_rule_type: str or ~azure.mgmt.network.v2018_01_01.models.RouteFilterRuleType
     :param communities: The collection for bgp community values to filter on. e.g.
      ['12076:5010','12076:5020'].
     :type communities: list[str]
@@ -6343,7 +6343,6 @@ class PatchRouteFilterRule(SubResource):
     _validation = {
         'name': {'readonly': True},
         'etag': {'readonly': True},
-        'route_filter_rule_type': {'constant': True},
         'provisioning_state': {'readonly': True},
     }
 
@@ -6357,8 +6356,6 @@ class PatchRouteFilterRule(SubResource):
         'provisioning_state': {'key': 'properties.provisioningState', 'type': 'str'},
     }
 
-    route_filter_rule_type = "Community"
-
     def __init__(
         self,
         **kwargs
@@ -6367,6 +6364,7 @@ class PatchRouteFilterRule(SubResource):
         self.name = None
         self.etag = None
         self.access = kwargs.get('access', None)
+        self.route_filter_rule_type = kwargs.get('route_filter_rule_type', None)
         self.communities = kwargs.get('communities', None)
         self.provisioning_state = None
 
@@ -6847,9 +6845,9 @@ class RouteFilterRule(SubResource):
     :param access: The access type of the rule. Valid values are: 'Allow', 'Deny'. Possible values
      include: "Allow", "Deny".
     :type access: str or ~azure.mgmt.network.v2018_01_01.models.Access
-    :ivar route_filter_rule_type: The rule type of the rule. Valid value is: 'Community'. Default
-     value: "Community".
-    :vartype route_filter_rule_type: str
+    :param route_filter_rule_type: The rule type of the rule. Valid value is: 'Community'. Possible
+     values include: "Community".
+    :type route_filter_rule_type: str or ~azure.mgmt.network.v2018_01_01.models.RouteFilterRuleType
     :param communities: The collection for bgp community values to filter on. e.g.
      ['12076:5010','12076:5020'].
     :type communities: list[str]
@@ -6860,7 +6858,6 @@ class RouteFilterRule(SubResource):
 
     _validation = {
         'etag': {'readonly': True},
-        'route_filter_rule_type': {'constant': True},
         'provisioning_state': {'readonly': True},
     }
 
@@ -6875,8 +6872,6 @@ class RouteFilterRule(SubResource):
         'provisioning_state': {'key': 'properties.provisioningState', 'type': 'str'},
     }
 
-    route_filter_rule_type = "Community"
-
     def __init__(
         self,
         **kwargs
@@ -6886,6 +6881,7 @@ class RouteFilterRule(SubResource):
         self.location = kwargs.get('location', None)
         self.etag = None
         self.access = kwargs.get('access', None)
+        self.route_filter_rule_type = kwargs.get('route_filter_rule_type', None)
         self.communities = kwargs.get('communities', None)
         self.provisioning_state = None
 
@@ -7776,8 +7772,9 @@ class Usage(msrest.serialization.Model):
 
     :ivar id: Resource identifier.
     :vartype id: str
-    :ivar unit: Required. An enum describing the unit of measurement. Default value: "Count".
-    :vartype unit: str
+    :param unit: Required. An enum describing the unit of measurement. Possible values include:
+     "Count".
+    :type unit: str or ~azure.mgmt.network.v2018_01_01.models.UsageUnit
     :param current_value: Required. The current value of the usage.
     :type current_value: long
     :param limit: Required. The limit of usage.
@@ -7788,7 +7785,7 @@ class Usage(msrest.serialization.Model):
 
     _validation = {
         'id': {'readonly': True},
-        'unit': {'required': True, 'constant': True},
+        'unit': {'required': True},
         'current_value': {'required': True},
         'limit': {'required': True},
         'name': {'required': True},
@@ -7802,14 +7799,13 @@ class Usage(msrest.serialization.Model):
         'name': {'key': 'name', 'type': 'UsageName'},
     }
 
-    unit = "Count"
-
     def __init__(
         self,
         **kwargs
     ):
         super(Usage, self).__init__(**kwargs)
         self.id = None
+        self.unit = kwargs['unit']
         self.current_value = kwargs['current_value']
         self.limit = kwargs['limit']
         self.name = kwargs['name']
@@ -8655,8 +8651,8 @@ class VirtualNetworkPeering(SubResource):
     :type use_remote_gateways: bool
     :param remote_virtual_network: The reference of the remote virtual network. The remote virtual
      network can be in the same or different region (preview). See here to register for the preview
-     and learn more (https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-create-
-     peering).
+     and learn more
+     (https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-create-peering).
     :type remote_virtual_network: ~azure.mgmt.network.v2018_01_01.models.SubResource
     :param remote_address_space: The reference of the remote virtual network address space.
     :type remote_address_space: ~azure.mgmt.network.v2018_01_01.models.AddressSpace

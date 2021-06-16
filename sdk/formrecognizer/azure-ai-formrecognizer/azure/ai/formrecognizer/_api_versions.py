@@ -7,9 +7,11 @@ from enum import Enum
 
 
 class FormRecognizerApiVersion(str, Enum):
-    """Form Recognizer service API versions supported by this package"""
+    """Form Recognizer API versions supported by this package"""
 
-    V2_0 = "v2.0"
+    #: This is the default version
+    V2_1 = "2.1"
+    V2_0 = "2.0"
 
 
 def validate_api_version(api_version):
@@ -23,5 +25,6 @@ def validate_api_version(api_version):
     except ValueError:
         raise ValueError(
             "Unsupported API version '{}'. Please select from:\n{}".format(
-                api_version, ", ".join(v.value for v in FormRecognizerApiVersion))
+                api_version, ", ".join(v.value for v in FormRecognizerApiVersion)
+            )
         )

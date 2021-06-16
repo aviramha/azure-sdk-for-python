@@ -12,17 +12,17 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - azsdk-python-ai-textanalytics/5.0.1 Python/3.8.5 (macOS-10.13.6-x86_64-i386-64bit)
+      - azsdk-python-ai-textanalytics/5.1.0b7 Python/3.9.1 (macOS-10.16-x86_64-i386-64bit)
     method: POST
-    uri: https://westus2.api.cognitive.microsoft.com/text/analytics/v3.1-preview.1/entities/linking?showStats=false&stringIndexType=UnicodeCodePoint
+    uri: https://westus2.api.cognitive.microsoft.com/text/analytics/v3.1-preview.5/entities/linking?showStats=false&stringIndexType=UnicodeCodePoint
   response:
     body:
       string: '{"documents":[{"id":"1","entities":[],"warnings":[]},{"id":"2","entities":[],"warnings":[]},{"id":"3","entities":[],"warnings":[]}],"errors":[],"modelVersion":"2020-02-01"}'
     headers:
-      apim-request-id: 3cd8f925-4259-4bfe-8a97-7cdc2b4ea786
+      apim-request-id: fa6e5e22-a9d7-4966-b940-41e4c0aac35f
       content-type: application/json; charset=utf-8
-      csp-billing-usage: CognitiveServices.TextAnalytics.BatchScoring=3
-      date: Thu, 27 Aug 2020 19:32:17 GMT
+      csp-billing-usage: CognitiveServices.TextAnalytics.BatchScoring=3,CognitiveServices.TextAnalytics.TextRecords=3
+      date: Tue, 18 May 2021 17:48:04 GMT
       strict-transport-security: max-age=31536000; includeSubDomains; preload
       transfer-encoding: chunked
       x-content-type-options: nosniff
@@ -30,5 +30,5 @@ interactions:
     status:
       code: 200
       message: OK
-    url: https://westus2.api.cognitive.microsoft.com//text/analytics/v3.1-preview.1/entities/linking?showStats=false&stringIndexType=UnicodeCodePoint
+    url: https://westus2.api.cognitive.microsoft.com//text/analytics/v3.1-preview.5/entities/linking?showStats=false&stringIndexType=UnicodeCodePoint
 version: 1

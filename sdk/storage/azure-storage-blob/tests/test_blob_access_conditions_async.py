@@ -25,7 +25,8 @@ from azure.storage.blob import (
     ContentSettings,
     BlobProperties,
     ContainerSasPermissions,
-    AccessPolicy,
+    AccessPolicy, generate_account_sas, ResourceTypes, AccountSasPermissions, generate_blob_sas, BlobSasPermissions,
+    generate_container_sas, CustomerProvidedEncryptionKey,
 )
 from _shared.testcase import GlobalStorageAccountPreparer
 from _shared.asynctestcase import AsyncStorageTestCase
@@ -83,6 +84,79 @@ class StorageBlobAccessConditionsAsyncTest(AsyncStorageTestCase):
         return container, blob
 
     # --Test cases for blob service --------------------------------------------
+
+    @GlobalStorageAccountPreparer()
+    @AsyncStorageTestCase.await_prepared_test
+    async def test_get_blob_service_client_from_container(
+            self, resource_group, location, storage_account, storage_account_key):
+        bsc1 = BlobServiceClient(
+            self.account_url(storage_account, "blob"), storage_account_key, connection_data_block_size=4 * 1024)
+        self._setup()
+        container_client1 = await self._create_container(self.container_name, bsc1)
+        await container_client1.get_container_properties()
+        test_datetime = (datetime.utcnow() - timedelta(minutes=15))
+
+        # Act
+        metadata = {'hello': 'world', 'number': '43'}
+        # Set metadata to check against later
+        await container_client1.set_container_metadata(metadata, if_modified_since=test_datetime)
+
+        # Assert metadata is set
+        cc1_props = await container_client1.get_container_properties()
+        cc1_md1 = cc1_props.metadata
+        self.assertDictEqual(metadata, cc1_md1)
+
+        # Get blob service client from container client
+        bsc_props1 = await bsc1.get_service_properties()
+        bsc2 = container_client1._get_blob_service_client()
+        bsc_props2 = await bsc2.get_service_properties()
+        self.assertDictEqual(bsc_props1, bsc_props2)
+
+        # Return to container and assert its properties
+        container_client2 = bsc2.get_container_client(self.container_name)
+        cc2_props = await container_client2.get_container_properties()
+        cc2_md1 = cc2_props.metadata
+        self.assertDictEqual(cc2_md1, cc1_md1)
+
+    @GlobalStorageAccountPreparer()
+    @AsyncStorageTestCase.await_prepared_test
+    async def test_get_container_client_from_blob(self, resource_group, location, storage_account, storage_account_key):
+        bsc = BlobServiceClient(
+            self.account_url(storage_account, "blob"), storage_account_key, connection_data_block_size=4 * 1024)
+        self._setup()
+        container_client1 = await self._create_container(self.container_name, bsc)
+        test_datetime = (datetime.utcnow() - timedelta(minutes=15))
+
+        # Act
+        metadata = {'hello': 'world', 'number': '43'}
+        # Set metadata to check against later
+        await container_client1.set_container_metadata(metadata, if_modified_since=test_datetime)
+
+        # Assert metadata is set
+        props1 = await container_client1.get_container_properties()
+        md1 = props1.metadata
+        self.assertDictEqual(metadata, md1)
+
+        # Create a blob from container_client1
+        blob_name = self.get_resource_name("testblob1")
+        blob_client1 = container_client1.get_blob_client(blob_name)
+
+        # Upload data to blob and get container_client again
+        await blob_client1.upload_blob(b"this is test data")
+        downloaded_blob1 = await blob_client1.download_blob()
+        blob_client1_data = await downloaded_blob1.readall()
+        container_client2 = blob_client1._get_container_client()
+
+        props2 = await container_client2.get_container_properties()
+        md2 = props2.metadata
+        self.assertEqual(md1, md2)
+
+        # Ensure we can get blob client again
+        blob_client2 = container_client2.get_blob_client(blob_name)
+        downloaded_blob2 = await blob_client2.download_blob()
+        blob_client2_data = await downloaded_blob2.readall()
+
+        self.assertEqual(blob_client1_data, blob_client2_data)
 
     @GlobalStorageAccountPreparer()
     @AsyncStorageTestCase.await_prepared_test
@@ -315,6 +389,29 @@ class StorageBlobAccessConditionsAsyncTest(AsyncStorageTestCase):
             await container.delete_container(if_unmodified_since=test_datetime)
 
         self.assertEqual(StorageErrorCode.condition_not_met, e.exception.error_code)
+
+    @GlobalStorageAccountPreparer()
+    @AsyncStorageTestCase.await_prepared_test
+    async def test_multi_put_block_contains_headers(self, resource_group, location, storage_account, storage_account_key):
+        counter = list()
+
+        def _validate_headers(request):
+            counter.append(request)
+            header = request.http_request.headers.get('x-custom-header')
+            self.assertEqual(header, 'test_value')
+
+        bsc = BlobServiceClient(
+            self.account_url(storage_account, "blob"), storage_account_key, max_single_put_size=100, max_block_size=50)
+        self._setup()
+        data = self.get_random_bytes(2 * 100)
+        await self._create_container(self.container_name, bsc)
+        blob = bsc.get_blob_client(self.container_name, "blob1")
+        await blob.upload_blob(
+            data,
+            headers={'x-custom-header': 'test_value'},
+            raw_request_hook=_validate_headers
+        )
+        self.assertEqual(len(counter), 5)
 
     @GlobalStorageAccountPreparer()
     @AsyncStorageTestCase.await_prepared_test
@@ -743,6 +840,56 @@ class StorageBlobAccessConditionsAsyncTest(AsyncStorageTestCase):
 
         # Assert
         self.assertEqual(StorageErrorCode.condition_not_met, e.exception.error_code)
+
+    @pytest.mark.playback_test_only
+    @GlobalStorageAccountPreparer()
+    @AsyncStorageTestCase.await_prepared_test
+    async def test_if_blob_exists(self, resource_group, location, storage_account, storage_account_key):
+        bsc = BlobServiceClient(self.account_url(storage_account, "blob"), storage_account_key, connection_data_block_size=4 * 1024)
+        self._setup()
+        await self._create_container_and_block_blob(
+            self.container_name, 'blob1', b'hello world', bsc)
+        # Act
+        blob = bsc.get_blob_client(self.container_name, 'blob1')
+        old_blob_props = await blob.get_blob_properties()
+        old_blob_version_id = old_blob_props.get("version_id")
+        self.assertIsNotNone(old_blob_version_id)
+        await blob.stage_block(block_id='1', data="this is test content")
+        await blob.commit_block_list(['1'])
+        new_blob_props = await blob.get_blob_properties()
+        new_blob_version_id = new_blob_props.get("version_id")
+
+        # Assert
+        self.assertEqual(await blob.exists(version_id=old_blob_version_id), True)
+        self.assertEqual(await blob.exists(version_id=new_blob_version_id), True)
+        self.assertEqual(await blob.exists(version_id="2020-08-21T21:24:15.3585832Z"), False)
+
+        # Act
+        test_snapshot = await blob.create_snapshot()
+        blob_snapshot = bsc.get_blob_client(self.container_name, 'blob1', snapshot=test_snapshot)
+        self.assertEqual(await blob_snapshot.exists(), True)
+        await blob.stage_block(block_id='1', data="this is additional test content")
+        await blob.commit_block_list(['1'])
+
+        # Assert
+        self.assertEqual(await blob_snapshot.exists(), True)
+        self.assertEqual(await blob.exists(), True)
+
+    @GlobalStorageAccountPreparer()
+    @AsyncStorageTestCase.await_prepared_test
+    async def test_if_blob_with_cpk_exists(self, resource_group, location, storage_account, storage_account_key):
+        container_name = self.get_resource_name("testcontainer1")
+        cc = ContainerClient(
+            self.account_url(storage_account, "blob"), credential=storage_account_key, container_name=container_name,
+            connection_data_block_size=4 * 1024)
+        await cc.create_container()
+        self._setup()
+        test_cpk = CustomerProvidedEncryptionKey(key_value="MDEyMzQ1NjcwMTIzNDU2NzAxMjM0NTY3MDEyMzQ1Njc=",
+                                                 key_hash="3QFFFpRA5+XANHqwwbT4yXDmrT/2JaLt/FKHjzhOdoE=")
+        blob_client = cc.get_blob_client("test_blob")
+        await blob_client.upload_blob(b"hello world", cpk=test_cpk)
+        # Act
+        self.assertTrue(await blob_client.exists())
 
     @GlobalStorageAccountPreparer()
     @AsyncStorageTestCase.await_prepared_test

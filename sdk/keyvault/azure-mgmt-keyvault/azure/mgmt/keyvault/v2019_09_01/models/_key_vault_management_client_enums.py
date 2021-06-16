@@ -6,134 +6,211 @@
 # Changes may cause incorrect behavior and will be lost if the code is regenerated.
 # --------------------------------------------------------------------------
 
-from enum import Enum
+from enum import Enum, EnumMeta
+from six import with_metaclass
 
-class AccessPolicyUpdateKind(str, Enum):
+class _CaseInsensitiveEnumMeta(EnumMeta):
+    def __getitem__(self, name):
+        return super().__getitem__(name.upper())
 
-    add = "add"
-    replace = "replace"
-    remove = "remove"
+    def __getattr__(cls, name):
+        """Return the enum member matching `name`
+        We use __getattr__ instead of descriptors or inserting into the enum
+        class' __dict__ in order to support `name` and `value` being both
+        properties for enum members (which live in the class' __dict__) and
+        enum members themselves.
+        """
+        try:
+            return cls._member_map_[name.upper()]
+        except KeyError:
+            raise AttributeError(name)
 
-class CertificatePermissions(str, Enum):
 
-    get = "get"
-    list = "list"
-    delete = "delete"
-    create = "create"
-    import_enum = "import"
-    update = "update"
-    managecontacts = "managecontacts"
-    getissuers = "getissuers"
-    listissuers = "listissuers"
-    setissuers = "setissuers"
-    deleteissuers = "deleteissuers"
-    manageissuers = "manageissuers"
-    recover = "recover"
-    purge = "purge"
-    backup = "backup"
-    restore = "restore"
+class AccessPolicyUpdateKind(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
 
-class CreateMode(str, Enum):
+    ADD = "add"
+    REPLACE = "replace"
+    REMOVE = "remove"
+
+class CertificatePermissions(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
+
+    ALL = "all"
+    GET = "get"
+    LIST = "list"
+    DELETE = "delete"
+    CREATE = "create"
+    IMPORT_ENUM = "import"
+    UPDATE = "update"
+    MANAGECONTACTS = "managecontacts"
+    GETISSUERS = "getissuers"
+    LISTISSUERS = "listissuers"
+    SETISSUERS = "setissuers"
+    DELETEISSUERS = "deleteissuers"
+    MANAGEISSUERS = "manageissuers"
+    RECOVER = "recover"
+    PURGE = "purge"
+    BACKUP = "backup"
+    RESTORE = "restore"
+
+class CreateMode(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
     """The vault's create mode to indicate whether the vault need to be recovered or not.
     """
 
-    recover = "recover"
-    default = "default"
+    RECOVER = "recover"
+    DEFAULT = "default"
 
-class KeyPermissions(str, Enum):
+class DeletionRecoveryLevel(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
+    """The deletion recovery level currently in effect for the object. If it contains 'Purgeable',
+    then the object can be permanently deleted by a privileged user; otherwise, only the system can
+    purge the object at the end of the retention interval.
+    """
 
-    encrypt = "encrypt"
-    decrypt = "decrypt"
-    wrap_key = "wrapKey"
-    unwrap_key = "unwrapKey"
-    sign = "sign"
-    verify = "verify"
-    get = "get"
-    list = "list"
-    create = "create"
-    update = "update"
-    import_enum = "import"
-    delete = "delete"
-    backup = "backup"
-    restore = "restore"
-    recover = "recover"
-    purge = "purge"
+    PURGEABLE = "Purgeable"
+    RECOVERABLE_PURGEABLE = "Recoverable+Purgeable"
+    RECOVERABLE = "Recoverable"
+    RECOVERABLE_PROTECTED_SUBSCRIPTION = "Recoverable+ProtectedSubscription"
 
-class NetworkRuleAction(str, Enum):
+class JsonWebKeyCurveName(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
+    """The elliptic curve name. For valid values, see JsonWebKeyCurveName.
+    """
+
+    P256 = "P-256"
+    P384 = "P-384"
+    P521 = "P-521"
+    P256_K = "P-256K"
+
+class JsonWebKeyOperation(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
+    """The permitted JSON web key operations of the key. For more information, see
+    JsonWebKeyOperation.
+    """
+
+    ENCRYPT = "encrypt"
+    DECRYPT = "decrypt"
+    SIGN = "sign"
+    VERIFY = "verify"
+    WRAP_KEY = "wrapKey"
+    UNWRAP_KEY = "unwrapKey"
+    IMPORT_ENUM = "import"
+
+class JsonWebKeyType(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
+    """The type of the key. For valid values, see JsonWebKeyType.
+    """
+
+    EC = "EC"
+    EC_HSM = "EC-HSM"
+    RSA = "RSA"
+    RSA_HSM = "RSA-HSM"
+
+class KeyPermissions(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
+
+    ALL = "all"
+    ENCRYPT = "encrypt"
+    DECRYPT = "decrypt"
+    WRAP_KEY = "wrapKey"
+    UNWRAP_KEY = "unwrapKey"
+    SIGN = "sign"
+    VERIFY = "verify"
+    GET = "get"
+    LIST = "list"
+    CREATE = "create"
+    UPDATE = "update"
+    IMPORT_ENUM = "import"
+    DELETE = "delete"
+    BACKUP = "backup"
+    RESTORE = "restore"
+    RECOVER = "recover"
+    PURGE = "purge"
+
+class NetworkRuleAction(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
     """The default action when no rule from ipRules and from virtualNetworkRules match. This is only
     used after the bypass property has been evaluated.
     """
 
-    allow = "Allow"
-    deny = "Deny"
+    ALLOW = "Allow"
+    DENY = "Deny"
 
-class NetworkRuleBypassOptions(str, Enum):
+class NetworkRuleBypassOptions(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
     """Tells what traffic can bypass network rules. This can be 'AzureServices' or 'None'.  If not
     specified the default is 'AzureServices'.
     """
 
-    azure_services = "AzureServices"
-    none = "None"
+    AZURE_SERVICES = "AzureServices"
+    NONE = "None"
 
-class PrivateEndpointConnectionProvisioningState(str, Enum):
+class PrivateEndpointConnectionProvisioningState(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
     """The current provisioning state.
     """
 
-    succeeded = "Succeeded"
-    creating = "Creating"
-    updating = "Updating"
-    deleting = "Deleting"
-    failed = "Failed"
-    disconnected = "Disconnected"
+    SUCCEEDED = "Succeeded"
+    CREATING = "Creating"
+    UPDATING = "Updating"
+    DELETING = "Deleting"
+    FAILED = "Failed"
+    DISCONNECTED = "Disconnected"
 
-class PrivateEndpointServiceConnectionStatus(str, Enum):
+class PrivateEndpointServiceConnectionStatus(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
     """The private endpoint connection status.
     """
 
-    pending = "Pending"
-    approved = "Approved"
-    rejected = "Rejected"
-    disconnected = "Disconnected"
+    PENDING = "Pending"
+    APPROVED = "Approved"
+    REJECTED = "Rejected"
+    DISCONNECTED = "Disconnected"
 
-class Reason(str, Enum):
+class Reason(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
     """The reason that a vault name could not be used. The Reason element is only returned if
     NameAvailable is false.
     """
 
-    account_name_invalid = "AccountNameInvalid"
-    already_exists = "AlreadyExists"
+    ACCOUNT_NAME_INVALID = "AccountNameInvalid"
+    ALREADY_EXISTS = "AlreadyExists"
 
-class SecretPermissions(str, Enum):
+class SecretPermissions(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
 
-    get = "get"
-    list = "list"
-    set = "set"
-    delete = "delete"
-    backup = "backup"
-    restore = "restore"
-    recover = "recover"
-    purge = "purge"
+    ALL = "all"
+    GET = "get"
+    LIST = "list"
+    SET = "set"
+    DELETE = "delete"
+    BACKUP = "backup"
+    RESTORE = "restore"
+    RECOVER = "recover"
+    PURGE = "purge"
 
-class SkuName(str, Enum):
+class SkuFamily(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
+    """SKU family name
+    """
+
+    A = "A"
+
+class SkuName(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
     """SKU name to specify whether the key vault is a standard vault or a premium vault.
     """
 
-    standard = "standard"
-    premium = "premium"
+    STANDARD = "standard"
+    PREMIUM = "premium"
 
-class StoragePermissions(str, Enum):
+class StoragePermissions(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
 
-    get = "get"
-    list = "list"
-    delete = "delete"
-    set = "set"
-    update = "update"
-    regeneratekey = "regeneratekey"
-    recover = "recover"
-    purge = "purge"
-    backup = "backup"
-    restore = "restore"
-    setsas = "setsas"
-    listsas = "listsas"
-    getsas = "getsas"
-    deletesas = "deletesas"
+    ALL = "all"
+    GET = "get"
+    LIST = "list"
+    DELETE = "delete"
+    SET = "set"
+    UPDATE = "update"
+    REGENERATEKEY = "regeneratekey"
+    RECOVER = "recover"
+    PURGE = "purge"
+    BACKUP = "backup"
+    RESTORE = "restore"
+    SETSAS = "setsas"
+    LISTSAS = "listsas"
+    GETSAS = "getsas"
+    DELETESAS = "deletesas"
+
+class VaultProvisioningState(with_metaclass(_CaseInsensitiveEnumMeta, str, Enum)):
+    """Provisioning state of the vault.
+    """
+
+    SUCCEEDED = "Succeeded"
+    REGISTERING_DNS = "RegisteringDns"

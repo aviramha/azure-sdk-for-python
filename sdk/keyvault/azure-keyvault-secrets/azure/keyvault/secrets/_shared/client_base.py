@@ -23,11 +23,12 @@ class ApiVersion(str, Enum):
     """Key Vault API versions supported by this package"""
 
     #: this is the default version
+    V7_2 = "7.2"
     V7_1 = "7.1"
     V7_0 = "7.0"
     V2016_10_01 = "2016-10-01"
 
-DEFAULT_VERSION = ApiVersion.V7_1
+DEFAULT_VERSION = ApiVersion.V7_2
 
 
 class KeyVaultClientBase(object):
@@ -48,7 +49,7 @@ class KeyVaultClientBase(object):
             self._client = client
             return
 
-        api_version = kwargs.pop("api_version", DEFAULT_VERSION)
+        self.api_version = kwargs.pop("api_version", DEFAULT_VERSION)
 
         pipeline = kwargs.pop("pipeline", None)
         transport = kwargs.pop("transport", RequestsTransport(**kwargs))
@@ -62,7 +63,7 @@ class KeyVaultClientBase(object):
         )
         try:
             self._client = _KeyVaultClient(
-                api_version=api_version,
+                api_version=self.api_version,
                 pipeline=pipeline,
                 transport=transport,
                 authentication_policy=ChallengeAuthPolicy(credential),
@@ -70,10 +71,10 @@ class KeyVaultClientBase(object):
                 http_logging_policy=http_logging_policy,
                 **kwargs
             )
-            self._models = _KeyVaultClient.models(api_version=api_version)
-        except NotImplementedError:
+            self._models = _KeyVaultClient.models(api_version=self.api_version)
+        except ValueError:
             raise NotImplementedError(
-                "This package doesn't support API version '{}'. ".format(api_version)
+                "This package doesn't support API version '{}'. ".format(self.api_version)
                 + "Supported versions: {}".format(", ".join(v.value for v in ApiVersion))
             )
 

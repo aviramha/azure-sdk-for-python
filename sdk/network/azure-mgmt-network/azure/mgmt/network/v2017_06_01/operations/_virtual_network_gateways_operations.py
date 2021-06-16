@@ -8,7 +8,7 @@
 from typing import TYPE_CHECKING
 import warnings
 
-from azure.core.exceptions import HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
+from azure.core.exceptions import ClientAuthenticationError, HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
 from azure.core.paging import ItemPaged
 from azure.core.pipeline import PipelineResponse
 from azure.core.pipeline.transport import HttpRequest, HttpResponse
@@ -16,7 +16,7 @@ from azure.core.polling import LROPoller, NoPolling, PollingMethod
 from azure.mgmt.core.exceptions import ARMErrorFormat
 from azure.mgmt.core.polling.arm_polling import ARMPolling
 
-from .. import models
+from .. import models as _models
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,ungrouped-imports
@@ -39,7 +39,7 @@ class VirtualNetworkGatewaysOperations(object):
     :param deserializer: An object model deserializer.
     """
 
-    models = models
+    models = _models
 
     def __init__(self, client, config, serializer, deserializer):
         self._client = client
@@ -51,15 +51,18 @@ class VirtualNetworkGatewaysOperations(object):
         self,
         resource_group_name,  # type: str
         virtual_network_gateway_name,  # type: str
-        parameters,  # type: "models.VirtualNetworkGateway"
+        parameters,  # type: "_models.VirtualNetworkGateway"
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.VirtualNetworkGateway"
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.VirtualNetworkGateway"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        # type: (...) -> "_models.VirtualNetworkGateway"
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.VirtualNetworkGateway"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2017-06-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json, text/json"
 
         # Construct URL
         url = self._create_or_update_initial.metadata['url']  # type: ignore
@@ -77,14 +80,12 @@ class VirtualNetworkGatewaysOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(parameters, 'VirtualNetworkGateway')
         body_content_kwargs['content'] = body_content
         request = self._client.put(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
@@ -92,7 +93,6 @@ class VirtualNetworkGatewaysOperations(object):
             map_error(status_code=response.status_code, response=response, error_map=error_map)
             raise HttpResponseError(response=response, error_format=ARMErrorFormat)
 
-        deserialized = None
         if response.status_code == 200:
             deserialized = self._deserialize('VirtualNetworkGateway', pipeline_response)
 
@@ -109,10 +109,10 @@ class VirtualNetworkGatewaysOperations(object):
         self,
         resource_group_name,  # type: str
         virtual_network_gateway_name,  # type: str
-        parameters,  # type: "models.VirtualNetworkGateway"
+        parameters,  # type: "_models.VirtualNetworkGateway"
         **kwargs  # type: Any
     ):
-        # type: (...) -> LROPoller
+        # type: (...) -> LROPoller["_models.VirtualNetworkGateway"]
         """Creates or updates a virtual network gateway in the specified resource group.
 
         :param resource_group_name: The name of the resource group.
@@ -123,8 +123,8 @@ class VirtualNetworkGatewaysOperations(object):
         :type parameters: ~azure.mgmt.network.v2017_06_01.models.VirtualNetworkGateway
         :keyword callable cls: A custom type or function that will be passed the direct response
         :keyword str continuation_token: A continuation token to restart a poller from a saved state.
-        :keyword polling: True for ARMPolling, False for no polling, or a
-         polling object for personal polling strategy
+        :keyword polling: Pass in True if you'd like the ARMPolling polling method,
+         False for no polling, or your own initialized polling object for a personal polling strategy.
         :paramtype polling: bool or ~azure.core.polling.PollingMethod
         :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
         :return: An instance of LROPoller that returns either VirtualNetworkGateway or the result of cls(response)
@@ -132,7 +132,7 @@ class VirtualNetworkGatewaysOperations(object):
         :raises ~azure.core.exceptions.HttpResponseError:
         """
         polling = kwargs.pop('polling', True)  # type: Union[bool, PollingMethod]
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.VirtualNetworkGateway"]
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.VirtualNetworkGateway"]
         lro_delay = kwargs.pop(
             'polling_interval',
             self._config.polling_interval
@@ -157,7 +157,13 @@ class VirtualNetworkGatewaysOperations(object):
                 return cls(pipeline_response, deserialized, {})
             return deserialized
 
-        if polling is True: polling_method = ARMPolling(lro_delay,  **kwargs)
+        path_format_arguments = {
+            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str'),
+            'virtualNetworkGatewayName': self._serialize.url("virtual_network_gateway_name", virtual_network_gateway_name, 'str'),
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+        }
+
+        if polling is True: polling_method = ARMPolling(lro_delay, path_format_arguments=path_format_arguments,  **kwargs)
         elif polling is False: polling_method = NoPolling()
         else: polling_method = polling
         if cont_token:
@@ -177,7 +183,7 @@ class VirtualNetworkGatewaysOperations(object):
         virtual_network_gateway_name,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.VirtualNetworkGateway"
+        # type: (...) -> "_models.VirtualNetworkGateway"
         """Gets the specified virtual network gateway by resource group.
 
         :param resource_group_name: The name of the resource group.
@@ -189,10 +195,13 @@ class VirtualNetworkGatewaysOperations(object):
         :rtype: ~azure.mgmt.network.v2017_06_01.models.VirtualNetworkGateway
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.VirtualNetworkGateway"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.VirtualNetworkGateway"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2017-06-01"
+        accept = "application/json, text/json"
 
         # Construct URL
         url = self.get.metadata['url']  # type: ignore
@@ -209,9 +218,8 @@ class VirtualNetworkGatewaysOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -236,7 +244,9 @@ class VirtualNetworkGatewaysOperations(object):
     ):
         # type: (...) -> None
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2017-06-01"
 
@@ -256,7 +266,6 @@ class VirtualNetworkGatewaysOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
 
-        # Construct and send request
         request = self._client.delete(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -276,7 +285,7 @@ class VirtualNetworkGatewaysOperations(object):
         virtual_network_gateway_name,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> LROPoller
+        # type: (...) -> LROPoller[None]
         """Deletes the specified virtual network gateway.
 
         :param resource_group_name: The name of the resource group.
@@ -285,8 +294,8 @@ class VirtualNetworkGatewaysOperations(object):
         :type virtual_network_gateway_name: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :keyword str continuation_token: A continuation token to restart a poller from a saved state.
-        :keyword polling: True for ARMPolling, False for no polling, or a
-         polling object for personal polling strategy
+        :keyword polling: Pass in True if you'd like the ARMPolling polling method,
+         False for no polling, or your own initialized polling object for a personal polling strategy.
         :paramtype polling: bool or ~azure.core.polling.PollingMethod
         :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
         :return: An instance of LROPoller that returns either None or the result of cls(response)
@@ -315,7 +324,13 @@ class VirtualNetworkGatewaysOperations(object):
             if cls:
                 return cls(pipeline_response, None, {})
 
-        if polling is True: polling_method = ARMPolling(lro_delay, lro_options={'final-state-via': 'location'},  **kwargs)
+        path_format_arguments = {
+            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str'),
+            'virtualNetworkGatewayName': self._serialize.url("virtual_network_gateway_name", virtual_network_gateway_name, 'str'),
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+        }
+
+        if polling is True: polling_method = ARMPolling(lro_delay, lro_options={'final-state-via': 'location'}, path_format_arguments=path_format_arguments,  **kwargs)
         elif polling is False: polling_method = NoPolling()
         else: polling_method = polling
         if cont_token:
@@ -334,7 +349,7 @@ class VirtualNetworkGatewaysOperations(object):
         resource_group_name,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.VirtualNetworkGatewayListResult"]
+        # type: (...) -> Iterable["_models.VirtualNetworkGatewayListResult"]
         """Gets all virtual network gateways by resource group.
 
         :param resource_group_name: The name of the resource group.
@@ -344,12 +359,19 @@ class VirtualNetworkGatewaysOperations(object):
         :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.network.v2017_06_01.models.VirtualNetworkGatewayListResult]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.VirtualNetworkGatewayListResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.VirtualNetworkGatewayListResult"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2017-06-01"
+        accept = "application/json, text/json"
 
         def prepare_request(next_link=None):
+            # Construct headers
+            header_parameters = {}  # type: Dict[str, Any]
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
+
             if not next_link:
                 # Construct URL
                 url = self.list.metadata['url']  # type: ignore
@@ -362,15 +384,11 @@ class VirtualNetworkGatewaysOperations(object):
                 query_parameters = {}  # type: Dict[str, Any]
                 query_parameters['api-version'] = self._serialize.query("api_version", api_version, 'str')
 
+                request = self._client.get(url, query_parameters, header_parameters)
             else:
                 url = next_link
                 query_parameters = {}  # type: Dict[str, Any]
-            # Construct headers
-            header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
-
-            # Construct and send request
-            request = self._client.get(url, query_parameters, header_parameters)
+                request = self._client.get(url, query_parameters, header_parameters)
             return request
 
         def extract_data(pipeline_response):
@@ -403,7 +421,7 @@ class VirtualNetworkGatewaysOperations(object):
         virtual_network_gateway_name,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.VirtualNetworkGatewayListConnectionsResult"]
+        # type: (...) -> Iterable["_models.VirtualNetworkGatewayListConnectionsResult"]
         """Gets all the connections in a virtual network gateway.
 
         :param resource_group_name: The name of the resource group.
@@ -415,12 +433,19 @@ class VirtualNetworkGatewaysOperations(object):
         :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.network.v2017_06_01.models.VirtualNetworkGatewayListConnectionsResult]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.VirtualNetworkGatewayListConnectionsResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.VirtualNetworkGatewayListConnectionsResult"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2017-06-01"
+        accept = "application/json, text/json"
 
         def prepare_request(next_link=None):
+            # Construct headers
+            header_parameters = {}  # type: Dict[str, Any]
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
+
             if not next_link:
                 # Construct URL
                 url = self.list_connections.metadata['url']  # type: ignore
@@ -434,15 +459,11 @@ class VirtualNetworkGatewaysOperations(object):
                 query_parameters = {}  # type: Dict[str, Any]
                 query_parameters['api-version'] = self._serialize.query("api_version", api_version, 'str')
 
+                request = self._client.get(url, query_parameters, header_parameters)
             else:
                 url = next_link
                 query_parameters = {}  # type: Dict[str, Any]
-            # Construct headers
-            header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
-
-            # Construct and send request
-            request = self._client.get(url, query_parameters, header_parameters)
+                request = self._client.get(url, query_parameters, header_parameters)
             return request
 
         def extract_data(pipeline_response):
@@ -476,11 +497,14 @@ class VirtualNetworkGatewaysOperations(object):
         gateway_vip=None,  # type: Optional[str]
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.VirtualNetworkGateway"
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.VirtualNetworkGateway"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        # type: (...) -> Optional["_models.VirtualNetworkGateway"]
+        cls = kwargs.pop('cls', None)  # type: ClsType[Optional["_models.VirtualNetworkGateway"]]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2017-06-01"
+        accept = "application/json, text/json"
 
         # Construct URL
         url = self._reset_initial.metadata['url']  # type: ignore
@@ -499,9 +523,8 @@ class VirtualNetworkGatewaysOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.post(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -527,7 +550,7 @@ class VirtualNetworkGatewaysOperations(object):
         gateway_vip=None,  # type: Optional[str]
         **kwargs  # type: Any
     ):
-        # type: (...) -> LROPoller
+        # type: (...) -> LROPoller["_models.VirtualNetworkGateway"]
         """Resets the primary of the virtual network gateway in the specified resource group.
 
         :param resource_group_name: The name of the resource group.
@@ -535,12 +558,12 @@ class VirtualNetworkGatewaysOperations(object):
         :param virtual_network_gateway_name: The name of the virtual network gateway.
         :type virtual_network_gateway_name: str
         :param gateway_vip: Virtual network gateway vip address supplied to the begin reset of the
-     active-active feature enabled gateway.
+         active-active feature enabled gateway.
         :type gateway_vip: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :keyword str continuation_token: A continuation token to restart a poller from a saved state.
-        :keyword polling: True for ARMPolling, False for no polling, or a
-         polling object for personal polling strategy
+        :keyword polling: Pass in True if you'd like the ARMPolling polling method,
+         False for no polling, or your own initialized polling object for a personal polling strategy.
         :paramtype polling: bool or ~azure.core.polling.PollingMethod
         :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
         :return: An instance of LROPoller that returns either VirtualNetworkGateway or the result of cls(response)
@@ -548,7 +571,7 @@ class VirtualNetworkGatewaysOperations(object):
         :raises ~azure.core.exceptions.HttpResponseError:
         """
         polling = kwargs.pop('polling', True)  # type: Union[bool, PollingMethod]
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.VirtualNetworkGateway"]
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.VirtualNetworkGateway"]
         lro_delay = kwargs.pop(
             'polling_interval',
             self._config.polling_interval
@@ -573,7 +596,13 @@ class VirtualNetworkGatewaysOperations(object):
                 return cls(pipeline_response, deserialized, {})
             return deserialized
 
-        if polling is True: polling_method = ARMPolling(lro_delay, lro_options={'final-state-via': 'location'},  **kwargs)
+        path_format_arguments = {
+            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str'),
+            'virtualNetworkGatewayName': self._serialize.url("virtual_network_gateway_name", virtual_network_gateway_name, 'str'),
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+        }
+
+        if polling is True: polling_method = ARMPolling(lro_delay, lro_options={'final-state-via': 'location'}, path_format_arguments=path_format_arguments,  **kwargs)
         elif polling is False: polling_method = NoPolling()
         else: polling_method = polling
         if cont_token:
@@ -591,15 +620,18 @@ class VirtualNetworkGatewaysOperations(object):
         self,
         resource_group_name,  # type: str
         virtual_network_gateway_name,  # type: str
-        parameters,  # type: "models.VpnClientParameters"
+        parameters,  # type: "_models.VpnClientParameters"
         **kwargs  # type: Any
     ):
-        # type: (...) -> str
-        cls = kwargs.pop('cls', None)  # type: ClsType[str]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        # type: (...) -> Optional[str]
+        cls = kwargs.pop('cls', None)  # type: ClsType[Optional[str]]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2017-06-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json, text/json"
 
         # Construct URL
         url = self._generatevpnclientpackage_initial.metadata['url']  # type: ignore
@@ -617,14 +649,12 @@ class VirtualNetworkGatewaysOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(parameters, 'VpnClientParameters')
         body_content_kwargs['content'] = body_content
         request = self._client.post(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
@@ -646,24 +676,24 @@ class VirtualNetworkGatewaysOperations(object):
         self,
         resource_group_name,  # type: str
         virtual_network_gateway_name,  # type: str
-        parameters,  # type: "models.VpnClientParameters"
+        parameters,  # type: "_models.VpnClientParameters"
         **kwargs  # type: Any
     ):
-        # type: (...) -> LROPoller
+        # type: (...) -> LROPoller[str]
         """Generates VPN client package for P2S client of the virtual network gateway in the specified
-    resource group.
+        resource group.
 
         :param resource_group_name: The name of the resource group.
         :type resource_group_name: str
         :param virtual_network_gateway_name: The name of the virtual network gateway.
         :type virtual_network_gateway_name: str
         :param parameters: Parameters supplied to the generate virtual network gateway VPN client
-     package operation.
+         package operation.
         :type parameters: ~azure.mgmt.network.v2017_06_01.models.VpnClientParameters
         :keyword callable cls: A custom type or function that will be passed the direct response
         :keyword str continuation_token: A continuation token to restart a poller from a saved state.
-        :keyword polling: True for ARMPolling, False for no polling, or a
-         polling object for personal polling strategy
+        :keyword polling: Pass in True if you'd like the ARMPolling polling method,
+         False for no polling, or your own initialized polling object for a personal polling strategy.
         :paramtype polling: bool or ~azure.core.polling.PollingMethod
         :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
         :return: An instance of LROPoller that returns either str or the result of cls(response)
@@ -696,7 +726,13 @@ class VirtualNetworkGatewaysOperations(object):
                 return cls(pipeline_response, deserialized, {})
             return deserialized
 
-        if polling is True: polling_method = ARMPolling(lro_delay, lro_options={'final-state-via': 'location'},  **kwargs)
+        path_format_arguments = {
+            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str'),
+            'virtualNetworkGatewayName': self._serialize.url("virtual_network_gateway_name", virtual_network_gateway_name, 'str'),
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+        }
+
+        if polling is True: polling_method = ARMPolling(lro_delay, lro_options={'final-state-via': 'location'}, path_format_arguments=path_format_arguments,  **kwargs)
         elif polling is False: polling_method = NoPolling()
         else: polling_method = polling
         if cont_token:
@@ -714,15 +750,18 @@ class VirtualNetworkGatewaysOperations(object):
         self,
         resource_group_name,  # type: str
         virtual_network_gateway_name,  # type: str
-        parameters,  # type: "models.VpnClientParameters"
+        parameters,  # type: "_models.VpnClientParameters"
         **kwargs  # type: Any
     ):
         # type: (...) -> str
         cls = kwargs.pop('cls', None)  # type: ClsType[str]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2017-06-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json, text/json"
 
         # Construct URL
         url = self._generate_vpn_profile_initial.metadata['url']  # type: ignore
@@ -740,14 +779,12 @@ class VirtualNetworkGatewaysOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(parameters, 'VpnClientParameters')
         body_content_kwargs['content'] = body_content
         request = self._client.post(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
@@ -767,24 +804,24 @@ class VirtualNetworkGatewaysOperations(object):
         self,
         resource_group_name,  # type: str
         virtual_network_gateway_name,  # type: str
-        parameters,  # type: "models.VpnClientParameters"
+        parameters,  # type: "_models.VpnClientParameters"
         **kwargs  # type: Any
     ):
-        # type: (...) -> LROPoller
+        # type: (...) -> LROPoller[str]
         """Generates VPN profile for P2S client of the virtual network gateway in the specified resource
-    group. Used for IKEV2 and radius based authentication.
+        group. Used for IKEV2 and radius based authentication.
 
         :param resource_group_name: The name of the resource group.
         :type resource_group_name: str
         :param virtual_network_gateway_name: The name of the virtual network gateway.
         :type virtual_network_gateway_name: str
         :param parameters: Parameters supplied to the generate virtual network gateway VPN client
-     package operation.
+         package operation.
         :type parameters: ~azure.mgmt.network.v2017_06_01.models.VpnClientParameters
         :keyword callable cls: A custom type or function that will be passed the direct response
         :keyword str continuation_token: A continuation token to restart a poller from a saved state.
-        :keyword polling: True for ARMPolling, False for no polling, or a
-         polling object for personal polling strategy
+        :keyword polling: Pass in True if you'd like the ARMPolling polling method,
+         False for no polling, or your own initialized polling object for a personal polling strategy.
         :paramtype polling: bool or ~azure.core.polling.PollingMethod
         :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
         :return: An instance of LROPoller that returns either str or the result of cls(response)
@@ -817,7 +854,13 @@ class VirtualNetworkGatewaysOperations(object):
                 return cls(pipeline_response, deserialized, {})
             return deserialized
 
-        if polling is True: polling_method = ARMPolling(lro_delay, lro_options={'final-state-via': 'location'},  **kwargs)
+        path_format_arguments = {
+            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str'),
+            'virtualNetworkGatewayName': self._serialize.url("virtual_network_gateway_name", virtual_network_gateway_name, 'str'),
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+        }
+
+        if polling is True: polling_method = ARMPolling(lro_delay, lro_options={'final-state-via': 'location'}, path_format_arguments=path_format_arguments,  **kwargs)
         elif polling is False: polling_method = NoPolling()
         else: polling_method = polling
         if cont_token:
@@ -838,11 +881,14 @@ class VirtualNetworkGatewaysOperations(object):
         peer=None,  # type: Optional[str]
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.BgpPeerStatusListResult"
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.BgpPeerStatusListResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        # type: (...) -> Optional["_models.BgpPeerStatusListResult"]
+        cls = kwargs.pop('cls', None)  # type: ClsType[Optional["_models.BgpPeerStatusListResult"]]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2017-06-01"
+        accept = "application/json, text/json"
 
         # Construct URL
         url = self._get_bgp_peer_status_initial.metadata['url']  # type: ignore
@@ -861,9 +907,8 @@ class VirtualNetworkGatewaysOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.post(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -889,7 +934,7 @@ class VirtualNetworkGatewaysOperations(object):
         peer=None,  # type: Optional[str]
         **kwargs  # type: Any
     ):
-        # type: (...) -> LROPoller
+        # type: (...) -> LROPoller["_models.BgpPeerStatusListResult"]
         """The GetBgpPeerStatus operation retrieves the status of all BGP peers.
 
         :param resource_group_name: The name of the resource group.
@@ -900,8 +945,8 @@ class VirtualNetworkGatewaysOperations(object):
         :type peer: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :keyword str continuation_token: A continuation token to restart a poller from a saved state.
-        :keyword polling: True for ARMPolling, False for no polling, or a
-         polling object for personal polling strategy
+        :keyword polling: Pass in True if you'd like the ARMPolling polling method,
+         False for no polling, or your own initialized polling object for a personal polling strategy.
         :paramtype polling: bool or ~azure.core.polling.PollingMethod
         :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
         :return: An instance of LROPoller that returns either BgpPeerStatusListResult or the result of cls(response)
@@ -909,7 +954,7 @@ class VirtualNetworkGatewaysOperations(object):
         :raises ~azure.core.exceptions.HttpResponseError:
         """
         polling = kwargs.pop('polling', True)  # type: Union[bool, PollingMethod]
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.BgpPeerStatusListResult"]
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.BgpPeerStatusListResult"]
         lro_delay = kwargs.pop(
             'polling_interval',
             self._config.polling_interval
@@ -934,7 +979,13 @@ class VirtualNetworkGatewaysOperations(object):
                 return cls(pipeline_response, deserialized, {})
             return deserialized
 
-        if polling is True: polling_method = ARMPolling(lro_delay, lro_options={'final-state-via': 'location'},  **kwargs)
+        path_format_arguments = {
+            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str'),
+            'virtualNetworkGatewayName': self._serialize.url("virtual_network_gateway_name", virtual_network_gateway_name, 'str'),
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+        }
+
+        if polling is True: polling_method = ARMPolling(lro_delay, lro_options={'final-state-via': 'location'}, path_format_arguments=path_format_arguments,  **kwargs)
         elif polling is False: polling_method = NoPolling()
         else: polling_method = polling
         if cont_token:
@@ -954,11 +1005,14 @@ class VirtualNetworkGatewaysOperations(object):
         virtual_network_gateway_name,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.GatewayRouteListResult"
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.GatewayRouteListResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        # type: (...) -> Optional["_models.GatewayRouteListResult"]
+        cls = kwargs.pop('cls', None)  # type: ClsType[Optional["_models.GatewayRouteListResult"]]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2017-06-01"
+        accept = "application/json, text/json"
 
         # Construct URL
         url = self._get_learned_routes_initial.metadata['url']  # type: ignore
@@ -975,9 +1029,8 @@ class VirtualNetworkGatewaysOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.post(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -1002,9 +1055,9 @@ class VirtualNetworkGatewaysOperations(object):
         virtual_network_gateway_name,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> LROPoller
+        # type: (...) -> LROPoller["_models.GatewayRouteListResult"]
         """This operation retrieves a list of routes the virtual network gateway has learned, including
-    routes learned from BGP peers.
+        routes learned from BGP peers.
 
         :param resource_group_name: The name of the resource group.
         :type resource_group_name: str
@@ -1012,8 +1065,8 @@ class VirtualNetworkGatewaysOperations(object):
         :type virtual_network_gateway_name: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :keyword str continuation_token: A continuation token to restart a poller from a saved state.
-        :keyword polling: True for ARMPolling, False for no polling, or a
-         polling object for personal polling strategy
+        :keyword polling: Pass in True if you'd like the ARMPolling polling method,
+         False for no polling, or your own initialized polling object for a personal polling strategy.
         :paramtype polling: bool or ~azure.core.polling.PollingMethod
         :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
         :return: An instance of LROPoller that returns either GatewayRouteListResult or the result of cls(response)
@@ -1021,7 +1074,7 @@ class VirtualNetworkGatewaysOperations(object):
         :raises ~azure.core.exceptions.HttpResponseError:
         """
         polling = kwargs.pop('polling', True)  # type: Union[bool, PollingMethod]
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.GatewayRouteListResult"]
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.GatewayRouteListResult"]
         lro_delay = kwargs.pop(
             'polling_interval',
             self._config.polling_interval
@@ -1045,7 +1098,13 @@ class VirtualNetworkGatewaysOperations(object):
                 return cls(pipeline_response, deserialized, {})
             return deserialized
 
-        if polling is True: polling_method = ARMPolling(lro_delay, lro_options={'final-state-via': 'location'},  **kwargs)
+        path_format_arguments = {
+            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str'),
+            'virtualNetworkGatewayName': self._serialize.url("virtual_network_gateway_name", virtual_network_gateway_name, 'str'),
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+        }
+
+        if polling is True: polling_method = ARMPolling(lro_delay, lro_options={'final-state-via': 'location'}, path_format_arguments=path_format_arguments,  **kwargs)
         elif polling is False: polling_method = NoPolling()
         else: polling_method = polling
         if cont_token:
@@ -1066,11 +1125,14 @@ class VirtualNetworkGatewaysOperations(object):
         peer,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.GatewayRouteListResult"
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.GatewayRouteListResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        # type: (...) -> Optional["_models.GatewayRouteListResult"]
+        cls = kwargs.pop('cls', None)  # type: ClsType[Optional["_models.GatewayRouteListResult"]]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2017-06-01"
+        accept = "application/json, text/json"
 
         # Construct URL
         url = self._get_advertised_routes_initial.metadata['url']  # type: ignore
@@ -1088,9 +1150,8 @@ class VirtualNetworkGatewaysOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.post(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -1116,9 +1177,9 @@ class VirtualNetworkGatewaysOperations(object):
         peer,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> LROPoller
+        # type: (...) -> LROPoller["_models.GatewayRouteListResult"]
         """This operation retrieves a list of routes the virtual network gateway is advertising to the
-    specified peer.
+        specified peer.
 
         :param resource_group_name: The name of the resource group.
         :type resource_group_name: str
@@ -1128,8 +1189,8 @@ class VirtualNetworkGatewaysOperations(object):
         :type peer: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :keyword str continuation_token: A continuation token to restart a poller from a saved state.
-        :keyword polling: True for ARMPolling, False for no polling, or a
-         polling object for personal polling strategy
+        :keyword polling: Pass in True if you'd like the ARMPolling polling method,
+         False for no polling, or your own initialized polling object for a personal polling strategy.
         :paramtype polling: bool or ~azure.core.polling.PollingMethod
         :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
         :return: An instance of LROPoller that returns either GatewayRouteListResult or the result of cls(response)
@@ -1137,7 +1198,7 @@ class VirtualNetworkGatewaysOperations(object):
         :raises ~azure.core.exceptions.HttpResponseError:
         """
         polling = kwargs.pop('polling', True)  # type: Union[bool, PollingMethod]
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.GatewayRouteListResult"]
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.GatewayRouteListResult"]
         lro_delay = kwargs.pop(
             'polling_interval',
             self._config.polling_interval
@@ -1162,7 +1223,13 @@ class VirtualNetworkGatewaysOperations(object):
                 return cls(pipeline_response, deserialized, {})
             return deserialized
 
-        if polling is True: polling_method = ARMPolling(lro_delay, lro_options={'final-state-via': 'location'},  **kwargs)
+        path_format_arguments = {
+            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str'),
+            'virtualNetworkGatewayName': self._serialize.url("virtual_network_gateway_name", virtual_network_gateway_name, 'str'),
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+        }
+
+        if polling is True: polling_method = ARMPolling(lro_delay, lro_options={'final-state-via': 'location'}, path_format_arguments=path_format_arguments,  **kwargs)
         elif polling is False: polling_method = NoPolling()
         else: polling_method = polling
         if cont_token:

@@ -24,15 +24,16 @@
 #
 # --------------------------------------------------------------------------
 
-from .._internal._index import (
+from ._index import (
     ComplexField,
     SearchField,
     SearchableField,
     SimpleField,
+    SearchIndex,
 )
-from .._internal import _edm as SearchFieldDataType
-from ..._internal._generated.models import SuggestOptions
-from .._internal._generated.models import (
+from . import _edm as SearchFieldDataType
+from ..._generated.models import SuggestOptions
+from .._generated.models import (
     AnalyzeResult,
     AnalyzedTokenInfo,
     AsciiFoldingTokenFilter,
@@ -44,9 +45,12 @@ from .._internal._generated.models import (
     CommonGramTokenFilter,
     ConditionalSkill,
     CorsOptions,
+    CustomEntityLookupSkill,
+    CustomNormalizer,
     DictionaryDecompounderTokenFilter,
     DistanceScoringFunction,
     DistanceScoringParameters,
+    DocumentExtractionSkill,
     EdgeNGramTokenFilter,
     EdgeNGramTokenizer,
     EdgeNGramTokenFilterSide,
@@ -75,6 +79,7 @@ from .._internal._generated.models import (
     LanguageDetectionSkill,
     LengthTokenFilter,
     LexicalAnalyzer,
+    LexicalNormalizer,
     LexicalTokenizer,
     LimitTokenFilter,
     LuceneStandardAnalyzer,
@@ -99,10 +104,15 @@ from .._internal._generated.models import (
     PhoneticEncoder,
     PhoneticTokenFilter,
     RegexFlags,
-    SearchIndex,
     SearchIndexer,
     SearchIndexerDataContainer,
+    SearchIndexerDataSourceType,
     SearchIndexerError,
+    SearchIndexerKnowledgeStore,
+    SearchIndexerKnowledgeStoreFileProjectionSelector,
+    SearchIndexerKnowledgeStoreObjectProjectionSelector,
+    SearchIndexerKnowledgeStoreProjection,
+    SearchIndexerKnowledgeStoreTableProjectionSelector,
     SearchIndexerLimits,
     SearchIndexerSkillset,
     SearchIndexerStatus,
@@ -145,7 +155,7 @@ from .._internal._generated.models import (
     VisualFeature,
     WordDelimiterTokenFilter,
 )
-from .._internal._models import (
+from ._models import (
     AnalyzeTextOptions,
     CustomAnalyzer,
     PatternAnalyzer,
@@ -171,9 +181,12 @@ __all__ = (
     "ConditionalSkill",
     "CorsOptions",
     "CustomAnalyzer",
+    "CustomEntityLookupSkill",
+    "CustomNormalizer",
     "DictionaryDecompounderTokenFilter",
     "DistanceScoringFunction",
     "DistanceScoringParameters",
+    "DocumentExtractionSkill",
     "EdgeNGramTokenFilter",
     "EdgeNGramTokenizer",
     "ElisionTokenFilter",
@@ -202,6 +215,7 @@ __all__ = (
     "LanguageDetectionSkill",
     "LengthTokenFilter",
     "LexicalAnalyzer",
+    "LexicalNormalizer",
     "LexicalTokenizer",
     "LimitTokenFilter",
     "LuceneStandardAnalyzer",
@@ -237,7 +251,13 @@ __all__ = (
     "SearchIndexer",
     "SearchIndexerDataContainer",
     "SearchIndexerDataSourceConnection",
+    "SearchIndexerDataSourceType",
     "SearchIndexerError",
+    "SearchIndexerKnowledgeStore",
+    "SearchIndexerKnowledgeStoreFileProjectionSelector",
+    "SearchIndexerKnowledgeStoreObjectProjectionSelector",
+    "SearchIndexerKnowledgeStoreProjection",
+    "SearchIndexerKnowledgeStoreTableProjectionSelector",
     "SearchIndexerLimits",
     "SearchIndexerSkillset",
     "SearchIndexerStatus",

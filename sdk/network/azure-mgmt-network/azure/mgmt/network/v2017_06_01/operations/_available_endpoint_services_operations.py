@@ -8,13 +8,13 @@
 from typing import TYPE_CHECKING
 import warnings
 
-from azure.core.exceptions import HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
+from azure.core.exceptions import ClientAuthenticationError, HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
 from azure.core.paging import ItemPaged
 from azure.core.pipeline import PipelineResponse
 from azure.core.pipeline.transport import HttpRequest, HttpResponse
 from azure.mgmt.core.exceptions import ARMErrorFormat
 
-from .. import models
+from .. import models as _models
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,ungrouped-imports
@@ -37,7 +37,7 @@ class AvailableEndpointServicesOperations(object):
     :param deserializer: An object model deserializer.
     """
 
-    models = models
+    models = _models
 
     def __init__(self, client, config, serializer, deserializer):
         self._client = client
@@ -50,7 +50,7 @@ class AvailableEndpointServicesOperations(object):
         location,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.EndpointServicesListResult"]
+        # type: (...) -> Iterable["_models.EndpointServicesListResult"]
         """List what values of endpoint services are available for use.
 
         :param location: The location to check available endpoint services.
@@ -60,12 +60,19 @@ class AvailableEndpointServicesOperations(object):
         :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.network.v2017_06_01.models.EndpointServicesListResult]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.EndpointServicesListResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.EndpointServicesListResult"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2017-06-01"
+        accept = "application/json"
 
         def prepare_request(next_link=None):
+            # Construct headers
+            header_parameters = {}  # type: Dict[str, Any]
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
+
             if not next_link:
                 # Construct URL
                 url = self.list.metadata['url']  # type: ignore
@@ -78,15 +85,11 @@ class AvailableEndpointServicesOperations(object):
                 query_parameters = {}  # type: Dict[str, Any]
                 query_parameters['api-version'] = self._serialize.query("api_version", api_version, 'str')
 
+                request = self._client.get(url, query_parameters, header_parameters)
             else:
                 url = next_link
                 query_parameters = {}  # type: Dict[str, Any]
-            # Construct headers
-            header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
-
-            # Construct and send request
-            request = self._client.get(url, query_parameters, header_parameters)
+                request = self._client.get(url, query_parameters, header_parameters)
             return request
 
         def extract_data(pipeline_response):

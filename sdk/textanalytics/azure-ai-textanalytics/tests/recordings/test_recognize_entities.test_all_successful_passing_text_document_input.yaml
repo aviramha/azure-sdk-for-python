@@ -17,30 +17,26 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - azsdk-python-ai-textanalytics/5.0.1 Python/3.8.5 (macOS-10.13.6-x86_64-i386-64bit)
+      - azsdk-python-ai-textanalytics/5.1.0b7 Python/3.9.1 (macOS-10.16-x86_64-i386-64bit)
     method: POST
-    uri: https://westus2.api.cognitive.microsoft.com/text/analytics/v3.1-preview.1/entities/recognition/general?model-version=2020-02-01&showStats=false&stringIndexType=UnicodeCodePoint
+    uri: https://westus2.api.cognitive.microsoft.com/text/analytics/v3.1-preview.5/entities/recognition/general?model-version=2020-02-01&showStats=false&stringIndexType=UnicodeCodePoint
   response:
     body:
       string: '{"documents":[{"id":"1","entities":[{"text":"Microsoft","category":"Organization","offset":0,"length":9,"confidenceScore":1.0},{"text":"Bill
         Gates","category":"Person","offset":25,"length":10,"confidenceScore":0.67},{"text":"Paul
         Allen","category":"Person","offset":40,"length":10,"confidenceScore":0.81},{"text":"April
-        4, 1975","category":"DateTime","subcategory":"Date","offset":54,"length":13,"confidenceScore":0.8}],"warnings":[]},{"id":"2","entities":[{"text":"Microsoft","category":"Organization","offset":0,"length":9,"confidenceScore":1.0},{"text":"Bill
-        Gates","category":"Person","offset":26,"length":10,"confidenceScore":0.8},{"text":"Paul
-        Allen","category":"Person","offset":39,"length":10,"confidenceScore":0.78},{"text":"4
-        de abril de 1975","category":"DateTime","subcategory":"Date","offset":53,"length":18,"confidenceScore":0.8}],"warnings":[]},{"id":"3","entities":[{"text":"Microsoft","category":"Organization","offset":0,"length":9,"confidenceScore":1.0},{"text":"4.
-        April 1975","category":"DateTime","subcategory":"Date","offset":19,"length":13,"confidenceScore":0.8},{"text":"Bill
-        Gates","category":"Person","offset":37,"length":10,"confidenceScore":0.86},{"text":"Paul
-        Allen","category":"Person","offset":52,"length":10,"confidenceScore":0.98}],"warnings":[]}],"errors":[],"modelVersion":"2020-02-01"}'
+        4, 1975","category":"DateTime","subcategory":"Date","offset":54,"length":13,"confidenceScore":0.8}],"warnings":[]},{"id":"2","entities":[{"text":"4
+        de abril de 1975","category":"DateTime","subcategory":"Date","offset":53,"length":18,"confidenceScore":0.8}],"warnings":[]},{"id":"3","entities":[{"text":"4.
+        April 1975","category":"DateTime","subcategory":"Date","offset":19,"length":13,"confidenceScore":0.8}],"warnings":[]}],"errors":[],"modelVersion":"2020-02-01"}'
     headers:
       apim-request-id:
-      - a36aa787-18cd-4463-96cf-f74b47127196
+      - 75aaa5f6-918e-4db3-8c30-0b7408a55778
       content-type:
       - application/json; charset=utf-8
       csp-billing-usage:
-      - CognitiveServices.TextAnalytics.BatchScoring=3
+      - CognitiveServices.TextAnalytics.BatchScoring=3,CognitiveServices.TextAnalytics.TextRecords=3
       date:
-      - Thu, 27 Aug 2020 19:32:08 GMT
+      - Tue, 18 May 2021 17:47:54 GMT
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       transfer-encoding:
@@ -48,7 +44,7 @@ interactions:
       x-content-type-options:
       - nosniff
       x-envoy-upstream-service-time:
-      - '76'
+      - '2753'
     status:
       code: 200
       message: OK

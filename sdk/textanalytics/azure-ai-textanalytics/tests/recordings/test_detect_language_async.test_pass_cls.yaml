@@ -10,23 +10,23 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - azsdk-python-ai-textanalytics/5.0.1 Python/3.8.5 (macOS-10.13.6-x86_64-i386-64bit)
+      - azsdk-python-ai-textanalytics/5.1.0b7 Python/3.9.1 (macOS-10.16-x86_64-i386-64bit)
     method: POST
-    uri: https://westus2.api.cognitive.microsoft.com/text/analytics/v3.1-preview.1/languages?showStats=false
+    uri: https://westus2.api.cognitive.microsoft.com/text/analytics/v3.1-preview.5/languages?showStats=false
   response:
     body:
-      string: '{"documents":[{"id":"0","detectedLanguage":{"name":"English","iso6391Name":"en","confidenceScore":1.0},"warnings":[]}],"errors":[],"modelVersion":"2020-07-01"}'
+      string: '{"documents":[{"id":"0","detectedLanguage":{"name":"English","iso6391Name":"en","confidenceScore":0.77},"warnings":[]}],"errors":[],"modelVersion":"2021-01-05"}'
     headers:
-      apim-request-id: 75c58116-303f-44c7-9e51-3ab6643858e2
+      apim-request-id: ff8b8169-7c30-4855-965f-7b0b5ca258dc
       content-type: application/json; charset=utf-8
-      csp-billing-usage: CognitiveServices.TextAnalytics.BatchScoring=1
-      date: Thu, 27 Aug 2020 19:32:03 GMT
+      csp-billing-usage: CognitiveServices.TextAnalytics.BatchScoring=1,CognitiveServices.TextAnalytics.TextRecords=1
+      date: Tue, 18 May 2021 17:47:44 GMT
       strict-transport-security: max-age=31536000; includeSubDomains; preload
       transfer-encoding: chunked
       x-content-type-options: nosniff
-      x-envoy-upstream-service-time: '6'
+      x-envoy-upstream-service-time: '13'
     status:
       code: 200
       message: OK
-    url: https://westus2.api.cognitive.microsoft.com//text/analytics/v3.1-preview.1/languages?showStats=false
+    url: https://westus2.api.cognitive.microsoft.com//text/analytics/v3.1-preview.5/languages?showStats=false
 version: 1

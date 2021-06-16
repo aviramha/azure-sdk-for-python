@@ -39,12 +39,14 @@ except (SyntaxError, ImportError):
     from ._models import Source  # type: ignore
     from ._models import TriggerCondition  # type: ignore
 
-from ._monitor_client_enums import (
+from ._monitor_management_client_enums import (
     AlertSeverity,
     ConditionalOperator,
     Enabled,
     MetricTriggerType,
+    Operator,
     ProvisioningState,
+    QueryType,
 )
 
 __all__ = [
@@ -67,5 +69,7 @@ __all__ = [
     'ConditionalOperator',
     'Enabled',
     'MetricTriggerType',
+    'Operator',
     'ProvisioningState',
+    'QueryType',
 ]

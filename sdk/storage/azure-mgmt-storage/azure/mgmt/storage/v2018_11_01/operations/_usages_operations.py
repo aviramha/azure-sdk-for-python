@@ -8,13 +8,13 @@
 from typing import TYPE_CHECKING
 import warnings
 
-from azure.core.exceptions import HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
+from azure.core.exceptions import ClientAuthenticationError, HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
 from azure.core.paging import ItemPaged
 from azure.core.pipeline import PipelineResponse
 from azure.core.pipeline.transport import HttpRequest, HttpResponse
 from azure.mgmt.core.exceptions import ARMErrorFormat
 
-from .. import models
+from .. import models as _models
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,ungrouped-imports
@@ -37,7 +37,7 @@ class UsagesOperations(object):
     :param deserializer: An object model deserializer.
     """
 
-    models = models
+    models = _models
 
     def __init__(self, client, config, serializer, deserializer):
         self._client = client
@@ -50,9 +50,9 @@ class UsagesOperations(object):
         location,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.UsageListResult"]
+        # type: (...) -> Iterable["_models.UsageListResult"]
         """Gets the current usage count and the limit for the resources of the location under the
-    subscription.
+        subscription.
 
         :param location: The location of the Azure Storage resource.
         :type location: str
@@ -61,15 +61,18 @@ class UsagesOperations(object):
         :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.storage.v2018_11_01.models.UsageListResult]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.UsageListResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.UsageListResult"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2018-11-01"
+        accept = "application/json"
 
         def prepare_request(next_link=None):
             # Construct headers
             header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
             if not next_link:
                 # Construct URL

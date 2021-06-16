@@ -8,13 +8,13 @@
 from typing import TYPE_CHECKING
 import warnings
 
-from azure.core.exceptions import HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
+from azure.core.exceptions import ClientAuthenticationError, HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
 from azure.core.paging import ItemPaged
 from azure.core.pipeline import PipelineResponse
 from azure.core.pipeline.transport import HttpRequest, HttpResponse
 from azure.mgmt.core.exceptions import ARMErrorFormat
 
-from .. import models
+from .. import models as _models
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,ungrouped-imports
@@ -37,7 +37,7 @@ class VirtualMachineRunCommandsOperations(object):
     :param deserializer: An object model deserializer.
     """
 
-    models = models
+    models = _models
 
     def __init__(self, client, config, serializer, deserializer):
         self._client = client
@@ -50,7 +50,7 @@ class VirtualMachineRunCommandsOperations(object):
         location,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.RunCommandListResult"]
+        # type: (...) -> Iterable["_models.RunCommandListResult"]
         """Lists all available run commands for a subscription in a location.
 
         :param location: The location upon which run commands is queried.
@@ -60,12 +60,19 @@ class VirtualMachineRunCommandsOperations(object):
         :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.compute.v2018_04_01.models.RunCommandListResult]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.RunCommandListResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.RunCommandListResult"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2018-04-01"
+        accept = "application/json, text/json"
 
         def prepare_request(next_link=None):
+            # Construct headers
+            header_parameters = {}  # type: Dict[str, Any]
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
+
             if not next_link:
                 # Construct URL
                 url = self.list.metadata['url']  # type: ignore
@@ -78,15 +85,11 @@ class VirtualMachineRunCommandsOperations(object):
                 query_parameters = {}  # type: Dict[str, Any]
                 query_parameters['api-version'] = self._serialize.query("api_version", api_version, 'str')
 
+                request = self._client.get(url, query_parameters, header_parameters)
             else:
                 url = next_link
                 query_parameters = {}  # type: Dict[str, Any]
-            # Construct headers
-            header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
-
-            # Construct and send request
-            request = self._client.get(url, query_parameters, header_parameters)
+                request = self._client.get(url, query_parameters, header_parameters)
             return request
 
         def extract_data(pipeline_response):
@@ -119,7 +122,7 @@ class VirtualMachineRunCommandsOperations(object):
         command_id,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.RunCommandDocument"
+        # type: (...) -> "_models.RunCommandDocument"
         """Gets specific run command for a subscription in a location.
 
         :param location: The location upon which run commands is queried.
@@ -131,10 +134,13 @@ class VirtualMachineRunCommandsOperations(object):
         :rtype: ~azure.mgmt.compute.v2018_04_01.models.RunCommandDocument
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.RunCommandDocument"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.RunCommandDocument"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2018-04-01"
+        accept = "application/json, text/json"
 
         # Construct URL
         url = self.get.metadata['url']  # type: ignore
@@ -151,9 +157,8 @@ class VirtualMachineRunCommandsOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response

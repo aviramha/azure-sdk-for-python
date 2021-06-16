@@ -8,7 +8,7 @@
 from typing import TYPE_CHECKING
 import warnings
 
-from azure.core.exceptions import HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
+from azure.core.exceptions import ClientAuthenticationError, HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
 from azure.core.paging import ItemPaged
 from azure.core.pipeline import PipelineResponse
 from azure.core.pipeline.transport import HttpRequest, HttpResponse
@@ -16,7 +16,7 @@ from azure.core.polling import LROPoller, NoPolling, PollingMethod
 from azure.mgmt.core.exceptions import ARMErrorFormat
 from azure.mgmt.core.polling.arm_polling import ARMPolling
 
-from .. import models
+from .. import models as _models
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,ungrouped-imports
@@ -39,7 +39,7 @@ class ApplicationsOperations(object):
     :param deserializer: An object model deserializer.
     """
 
-    models = models
+    models = _models
 
     def __init__(self, client, config, serializer, deserializer):
         self._client = client
@@ -53,7 +53,7 @@ class ApplicationsOperations(object):
         application_name,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.Application"
+        # type: (...) -> Optional["_models.Application"]
         """Gets the managed application.
 
         :param resource_group_name: The name of the resource group. The name is case insensitive.
@@ -65,10 +65,13 @@ class ApplicationsOperations(object):
         :rtype: ~azure.mgmt.resource.managedapplications.models.Application or None
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.Application"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType[Optional["_models.Application"]]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2018-06-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.get.metadata['url']  # type: ignore
@@ -85,16 +88,15 @@ class ApplicationsOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
         if response.status_code not in [200, 404]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.ErrorResponse, response)
+            error = self._deserialize.failsafe_deserialize(_models.ErrorResponse, response)
             raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
 
         deserialized = None
@@ -115,9 +117,12 @@ class ApplicationsOperations(object):
     ):
         # type: (...) -> None
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2018-06-01"
+        accept = "application/json"
 
         # Construct URL
         url = self._delete_initial.metadata['url']  # type: ignore
@@ -134,15 +139,15 @@ class ApplicationsOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.delete(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
         if response.status_code not in [202, 204]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.ErrorResponse, response)
+            error = self._deserialize.failsafe_deserialize(_models.ErrorResponse, response)
             raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
 
         if cls:
@@ -156,7 +161,7 @@ class ApplicationsOperations(object):
         application_name,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> LROPoller
+        # type: (...) -> LROPoller[None]
         """Deletes the managed application.
 
         :param resource_group_name: The name of the resource group. The name is case insensitive.
@@ -165,8 +170,8 @@ class ApplicationsOperations(object):
         :type application_name: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :keyword str continuation_token: A continuation token to restart a poller from a saved state.
-        :keyword polling: True for ARMPolling, False for no polling, or a
-         polling object for personal polling strategy
+        :keyword polling: By default, your polling method will be ARMPolling.
+         Pass in False for this operation to not poll, or pass in your own initialized polling object for a personal polling strategy.
         :paramtype polling: bool or ~azure.core.polling.PollingMethod
         :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
         :return: An instance of LROPoller that returns either None or the result of cls(response)
@@ -195,7 +200,13 @@ class ApplicationsOperations(object):
             if cls:
                 return cls(pipeline_response, None, {})
 
-        if polling is True: polling_method = ARMPolling(lro_delay,  **kwargs)
+        path_format_arguments = {
+            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str', max_length=90, min_length=1, pattern=r'^[-\w\._\(\)]+$'),
+            'applicationName': self._serialize.url("application_name", application_name, 'str', max_length=64, min_length=3),
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+        }
+
+        if polling is True: polling_method = ARMPolling(lro_delay, path_format_arguments=path_format_arguments,  **kwargs)
         elif polling is False: polling_method = NoPolling()
         else: polling_method = polling
         if cont_token:
@@ -213,15 +224,18 @@ class ApplicationsOperations(object):
         self,
         resource_group_name,  # type: str
         application_name,  # type: str
-        parameters,  # type: "models.Application"
+        parameters,  # type: "_models.Application"
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.Application"
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.Application"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        # type: (...) -> "_models.Application"
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.Application"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2018-06-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self._create_or_update_initial.metadata['url']  # type: ignore
@@ -239,23 +253,20 @@ class ApplicationsOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(parameters, 'Application')
         body_content_kwargs['content'] = body_content
         request = self._client.put(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
         if response.status_code not in [200, 201]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.ErrorResponse, response)
+            error = self._deserialize.failsafe_deserialize(_models.ErrorResponse, response)
             raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
 
-        deserialized = None
         if response.status_code == 200:
             deserialized = self._deserialize('Application', pipeline_response)
 
@@ -272,10 +283,10 @@ class ApplicationsOperations(object):
         self,
         resource_group_name,  # type: str
         application_name,  # type: str
-        parameters,  # type: "models.Application"
+        parameters,  # type: "_models.Application"
         **kwargs  # type: Any
     ):
-        # type: (...) -> LROPoller
+        # type: (...) -> LROPoller["_models.Application"]
         """Creates a new managed application.
 
         :param resource_group_name: The name of the resource group. The name is case insensitive.
@@ -286,8 +297,8 @@ class ApplicationsOperations(object):
         :type parameters: ~azure.mgmt.resource.managedapplications.models.Application
         :keyword callable cls: A custom type or function that will be passed the direct response
         :keyword str continuation_token: A continuation token to restart a poller from a saved state.
-        :keyword polling: True for ARMPolling, False for no polling, or a
-         polling object for personal polling strategy
+        :keyword polling: By default, your polling method will be ARMPolling.
+         Pass in False for this operation to not poll, or pass in your own initialized polling object for a personal polling strategy.
         :paramtype polling: bool or ~azure.core.polling.PollingMethod
         :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
         :return: An instance of LROPoller that returns either Application or the result of cls(response)
@@ -295,7 +306,7 @@ class ApplicationsOperations(object):
         :raises ~azure.core.exceptions.HttpResponseError:
         """
         polling = kwargs.pop('polling', True)  # type: Union[bool, PollingMethod]
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.Application"]
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.Application"]
         lro_delay = kwargs.pop(
             'polling_interval',
             self._config.polling_interval
@@ -320,7 +331,13 @@ class ApplicationsOperations(object):
                 return cls(pipeline_response, deserialized, {})
             return deserialized
 
-        if polling is True: polling_method = ARMPolling(lro_delay,  **kwargs)
+        path_format_arguments = {
+            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str', max_length=90, min_length=1, pattern=r'^[-\w\._\(\)]+$'),
+            'applicationName': self._serialize.url("application_name", application_name, 'str', max_length=64, min_length=3),
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+        }
+
+        if polling is True: polling_method = ARMPolling(lro_delay, path_format_arguments=path_format_arguments,  **kwargs)
         elif polling is False: polling_method = NoPolling()
         else: polling_method = polling
         if cont_token:
@@ -338,10 +355,10 @@ class ApplicationsOperations(object):
         self,
         resource_group_name,  # type: str
         application_name,  # type: str
-        parameters=None,  # type: Optional["models.Application"]
+        parameters=None,  # type: Optional["_models.ApplicationPatchable"]
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.Application"
+        # type: (...) -> "_models.Application"
         """Updates an existing managed application. The only value that can be updated via PATCH currently
         is the tags.
 
@@ -350,17 +367,20 @@ class ApplicationsOperations(object):
         :param application_name: The name of the managed application.
         :type application_name: str
         :param parameters: Parameters supplied to update an existing managed application.
-        :type parameters: ~azure.mgmt.resource.managedapplications.models.Application
+        :type parameters: ~azure.mgmt.resource.managedapplications.models.ApplicationPatchable
         :keyword callable cls: A custom type or function that will be passed the direct response
         :return: Application, or the result of cls(response)
         :rtype: ~azure.mgmt.resource.managedapplications.models.Application
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.Application"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.Application"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2018-06-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self.update.metadata['url']  # type: ignore
@@ -378,23 +398,21 @@ class ApplicationsOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         body_content_kwargs = {}  # type: Dict[str, Any]
         if parameters is not None:
-            body_content = self._serialize.body(parameters, 'Application')
+            body_content = self._serialize.body(parameters, 'ApplicationPatchable')
         else:
             body_content = None
         body_content_kwargs['content'] = body_content
         request = self._client.patch(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
         if response.status_code not in [200]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.ErrorResponse, response)
+            error = self._deserialize.failsafe_deserialize(_models.ErrorResponse, response)
             raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
 
         deserialized = self._deserialize('Application', pipeline_response)
@@ -410,7 +428,7 @@ class ApplicationsOperations(object):
         resource_group_name,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.ApplicationListResult"]
+        # type: (...) -> Iterable["_models.ApplicationListResult"]
         """Gets all the applications within a resource group.
 
         :param resource_group_name: The name of the resource group. The name is case insensitive.
@@ -420,12 +438,19 @@ class ApplicationsOperations(object):
         :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.resource.managedapplications.models.ApplicationListResult]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.ApplicationListResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.ApplicationListResult"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2018-06-01"
+        accept = "application/json"
 
         def prepare_request(next_link=None):
+            # Construct headers
+            header_parameters = {}  # type: Dict[str, Any]
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
+
             if not next_link:
                 # Construct URL
                 url = self.list_by_resource_group.metadata['url']  # type: ignore
@@ -438,15 +463,11 @@ class ApplicationsOperations(object):
                 query_parameters = {}  # type: Dict[str, Any]
                 query_parameters['api-version'] = self._serialize.query("api_version", api_version, 'str')
 
+                request = self._client.get(url, query_parameters, header_parameters)
             else:
                 url = next_link
                 query_parameters = {}  # type: Dict[str, Any]
-            # Construct headers
-            header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
-
-            # Construct and send request
-            request = self._client.get(url, query_parameters, header_parameters)
+                request = self._client.get(url, query_parameters, header_parameters)
             return request
 
         def extract_data(pipeline_response):
@@ -463,7 +484,7 @@ class ApplicationsOperations(object):
             response = pipeline_response.http_response
 
             if response.status_code not in [200]:
-                error = self._deserialize(models.ErrorResponse, response)
+                error = self._deserialize.failsafe_deserialize(_models.ErrorResponse, response)
                 map_error(status_code=response.status_code, response=response, error_map=error_map)
                 raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
 
@@ -478,7 +499,7 @@ class ApplicationsOperations(object):
         self,
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.ApplicationListResult"]
+        # type: (...) -> Iterable["_models.ApplicationListResult"]
         """Gets all the applications within a subscription.
 
         :keyword callable cls: A custom type or function that will be passed the direct response
@@ -486,12 +507,19 @@ class ApplicationsOperations(object):
         :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.resource.managedapplications.models.ApplicationListResult]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.ApplicationListResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.ApplicationListResult"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2018-06-01"
+        accept = "application/json"
 
         def prepare_request(next_link=None):
+            # Construct headers
+            header_parameters = {}  # type: Dict[str, Any]
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
+
             if not next_link:
                 # Construct URL
                 url = self.list_by_subscription.metadata['url']  # type: ignore
@@ -503,15 +531,11 @@ class ApplicationsOperations(object):
                 query_parameters = {}  # type: Dict[str, Any]
                 query_parameters['api-version'] = self._serialize.query("api_version", api_version, 'str')
 
+                request = self._client.get(url, query_parameters, header_parameters)
             else:
                 url = next_link
                 query_parameters = {}  # type: Dict[str, Any]
-            # Construct headers
-            header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
-
-            # Construct and send request
-            request = self._client.get(url, query_parameters, header_parameters)
+                request = self._client.get(url, query_parameters, header_parameters)
             return request
 
         def extract_data(pipeline_response):
@@ -528,7 +552,7 @@ class ApplicationsOperations(object):
             response = pipeline_response.http_response
 
             if response.status_code not in [200]:
-                error = self._deserialize(models.ErrorResponse, response)
+                error = self._deserialize.failsafe_deserialize(_models.ErrorResponse, response)
                 map_error(status_code=response.status_code, response=response, error_map=error_map)
                 raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
 
@@ -544,23 +568,25 @@ class ApplicationsOperations(object):
         application_id,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.Application"
+        # type: (...) -> Optional["_models.Application"]
         """Gets the managed application.
 
         :param application_id: The fully qualified ID of the managed application, including the managed
          application name and the managed application resource type. Use the format,
-         /subscriptions/{guid}/resourceGroups/{resource-group-
-         name}/Microsoft.Solutions/applications/{application-name}.
+         /subscriptions/{guid}/resourceGroups/{resource-group-name}/Microsoft.Solutions/applications/{application-name}.
         :type application_id: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :return: Application, or the result of cls(response)
         :rtype: ~azure.mgmt.resource.managedapplications.models.Application or None
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.Application"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType[Optional["_models.Application"]]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2018-06-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.get_by_id.metadata['url']  # type: ignore
@@ -575,16 +601,15 @@ class ApplicationsOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
         if response.status_code not in [200, 404]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.ErrorResponse, response)
+            error = self._deserialize.failsafe_deserialize(_models.ErrorResponse, response)
             raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
 
         deserialized = None
@@ -604,9 +629,12 @@ class ApplicationsOperations(object):
     ):
         # type: (...) -> None
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2018-06-01"
+        accept = "application/json"
 
         # Construct URL
         url = self._delete_by_id_initial.metadata['url']  # type: ignore
@@ -621,15 +649,15 @@ class ApplicationsOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.delete(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
         if response.status_code not in [202, 204]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.ErrorResponse, response)
+            error = self._deserialize.failsafe_deserialize(_models.ErrorResponse, response)
             raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
 
         if cls:
@@ -642,18 +670,17 @@ class ApplicationsOperations(object):
         application_id,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> LROPoller
+        # type: (...) -> LROPoller[None]
         """Deletes the managed application.
 
         :param application_id: The fully qualified ID of the managed application, including the managed
-     application name and the managed application resource type. Use the format,
-     /subscriptions/{guid}/resourceGroups/{resource-group-
-     name}/Microsoft.Solutions/applications/{application-name}.
+         application name and the managed application resource type. Use the format,
+         /subscriptions/{guid}/resourceGroups/{resource-group-name}/Microsoft.Solutions/applications/{application-name}.
         :type application_id: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :keyword str continuation_token: A continuation token to restart a poller from a saved state.
-        :keyword polling: True for ARMPolling, False for no polling, or a
-         polling object for personal polling strategy
+        :keyword polling: By default, your polling method will be ARMPolling.
+         Pass in False for this operation to not poll, or pass in your own initialized polling object for a personal polling strategy.
         :paramtype polling: bool or ~azure.core.polling.PollingMethod
         :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
         :return: An instance of LROPoller that returns either None or the result of cls(response)
@@ -681,7 +708,11 @@ class ApplicationsOperations(object):
             if cls:
                 return cls(pipeline_response, None, {})
 
-        if polling is True: polling_method = ARMPolling(lro_delay,  **kwargs)
+        path_format_arguments = {
+            'applicationId': self._serialize.url("application_id", application_id, 'str', skip_quote=True),
+        }
+
+        if polling is True: polling_method = ARMPolling(lro_delay, path_format_arguments=path_format_arguments,  **kwargs)
         elif polling is False: polling_method = NoPolling()
         else: polling_method = polling
         if cont_token:
@@ -698,15 +729,18 @@ class ApplicationsOperations(object):
     def _create_or_update_by_id_initial(
         self,
         application_id,  # type: str
-        parameters,  # type: "models.Application"
+        parameters,  # type: "_models.Application"
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.Application"
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.Application"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        # type: (...) -> "_models.Application"
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.Application"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2018-06-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self._create_or_update_by_id_initial.metadata['url']  # type: ignore
@@ -722,23 +756,20 @@ class ApplicationsOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(parameters, 'Application')
         body_content_kwargs['content'] = body_content
         request = self._client.put(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
         if response.status_code not in [200, 201]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.ErrorResponse, response)
+            error = self._deserialize.failsafe_deserialize(_models.ErrorResponse, response)
             raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
 
-        deserialized = None
         if response.status_code == 200:
             deserialized = self._deserialize('Application', pipeline_response)
 
@@ -754,23 +785,22 @@ class ApplicationsOperations(object):
     def begin_create_or_update_by_id(
         self,
         application_id,  # type: str
-        parameters,  # type: "models.Application"
+        parameters,  # type: "_models.Application"
         **kwargs  # type: Any
     ):
-        # type: (...) -> LROPoller
+        # type: (...) -> LROPoller["_models.Application"]
         """Creates a new managed application.
 
         :param application_id: The fully qualified ID of the managed application, including the managed
-     application name and the managed application resource type. Use the format,
-     /subscriptions/{guid}/resourceGroups/{resource-group-
-     name}/Microsoft.Solutions/applications/{application-name}.
+         application name and the managed application resource type. Use the format,
+         /subscriptions/{guid}/resourceGroups/{resource-group-name}/Microsoft.Solutions/applications/{application-name}.
         :type application_id: str
         :param parameters: Parameters supplied to the create or update a managed application.
         :type parameters: ~azure.mgmt.resource.managedapplications.models.Application
         :keyword callable cls: A custom type or function that will be passed the direct response
         :keyword str continuation_token: A continuation token to restart a poller from a saved state.
-        :keyword polling: True for ARMPolling, False for no polling, or a
-         polling object for personal polling strategy
+        :keyword polling: By default, your polling method will be ARMPolling.
+         Pass in False for this operation to not poll, or pass in your own initialized polling object for a personal polling strategy.
         :paramtype polling: bool or ~azure.core.polling.PollingMethod
         :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
         :return: An instance of LROPoller that returns either Application or the result of cls(response)
@@ -778,7 +808,7 @@ class ApplicationsOperations(object):
         :raises ~azure.core.exceptions.HttpResponseError:
         """
         polling = kwargs.pop('polling', True)  # type: Union[bool, PollingMethod]
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.Application"]
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.Application"]
         lro_delay = kwargs.pop(
             'polling_interval',
             self._config.polling_interval
@@ -802,7 +832,11 @@ class ApplicationsOperations(object):
                 return cls(pipeline_response, deserialized, {})
             return deserialized
 
-        if polling is True: polling_method = ARMPolling(lro_delay,  **kwargs)
+        path_format_arguments = {
+            'applicationId': self._serialize.url("application_id", application_id, 'str', skip_quote=True),
+        }
+
+        if polling is True: polling_method = ARMPolling(lro_delay, path_format_arguments=path_format_arguments,  **kwargs)
         elif polling is False: polling_method = NoPolling()
         else: polling_method = polling
         if cont_token:
@@ -819,17 +853,16 @@ class ApplicationsOperations(object):
     def update_by_id(
         self,
         application_id,  # type: str
-        parameters=None,  # type: Optional["models.Application"]
+        parameters=None,  # type: Optional["_models.Application"]
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.Application"
+        # type: (...) -> "_models.Application"
         """Updates an existing managed application. The only value that can be updated via PATCH currently
         is the tags.
 
         :param application_id: The fully qualified ID of the managed application, including the managed
          application name and the managed application resource type. Use the format,
-         /subscriptions/{guid}/resourceGroups/{resource-group-
-         name}/Microsoft.Solutions/applications/{application-name}.
+         /subscriptions/{guid}/resourceGroups/{resource-group-name}/Microsoft.Solutions/applications/{application-name}.
         :type application_id: str
         :param parameters: Parameters supplied to update an existing managed application.
         :type parameters: ~azure.mgmt.resource.managedapplications.models.Application
@@ -838,11 +871,14 @@ class ApplicationsOperations(object):
         :rtype: ~azure.mgmt.resource.managedapplications.models.Application
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.Application"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.Application"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2018-06-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self.update_by_id.metadata['url']  # type: ignore
@@ -858,9 +894,8 @@ class ApplicationsOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         body_content_kwargs = {}  # type: Dict[str, Any]
         if parameters is not None:
             body_content = self._serialize.body(parameters, 'Application')
@@ -868,13 +903,12 @@ class ApplicationsOperations(object):
             body_content = None
         body_content_kwargs['content'] = body_content
         request = self._client.patch(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
         if response.status_code not in [200]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.ErrorResponse, response)
+            error = self._deserialize.failsafe_deserialize(_models.ErrorResponse, response)
             raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
 
         deserialized = self._deserialize('Application', pipeline_response)

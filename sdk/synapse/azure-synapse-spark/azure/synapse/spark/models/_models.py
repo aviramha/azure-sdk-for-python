@@ -474,7 +474,7 @@ class SparkSession(msrest.serialization.Model):
     :type scheduler: ~azure.synapse.spark.models.SparkScheduler
     :param plugin:
     :type plugin: ~azure.synapse.spark.models.SparkServicePlugin
-    :param errors:
+    :param errors: The error information.
     :type errors: list[~azure.synapse.spark.models.SparkServiceError]
     :param tags: A set of tags. Dictionary of :code:`<string>`.
     :type tags: dict[str, str]
@@ -672,7 +672,7 @@ class SparkSessionState(msrest.serialization.Model):
     :type dead_at: ~datetime.datetime
     :param shutting_down_at:
     :type shutting_down_at: ~datetime.datetime
-    :param terminated_at:
+    :param terminated_at: the time that at which "killed" livy state was first seen.
     :type terminated_at: ~datetime.datetime
     :param recovering_at:
     :type recovering_at: ~datetime.datetime
@@ -758,12 +758,12 @@ class SparkStatement(msrest.serialization.Model):
 class SparkStatementCancellationResult(msrest.serialization.Model):
     """SparkStatementCancellationResult.
 
-    :param msg:
-    :type msg: str
+    :param message: The msg property from the Livy API. The value is always "canceled".
+    :type message: str
     """
 
     _attribute_map = {
-        'msg': {'key': 'msg', 'type': 'str'},
+        'message': {'key': 'msg', 'type': 'str'},
     }
 
     def __init__(
@@ -771,7 +771,7 @@ class SparkStatementCancellationResult(msrest.serialization.Model):
         **kwargs
     ):
         super(SparkStatementCancellationResult, self).__init__(**kwargs)
-        self.msg = kwargs.get('msg', None)
+        self.message = kwargs.get('message', None)
 
 
 class SparkStatementCollection(msrest.serialization.Model):

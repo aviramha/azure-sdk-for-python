@@ -4,6 +4,7 @@
 # ------------------------------------
 from datetime import datetime
 import json
+import sys
 
 from azure.identity import AzureCliCredential, CredentialUnavailableError
 from azure.identity._credentials.azure_cli import CLI_NOT_FOUND, NOT_LOGGED_IN
@@ -51,11 +52,10 @@ def test_get_token():
     """The credential should parse the CLI's output to an AccessToken"""
 
     access_token = "access token"
-    valid_seconds = 42
+    expected_expires_on = 1602015811
     successful_output = json.dumps(
         {
-            # expiresOn is a naive datetime representing valid_seconds from the epoch
-            "expiresOn": datetime.fromtimestamp(valid_seconds).strftime("%Y-%m-%d %H:%M:%S.%f"),
+            "expiresOn": datetime.fromtimestamp(expected_expires_on).strftime("%Y-%m-%d %H:%M:%S.%f"),
             "accessToken": access_token,
             "subscription": "some-guid",
             "tenant": "some-guid",
@@ -68,7 +68,7 @@ def test_get_token():
 
     assert token.token == access_token
     assert type(token.expires_on) == int
-    assert token.expires_on == valid_seconds
+    assert token.expires_on == expected_expires_on
 
 
 def test_cli_not_installed_linux():
@@ -137,3 +137,14 @@ def test_subprocess_error_does_not_expose_token(output):
 
     assert "secret value" not in str(ex.value)
     assert "secret value" not in repr(ex.value)
+
+
+@pytest.mark.skipif(sys.version_info < (3, 3), reason="Python 3.3 added timeout support")
+def test_timeout():
+    """The credential should raise CredentialUnavailableError when the subprocess times out"""
+
+    from subprocess import TimeoutExpired
+
+    with mock.patch(CHECK_OUTPUT, mock.Mock(side_effect=TimeoutExpired("", 42))):
+        with pytest.raises(CredentialUnavailableError):
+            AzureCliCredential().get_token("scope")

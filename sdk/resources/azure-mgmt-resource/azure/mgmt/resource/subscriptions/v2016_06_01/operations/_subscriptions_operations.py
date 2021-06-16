@@ -8,13 +8,13 @@
 from typing import TYPE_CHECKING
 import warnings
 
-from azure.core.exceptions import HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
+from azure.core.exceptions import ClientAuthenticationError, HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
 from azure.core.paging import ItemPaged
 from azure.core.pipeline import PipelineResponse
 from azure.core.pipeline.transport import HttpRequest, HttpResponse
 from azure.mgmt.core.exceptions import ARMErrorFormat
 
-from .. import models
+from .. import models as _models
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,ungrouped-imports
@@ -37,7 +37,7 @@ class SubscriptionsOperations(object):
     :param deserializer: An object model deserializer.
     """
 
-    models = models
+    models = _models
 
     def __init__(self, client, config, serializer, deserializer):
         self._client = client
@@ -50,11 +50,11 @@ class SubscriptionsOperations(object):
         subscription_id,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.LocationListResult"]
+        # type: (...) -> Iterable["_models.LocationListResult"]
         """Gets all available geo-locations.
 
         This operation provides all the locations that are available for resource providers; however,
-    each resource provider may support a subset of this list.
+        each resource provider may support a subset of this list.
 
         :param subscription_id: The ID of the target subscription.
         :type subscription_id: str
@@ -63,12 +63,19 @@ class SubscriptionsOperations(object):
         :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.resource.subscriptions.v2016_06_01.models.LocationListResult]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.LocationListResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.LocationListResult"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2016-06-01"
+        accept = "application/json"
 
         def prepare_request(next_link=None):
+            # Construct headers
+            header_parameters = {}  # type: Dict[str, Any]
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
+
             if not next_link:
                 # Construct URL
                 url = self.list_locations.metadata['url']  # type: ignore
@@ -80,15 +87,11 @@ class SubscriptionsOperations(object):
                 query_parameters = {}  # type: Dict[str, Any]
                 query_parameters['api-version'] = self._serialize.query("api_version", api_version, 'str')
 
+                request = self._client.get(url, query_parameters, header_parameters)
             else:
                 url = next_link
                 query_parameters = {}  # type: Dict[str, Any]
-            # Construct headers
-            header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
-
-            # Construct and send request
-            request = self._client.get(url, query_parameters, header_parameters)
+                request = self._client.get(url, query_parameters, header_parameters)
             return request
 
         def extract_data(pipeline_response):
@@ -120,7 +123,7 @@ class SubscriptionsOperations(object):
         subscription_id,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.Subscription"
+        # type: (...) -> "_models.Subscription"
         """Gets details about a specified subscription.
 
         :param subscription_id: The ID of the target subscription.
@@ -130,10 +133,13 @@ class SubscriptionsOperations(object):
         :rtype: ~azure.mgmt.resource.subscriptions.v2016_06_01.models.Subscription
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.Subscription"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.Subscription"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2016-06-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.get.metadata['url']  # type: ignore
@@ -148,9 +154,8 @@ class SubscriptionsOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -171,7 +176,7 @@ class SubscriptionsOperations(object):
         self,
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.SubscriptionListResult"]
+        # type: (...) -> Iterable["_models.SubscriptionListResult"]
         """Gets all subscriptions for a tenant.
 
         :keyword callable cls: A custom type or function that will be passed the direct response
@@ -179,12 +184,19 @@ class SubscriptionsOperations(object):
         :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.resource.subscriptions.v2016_06_01.models.SubscriptionListResult]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.SubscriptionListResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.SubscriptionListResult"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2016-06-01"
+        accept = "application/json"
 
         def prepare_request(next_link=None):
+            # Construct headers
+            header_parameters = {}  # type: Dict[str, Any]
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
+
             if not next_link:
                 # Construct URL
                 url = self.list.metadata['url']  # type: ignore
@@ -192,15 +204,11 @@ class SubscriptionsOperations(object):
                 query_parameters = {}  # type: Dict[str, Any]
                 query_parameters['api-version'] = self._serialize.query("api_version", api_version, 'str')
 
+                request = self._client.get(url, query_parameters, header_parameters)
             else:
                 url = next_link
                 query_parameters = {}  # type: Dict[str, Any]
-            # Construct headers
-            header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
-
-            # Construct and send request
-            request = self._client.get(url, query_parameters, header_parameters)
+                request = self._client.get(url, query_parameters, header_parameters)
             return request
 
         def extract_data(pipeline_response):

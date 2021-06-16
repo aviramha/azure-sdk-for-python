@@ -38,7 +38,7 @@ Use the Azure.Search.Documents client library to:
 [Package (PyPI)](https://pypi.org/project/azure-search-documents/) |
 [API reference documentation](https://azuresdkdocs.blob.core.windows.net/$web/python/azure-search-documents/latest/index.html) |
 [Product documentation](https://docs.microsoft.com/azure/search/search-what-is-azure-search) |
-[Samples](samples)
+[Samples](https://github.com/Azure/azure-sdk-for-python/blob/master/sdk/search/azure-search-documents/samples)
 
 
 ## Getting started
@@ -106,40 +106,6 @@ client = SearchClient(endpoint=endpoint,
                       credential=credential)
 ```
 
-
-### Send your first search request
-
-To get running immediately, we're going to connect to a well known sandbox
-Search service provided by Microsoft.  This means you do not need an Azure
-subscription or Azure Cognitive Search service to try out this query.
-
-
-```python
-from azure.core.credentials import AzureKeyCredential
-from azure.search.documents import SearchClient
-
-# We'll connect to the Azure Cognitive Search public sandbox and send a
-# query to its "nycjobs" index built from a public dataset of available jobs
-# in New York.
-service_name = "azs-playground"
-index_name = "nycjobs"
-api_key = "252044BE3886FE4A8E3BAA4F595114BB"
-
-# Create a SearchClient to send queries
-endpoint = "https://{}.search.windows.net/".format(service_name)
-credential = AzureKeyCredential(api_key)
-client = SearchClient(endpoint=endpoint,
-                      index_name=index_name,
-                      credential=credential)
-
-# Let's get the top 5 jobs related to Microsoft
-results = client.search(search_text="Microsoft", top=5)
-
-for result in results:
-    # Print out the title and job description
-    print("{}\n{}\n)".format(result["business_title"], result["job_description"]))
-```
-
 ## Key concepts
 
 An Azure Cognitive Search service contains one or more indexes that provide
@@ -179,7 +145,7 @@ exploring online resources._
 
 The following examples all use a simple [Hotel data set](https://docs.microsoft.com/samples/azure-samples/azure-search-sample-data/azure-search-sample-data/)
 that you can [import into your own index from the Azure portal.](https://docs.microsoft.com/azure/search/search-get-started-portal#step-1---start-the-import-data-wizard-and-create-a-data-source)
-These are just a few of the basics - please [check out our Samples](samples) for
+These are just a few of the basics - please [check out our Samples](https://github.com/Azure/azure-sdk-for-python/blob/master/sdk/search/azure-search-documents/samples) for
 much more.
 
 
@@ -307,7 +273,7 @@ print("Upload of new document succeeded: {}".format(result[0].succeeded))
 ```
 
 
-### Retrieve a specific document from an index
+### Retrieving a specific document from your index
 
 In addition to querying for documents using keywords and optional filters,
 you can retrieve a specific document from your index if you already know the
@@ -398,7 +364,7 @@ result =  client.search(search_text="spa", logging_enable=True)
 
 ## Next steps
 
-* Go further with Azure.Search.Documents and our [samples](samples)
+* Go further with Azure.Search.Documents and our [https://github.com/Azure/azure-sdk-for-python/blob/master/sdk/search/azure-search-documents/samples](https://github.com/Azure/azure-sdk-for-python/blob/master/sdk/search/azure-search-documents/samples)
 * Watch a [demo or deep dive video](https://azure.microsoft.com/resources/videos/index/?services=search)
 * Read more about the [Azure Cognitive Search service](https://docs.microsoft.com/azure/search/search-what-is-azure-search)
 
@@ -428,7 +394,7 @@ additional questions or comments.
 ![Impressions](https://azure-sdk-impressions.azurewebsites.net/api/impressions/azure-sdk-for-python%2Fsdk%2Fsearch%2Fazure-search-documents%2FREADME.png)
 
 [azure_cli]: https://docs.microsoft.com/cli/azure
-[azure_core]: ../../core/azure-core/README.md
+[azure_core]: https://github.com/Azure/azure-sdk-for-python/blob/master/sdk/core/azure-core/README.md
 [azure_sub]: https://azure.microsoft.com/free/
 [search_resource]: https://docs.microsoft.com/azure/search/search-create-service-portal
 [azure_portal]: https://portal.azure.com

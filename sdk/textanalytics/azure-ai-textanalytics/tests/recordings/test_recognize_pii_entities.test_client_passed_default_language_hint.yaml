@@ -16,25 +16,23 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - azsdk-python-ai-textanalytics/5.0.1 Python/3.8.5 (macOS-10.13.6-x86_64-i386-64bit)
+      - azsdk-python-ai-textanalytics/5.1.0b7 Python/3.9.1 (macOS-10.16-x86_64-i386-64bit)
     method: POST
-    uri: https://westus2.api.cognitive.microsoft.com/text/analytics/v3.1-preview.1/entities/recognition/pii?showStats=false&stringIndexType=UnicodeCodePoint
+    uri: https://westus2.api.cognitive.microsoft.com/text/analytics/v3.1-preview.5/entities/recognition/pii?showStats=false&stringIndexType=UnicodeCodePoint
   response:
     body:
-      string: '{"documents":[],"errors":[{"id":"1","error":{"code":"InvalidArgument","message":"Invalid
-        Language Code.","innererror":{"code":"UnsupportedLanguageCode","message":"Invalid
-        language code. Supported languages: en"}}},{"id":"2","error":{"code":"InvalidArgument","message":"Invalid
-        Language Code.","innererror":{"code":"UnsupportedLanguageCode","message":"Invalid
-        language code. Supported languages: en"}}},{"id":"3","error":{"code":"InvalidArgument","message":"Invalid
-        Language Code.","innererror":{"code":"UnsupportedLanguageCode","message":"Invalid
-        language code. Supported languages: en"}}}],"modelVersion":"2020-07-01"}'
+      string: '{"documents":[{"redactedText":"I will go to the park.","id":"1","entities":[],"warnings":[]},{"redactedText":"I
+        did not like the hotel we stayed at.","id":"2","entities":[],"warnings":[]},{"redactedText":"The
+        restaurant had really good food.","id":"3","entities":[],"warnings":[]}],"errors":[],"modelVersion":"2021-01-15"}'
     headers:
       apim-request-id:
-      - f7cd8364-9393-4ee6-8164-1df9cda01c70
+      - 7b8043e3-3c58-4878-9cdb-0c149e1f3b37
       content-type:
       - application/json; charset=utf-8
+      csp-billing-usage:
+      - CognitiveServices.TextAnalytics.BatchScoring=3,CognitiveServices.TextAnalytics.TextRecords=3
       date:
-      - Thu, 27 Aug 2020 19:32:20 GMT
+      - Tue, 18 May 2021 17:48:05 GMT
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       transfer-encoding:
@@ -42,7 +40,7 @@ interactions:
       x-content-type-options:
       - nosniff
       x-envoy-upstream-service-time:
-      - '2'
+      - '29'
     status:
       code: 200
       message: OK
@@ -63,21 +61,23 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - azsdk-python-ai-textanalytics/5.0.1 Python/3.8.5 (macOS-10.13.6-x86_64-i386-64bit)
+      - azsdk-python-ai-textanalytics/5.1.0b7 Python/3.9.1 (macOS-10.16-x86_64-i386-64bit)
     method: POST
-    uri: https://westus2.api.cognitive.microsoft.com/text/analytics/v3.1-preview.1/entities/recognition/pii?showStats=false&stringIndexType=UnicodeCodePoint
+    uri: https://westus2.api.cognitive.microsoft.com/text/analytics/v3.1-preview.5/entities/recognition/pii?showStats=false&stringIndexType=UnicodeCodePoint
   response:
     body:
-      string: '{"documents":[{"id":"1","entities":[],"warnings":[]},{"id":"2","entities":[],"warnings":[]},{"id":"3","entities":[],"warnings":[]}],"errors":[],"modelVersion":"2020-07-01"}'
+      string: '{"documents":[{"redactedText":"I will go to the park.","id":"1","entities":[],"warnings":[]},{"redactedText":"I
+        did not like the hotel we stayed at.","id":"2","entities":[],"warnings":[]},{"redactedText":"The
+        restaurant had really good food.","id":"3","entities":[],"warnings":[]}],"errors":[],"modelVersion":"2021-01-15"}'
     headers:
       apim-request-id:
-      - a1ed5ef1-4fea-46ed-b836-659475a32277
+      - b7ff0832-d09a-4648-8484-4ea45e0b78d1
       content-type:
       - application/json; charset=utf-8
       csp-billing-usage:
-      - CognitiveServices.TextAnalytics.BatchScoring=3
+      - CognitiveServices.TextAnalytics.BatchScoring=3,CognitiveServices.TextAnalytics.TextRecords=3
       date:
-      - Thu, 27 Aug 2020 19:32:20 GMT
+      - Tue, 18 May 2021 17:48:05 GMT
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       transfer-encoding:
@@ -85,7 +85,7 @@ interactions:
       x-content-type-options:
       - nosniff
       x-envoy-upstream-service-time:
-      - '109'
+      - '25'
     status:
       code: 200
       message: OK
@@ -106,25 +106,23 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - azsdk-python-ai-textanalytics/5.0.1 Python/3.8.5 (macOS-10.13.6-x86_64-i386-64bit)
+      - azsdk-python-ai-textanalytics/5.1.0b7 Python/3.9.1 (macOS-10.16-x86_64-i386-64bit)
     method: POST
-    uri: https://westus2.api.cognitive.microsoft.com/text/analytics/v3.1-preview.1/entities/recognition/pii?showStats=false&stringIndexType=UnicodeCodePoint
+    uri: https://westus2.api.cognitive.microsoft.com/text/analytics/v3.1-preview.5/entities/recognition/pii?showStats=false&stringIndexType=UnicodeCodePoint
   response:
     body:
-      string: '{"documents":[],"errors":[{"id":"1","error":{"code":"InvalidArgument","message":"Invalid
-        Language Code.","innererror":{"code":"UnsupportedLanguageCode","message":"Invalid
-        language code. Supported languages: en"}}},{"id":"2","error":{"code":"InvalidArgument","message":"Invalid
-        Language Code.","innererror":{"code":"UnsupportedLanguageCode","message":"Invalid
-        language code. Supported languages: en"}}},{"id":"3","error":{"code":"InvalidArgument","message":"Invalid
-        Language Code.","innererror":{"code":"UnsupportedLanguageCode","message":"Invalid
-        language code. Supported languages: en"}}}],"modelVersion":"2020-07-01"}'
+      string: '{"documents":[{"redactedText":"I will go to the park.","id":"1","entities":[],"warnings":[]},{"redactedText":"I
+        did not like the hotel we stayed at.","id":"2","entities":[],"warnings":[]},{"redactedText":"The
+        restaurant had really good food.","id":"3","entities":[],"warnings":[]}],"errors":[],"modelVersion":"2021-01-15"}'
     headers:
       apim-request-id:
-      - ef15bf35-0343-4aa5-8d12-97b1af5243ec
+      - 9825167e-0699-41f2-8752-075faf53d854
       content-type:
       - application/json; charset=utf-8
+      csp-billing-usage:
+      - CognitiveServices.TextAnalytics.BatchScoring=3,CognitiveServices.TextAnalytics.TextRecords=3
       date:
-      - Thu, 27 Aug 2020 19:32:20 GMT
+      - Tue, 18 May 2021 17:48:05 GMT
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       transfer-encoding:
@@ -132,7 +130,7 @@ interactions:
       x-content-type-options:
       - nosniff
       x-envoy-upstream-service-time:
-      - '1'
+      - '31'
     status:
       code: 200
       message: OK

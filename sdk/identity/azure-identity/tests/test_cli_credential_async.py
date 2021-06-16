@@ -2,6 +2,7 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 # ------------------------------------
+import asyncio
 from datetime import datetime
 import json
 import sys
@@ -75,11 +76,10 @@ async def test_get_token():
     """The credential should parse the CLI's output to an AccessToken"""
 
     access_token = "access token"
-    valid_seconds = 42
+    expected_expires_on = 1602015811
     successful_output = json.dumps(
         {
-            # expiresOn is a naive datetime representing valid_seconds from the epoch
-            "expiresOn": datetime.fromtimestamp(valid_seconds).strftime("%Y-%m-%d %H:%M:%S.%f"),
+            "expiresOn": datetime.fromtimestamp(expected_expires_on).strftime("%Y-%m-%d %H:%M:%S.%f"),
             "accessToken": access_token,
             "subscription": "some-guid",
             "tenant": "some-guid",
@@ -93,7 +93,7 @@ async def test_get_token():
 
     assert token.token == access_token
     assert type(token.expires_on) == int
-    assert token.expires_on == valid_seconds
+    assert token.expires_on == expected_expires_on
 
 
 async def test_cli_not_installed_linux():
@@ -169,3 +169,15 @@ async def test_subprocess_error_does_not_expose_token(output):
 
     assert "secret value" not in str(ex.value)
     assert "secret value" not in repr(ex.value)
+
+
+async def test_timeout():
+    """The credential should kill the subprocess after a timeout"""
+
+    proc = mock.Mock(communicate=mock.Mock(side_effect=asyncio.TimeoutError), returncode=None)
+    with mock.patch(SUBPROCESS_EXEC, mock.Mock(return_value=get_completed_future(proc))):
+        with pytest.raises(CredentialUnavailableError):
+            await AzureCliCredential().get_token("scope")
+
+    assert proc.communicate.call_count == 1
+    assert proc.kill.call_count == 1

@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING
 
 from azure.core.configuration import Configuration
 from azure.core.pipeline import policies
+from azure.mgmt.core.policies import ARMHttpLoggingPolicy
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,ungrouped-imports
@@ -19,8 +20,8 @@ if TYPE_CHECKING:
 
 VERSION = "unknown"
 
-class MonitorClientConfiguration(Configuration):
-    """Configuration for MonitorClient.
+class MonitorManagementClientConfiguration(Configuration):
+    """Configuration for MonitorManagementClient.
 
     Note that all parameters used to create this instance are saved as instance
     attributes.
@@ -42,14 +43,13 @@ class MonitorClientConfiguration(Configuration):
             raise ValueError("Parameter 'credential' must not be None.")
         if subscription_id is None:
             raise ValueError("Parameter 'subscription_id' must not be None.")
-        super(MonitorClientConfiguration, self).__init__(**kwargs)
+        super(MonitorManagementClientConfiguration, self).__init__(**kwargs)
 
         self.credential = credential
         self.subscription_id = subscription_id
         self.api_version = "2019-06-01"
-        self.credential_scopes = ['https://management.azure.com/.default']
-        self.credential_scopes.extend(kwargs.pop('credential_scopes', []))
-        kwargs.setdefault('sdk_moniker', 'mgmt-eventhub/{}'.format(VERSION))
+        self.credential_scopes = kwargs.pop('credential_scopes', ['https://management.azure.com/.default'])
+        kwargs.setdefault('sdk_moniker', 'mgmt-monitor/{}'.format(VERSION))
         self._configure(**kwargs)
 
     def _configure(
@@ -61,6 +61,7 @@ class MonitorClientConfiguration(Configuration):
         self.headers_policy = kwargs.get('headers_policy') or policies.HeadersPolicy(**kwargs)
         self.proxy_policy = kwargs.get('proxy_policy') or policies.ProxyPolicy(**kwargs)
         self.logging_policy = kwargs.get('logging_policy') or policies.NetworkTraceLoggingPolicy(**kwargs)
+        self.http_logging_policy = kwargs.get('http_logging_policy') or ARMHttpLoggingPolicy(**kwargs)
         self.retry_policy = kwargs.get('retry_policy') or policies.RetryPolicy(**kwargs)
         self.custom_hook_policy = kwargs.get('custom_hook_policy') or policies.CustomHookPolicy(**kwargs)
         self.redirect_policy = kwargs.get('redirect_policy') or policies.RedirectPolicy(**kwargs)

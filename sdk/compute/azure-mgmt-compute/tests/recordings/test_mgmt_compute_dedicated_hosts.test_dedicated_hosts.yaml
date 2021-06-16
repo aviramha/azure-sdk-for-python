@@ -14,24 +14,26 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - azsdk-python-azure-mgmt-compute/0.1.0 Python/3.6.9 (Linux-4.9.184-linuxkit-x86_64-with-Ubuntu-18.04-bionic)
+      - azsdk-python-azure-mgmt-compute/21.0.0 Python/3.8.10 (Linux-5.4.0-1047-azure-x86_64-with-glibc2.2.5)
+        VSTS_0fb41ef4-5012-48a9-bf39-4ee3de03ee35_build_2384_0
     method: PUT
-    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b?api-version=2019-12-01
+    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b?api-version=2021-03-01
   response:
     body:
-      string: "{\r\n  \"name\": \"hostgroup640e162b\",\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b\"\
-        ,\r\n  \"location\": \"eastus\",\r\n  \"tags\": {\r\n    \"department\": \"\
-        finance\"\r\n  },\r\n  \"zones\": [\r\n    \"1\"\r\n  ],\r\n  \"properties\"\
-        : {\r\n    \"platformFaultDomainCount\": 3\r\n  }\r\n}"
+      string: "{\r\n  \"name\": \"hostgroup640e162b\",\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/RGPY-2DCIKZZ6JXXQTXBSHXZNNVAK7WGAA76BXRBVM2IKNNXXYUAWMNTF4FOCOEH2PXKVOVXVRULMYQM/providers/Microsoft.Compute/hostGroups/hostgroup640e162b\",\r\n
+        \ \"type\": \"Microsoft.Compute/hostGroups\",\r\n  \"location\": \"eastus\",\r\n
+        \ \"tags\": {\r\n    \"department\": \"finance\"\r\n  },\r\n  \"zones\": [\r\n
+        \   \"1\"\r\n  ],\r\n  \"properties\": {\r\n    \"platformFaultDomainCount\":
+        3,\r\n    \"supportAutomaticPlacement\": false\r\n  }\r\n}"
     headers:
       cache-control:
       - no-cache
       content-length:
-      - '396'
+      - '498'
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 18 May 2020 15:04:37 GMT
+      - Tue, 25 May 2021 10:15:35 GMT
       expires:
       - '-1'
       pragma:
@@ -65,30 +67,31 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - azsdk-python-azure-mgmt-compute/0.1.0 Python/3.6.9 (Linux-4.9.184-linuxkit-x86_64-with-Ubuntu-18.04-bionic)
+      - azsdk-python-azure-mgmt-compute/21.0.0 Python/3.8.10 (Linux-5.4.0-1047-azure-x86_64-with-glibc2.2.5)
+        VSTS_0fb41ef4-5012-48a9-bf39-4ee3de03ee35_build_2384_0
     method: PUT
-    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b/hosts/hostname640e162b?api-version=2019-12-01
+    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b/hosts/hostname640e162b?api-version=2021-03-01
   response:
     body:
-      string: "{\r\n  \"name\": \"hostname640e162b\",\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b/hosts/hostname640e162b\"\
-        ,\r\n  \"location\": \"eastus\",\r\n  \"tags\": {\r\n    \"department\": \"\
-        HR\"\r\n  },\r\n  \"sku\": {\r\n    \"name\": \"DSv3-Type1\"\r\n  },\r\n \
-        \ \"properties\": {\r\n    \"platformFaultDomain\": 1,\r\n    \"autoReplaceOnFailure\"\
-        : true,\r\n    \"hostId\": \"6506599c-9e55-4339-90b5-6aefb4801133\",\r\n \
+      string: "{\r\n  \"name\": \"hostname640e162b\",\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b/hosts/hostname640e162b\",\r\n
+        \ \"type\": \"Microsoft.Compute/hostGroups/hosts\",\r\n  \"location\": \"eastus\",\r\n
+        \ \"tags\": {\r\n    \"department\": \"HR\"\r\n  },\r\n  \"sku\": {\r\n    \"name\":
+        \"DSv3-Type1\"\r\n  },\r\n  \"properties\": {\r\n    \"platformFaultDomain\":
+        1,\r\n    \"autoReplaceOnFailure\": true,\r\n    \"hostId\": \"e6c02e25-f363-41a9-83a1-19f7b1e1aa54\",\r\n
         \   \"provisioningState\": \"Creating\"\r\n  }\r\n}"
     headers:
       azure-asyncnotification:
       - Enabled
       azure-asyncoperation:
-      - https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Compute/locations/eastus/operations/73f599af-fddf-451b-8921-433318109914?api-version=2019-12-01
+      - https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Compute/locations/eastus/operations/a4b25f4d-3a60-46ff-8fbf-8c208c0fe95d?api-version=2021-03-01
       cache-control:
       - no-cache
       content-length:
-      - '551'
+      - '618'
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 18 May 2020 15:04:40 GMT
+      - Tue, 25 May 2021 10:15:37 GMT
       expires:
       - '-1'
       pragma:
@@ -117,14 +120,15 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - azsdk-python-azure-mgmt-compute/0.1.0 Python/3.6.9 (Linux-4.9.184-linuxkit-x86_64-with-Ubuntu-18.04-bionic)
+      - azsdk-python-azure-mgmt-compute/21.0.0 Python/3.8.10 (Linux-5.4.0-1047-azure-x86_64-with-glibc2.2.5)
+        VSTS_0fb41ef4-5012-48a9-bf39-4ee3de03ee35_build_2384_0
     method: GET
-    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Compute/locations/eastus/operations/73f599af-fddf-451b-8921-433318109914?api-version=2019-12-01
+    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Compute/locations/eastus/operations/a4b25f4d-3a60-46ff-8fbf-8c208c0fe95d?api-version=2021-03-01
   response:
     body:
-      string: "{\r\n  \"startTime\": \"2020-05-18T15:04:40.0962842+00:00\",\r\n  \"\
-        endTime\": \"2020-05-18T15:04:40.7213244+00:00\",\r\n  \"status\": \"Succeeded\"\
-        ,\r\n  \"name\": \"73f599af-fddf-451b-8921-433318109914\"\r\n}"
+      string: "{\r\n  \"startTime\": \"2021-05-25T10:15:37.0235123+00:00\",\r\n  \"endTime\":
+        \"2021-05-25T10:15:38.8829038+00:00\",\r\n  \"status\": \"Succeeded\",\r\n
+        \ \"name\": \"a4b25f4d-3a60-46ff-8fbf-8c208c0fe95d\"\r\n}"
     headers:
       cache-control:
       - no-cache
@@ -133,7 +137,7 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 18 May 2020 15:05:10 GMT
+      - Tue, 25 May 2021 10:16:07 GMT
       expires:
       - '-1'
       pragma:
@@ -150,7 +154,7 @@ interactions:
       x-content-type-options:
       - nosniff
       x-ms-ratelimit-remaining-resource:
-      - Microsoft.Compute/GetOperation3Min;14996,Microsoft.Compute/GetOperation30Min;29996
+      - Microsoft.Compute/GetOperation3Min;14986,Microsoft.Compute/GetOperation30Min;29937
     status:
       code: 200
       message: OK
@@ -164,27 +168,28 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - azsdk-python-azure-mgmt-compute/0.1.0 Python/3.6.9 (Linux-4.9.184-linuxkit-x86_64-with-Ubuntu-18.04-bionic)
+      - azsdk-python-azure-mgmt-compute/21.0.0 Python/3.8.10 (Linux-5.4.0-1047-azure-x86_64-with-glibc2.2.5)
+        VSTS_0fb41ef4-5012-48a9-bf39-4ee3de03ee35_build_2384_0
     method: GET
-    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b/hosts/hostname640e162b?api-version=2019-12-01
+    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b/hosts/hostname640e162b?api-version=2021-03-01
   response:
     body:
-      string: "{\r\n  \"name\": \"hostname640e162b\",\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b/hosts/hostname640e162b\"\
-        ,\r\n  \"location\": \"eastus\",\r\n  \"tags\": {\r\n    \"department\": \"\
-        HR\"\r\n  },\r\n  \"sku\": {\r\n    \"name\": \"DSv3-Type1\"\r\n  },\r\n \
-        \ \"properties\": {\r\n    \"platformFaultDomain\": 1,\r\n    \"autoReplaceOnFailure\"\
-        : true,\r\n    \"hostId\": \"6506599c-9e55-4339-90b5-6aefb4801133\",\r\n \
-        \   \"virtualMachines\": [],\r\n    \"provisioningTime\": \"2020-05-18T15:04:40.5494622+00:00\"\
-        ,\r\n    \"provisioningState\": \"Succeeded\"\r\n  }\r\n}"
+      string: "{\r\n  \"name\": \"hostname640e162b\",\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b/hosts/hostname640e162b\",\r\n
+        \ \"type\": \"Microsoft.Compute/hostGroups/hosts\",\r\n  \"location\": \"eastus\",\r\n
+        \ \"tags\": {\r\n    \"department\": \"HR\"\r\n  },\r\n  \"sku\": {\r\n    \"name\":
+        \"DSv3-Type1\"\r\n  },\r\n  \"properties\": {\r\n    \"platformFaultDomain\":
+        1,\r\n    \"autoReplaceOnFailure\": true,\r\n    \"hostId\": \"e6c02e25-f363-41a9-83a1-19f7b1e1aa54\",\r\n
+        \   \"virtualMachines\": [],\r\n    \"provisioningTime\": \"2021-05-25T10:15:38.7110374+00:00\",\r\n
+        \   \"provisioningState\": \"Succeeded\"\r\n  }\r\n}"
     headers:
       cache-control:
       - no-cache
       content-length:
-      - '642'
+      - '709'
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 18 May 2020 15:05:10 GMT
+      - Tue, 25 May 2021 10:16:07 GMT
       expires:
       - '-1'
       pragma:
@@ -201,7 +206,7 @@ interactions:
       x-content-type-options:
       - nosniff
       x-ms-ratelimit-remaining-resource:
-      - Microsoft.Compute/GetDedicatedHost3Min;247,Microsoft.Compute/GetDedicatedHost30Min;997
+      - Microsoft.Compute/GetDedicatedHost3Min;248,Microsoft.Compute/GetDedicatedHost30Min;998
     status:
       code: 200
       message: OK
@@ -215,26 +220,27 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - azsdk-python-azure-mgmt-compute/0.1.0 Python/3.6.9 (Linux-4.9.184-linuxkit-x86_64-with-Ubuntu-18.04-bionic)
+      - azsdk-python-azure-mgmt-compute/21.0.0 Python/3.8.10 (Linux-5.4.0-1047-azure-x86_64-with-glibc2.2.5)
+        VSTS_0fb41ef4-5012-48a9-bf39-4ee3de03ee35_build_2384_0
     method: GET
-    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b?api-version=2019-12-01
+    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b?api-version=2021-03-01
   response:
     body:
-      string: "{\r\n  \"name\": \"hostgroup640e162b\",\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b\"\
-        ,\r\n  \"location\": \"eastus\",\r\n  \"tags\": {\r\n    \"department\": \"\
-        finance\"\r\n  },\r\n  \"zones\": [\r\n    \"1\"\r\n  ],\r\n  \"properties\"\
-        : {\r\n    \"platformFaultDomainCount\": 3,\r\n    \"hosts\": [\r\n      {\r\
-        \n        \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/HOSTGROUP640E162B/hosts/HOSTNAME640E162B\"\
-        \r\n      }\r\n    ]\r\n  }\r\n}"
+      string: "{\r\n  \"name\": \"hostgroup640e162b\",\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/RGPY-2DCIKZZ6JXXQTXBSHXZNNVAK7WGAA76BXRBVM2IKNNXXYUAWMNTF4FOCOEH2PXKVOVXVRULMYQM/providers/Microsoft.Compute/hostGroups/hostgroup640e162b\",\r\n
+        \ \"type\": \"Microsoft.Compute/hostGroups\",\r\n  \"location\": \"eastus\",\r\n
+        \ \"tags\": {\r\n    \"department\": \"finance\"\r\n  },\r\n  \"zones\": [\r\n
+        \   \"1\"\r\n  ],\r\n  \"properties\": {\r\n    \"platformFaultDomainCount\":
+        3,\r\n    \"hosts\": [\r\n      {\r\n        \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/RGPY-2DCIKZZ6JXXQTXBSHXZNNVAK7WGAA76BXRBVM2IKNNXXYUAWMNTF4FOCOEH2PXKVOVXVRULMYQM/providers/Microsoft.Compute/hostGroups/HOSTGROUP640E162B/hosts/HOSTNAME640E162B\"\r\n
+        \     }\r\n    ],\r\n    \"supportAutomaticPlacement\": false\r\n  }\r\n}"
     headers:
       cache-control:
       - no-cache
       content-length:
-      - '665'
+      - '785'
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 18 May 2020 15:05:10 GMT
+      - Tue, 25 May 2021 10:16:07 GMT
       expires:
       - '-1'
       pragma:
@@ -251,7 +257,7 @@ interactions:
       x-content-type-options:
       - nosniff
       x-ms-ratelimit-remaining-resource:
-      - Microsoft.Compute/GetDedicatedHost30Min;996
+      - Microsoft.Compute/GetDedicatedHost30Min;997
     status:
       code: 200
       message: OK
@@ -265,56 +271,28 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - azsdk-python-azure-mgmt-compute/0.1.0 Python/3.6.9 (Linux-4.9.184-linuxkit-x86_64-with-Ubuntu-18.04-bionic)
+      - azsdk-python-azure-mgmt-compute/21.0.0 Python/3.8.10 (Linux-5.4.0-1047-azure-x86_64-with-glibc2.2.5)
+        VSTS_0fb41ef4-5012-48a9-bf39-4ee3de03ee35_build_2384_0
     method: GET
-    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b/hosts/hostname640e162b?$expand=instanceView&api-version=2019-12-01
+    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b/hosts/hostname640e162b?api-version=2021-03-01
   response:
     body:
-      string: "{\r\n  \"name\": \"hostname640e162b\",\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b/hosts/hostname640e162b\"\
-        ,\r\n  \"location\": \"eastus\",\r\n  \"tags\": {\r\n    \"department\": \"\
-        HR\"\r\n  },\r\n  \"sku\": {\r\n    \"name\": \"DSv3-Type1\"\r\n  },\r\n \
-        \ \"properties\": {\r\n    \"platformFaultDomain\": 1,\r\n    \"autoReplaceOnFailure\"\
-        : true,\r\n    \"hostId\": \"6506599c-9e55-4339-90b5-6aefb4801133\",\r\n \
-        \   \"virtualMachines\": [],\r\n    \"provisioningTime\": \"2020-05-18T15:04:40.5494622+00:00\"\
-        ,\r\n    \"provisioningState\": \"Succeeded\",\r\n    \"instanceView\": {\r\
-        \n      \"assetId\": \"3de5f88c-e0e4-406a-ac34-83209ef1568b\",\r\n      \"\
-        availableCapacity\": {\r\n        \"allocatableVMs\": [\r\n          {\r\n\
-        \            \"vmSize\": \"Standard_D2hs_v3\",\r\n            \"count\": 32\r\
-        \n          },\r\n          {\r\n            \"vmSize\": \"Standard_D2s_v3\"\
-        ,\r\n            \"count\": 32\r\n          },\r\n          {\r\n        \
-        \    \"vmSize\": \"Standard_D4hs_v3\",\r\n            \"count\": 16\r\n  \
-        \        },\r\n          {\r\n            \"vmSize\": \"Standard_D4s_v3\"\
-        ,\r\n            \"count\": 16\r\n          },\r\n          {\r\n        \
-        \    \"vmSize\": \"Standard_D8hs_v3\",\r\n            \"count\": 8\r\n   \
-        \       },\r\n          {\r\n            \"vmSize\": \"Standard_D8s_v3\",\r\
-        \n            \"count\": 8\r\n          },\r\n          {\r\n            \"\
-        vmSize\": \"Standard_D16s_v3\",\r\n            \"count\": 4\r\n          },\r\
-        \n          {\r\n            \"vmSize\": \"Standard_D32-8s_v3\",\r\n     \
-        \       \"count\": 2\r\n          },\r\n          {\r\n            \"vmSize\"\
-        : \"Standard_D32-16s_v3\",\r\n            \"count\": 2\r\n          },\r\n\
-        \          {\r\n            \"vmSize\": \"Standard_D32s_v3\",\r\n        \
-        \    \"count\": 2\r\n          },\r\n          {\r\n            \"vmSize\"\
-        : \"Standard_D48s_v3\",\r\n            \"count\": 1\r\n          },\r\n  \
-        \        {\r\n            \"vmSize\": \"Standard_D64-16s_v3\",\r\n       \
-        \     \"count\": 1\r\n          },\r\n          {\r\n            \"vmSize\"\
-        : \"Standard_D64-32s_v3\",\r\n            \"count\": 1\r\n          },\r\n\
-        \          {\r\n            \"vmSize\": \"Standard_D64s_v3\",\r\n        \
-        \    \"count\": 1\r\n          }\r\n        ]\r\n      },\r\n      \"statuses\"\
-        : [\r\n        {\r\n          \"code\": \"ProvisioningState/succeeded\",\r\
-        \n          \"level\": \"Info\",\r\n          \"displayStatus\": \"Provisioning\
-        \ succeeded\",\r\n          \"time\": \"2020-05-18T15:04:40.5494622+00:00\"\
-        \r\n        },\r\n        {\r\n          \"code\": \"HealthState/available\"\
-        ,\r\n          \"level\": \"Info\",\r\n          \"displayStatus\": \"Host\
-        \ available\"\r\n        }\r\n      ]\r\n    }\r\n  }\r\n}"
+      string: "{\r\n  \"name\": \"hostname640e162b\",\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b/hosts/hostname640e162b\",\r\n
+        \ \"type\": \"Microsoft.Compute/hostGroups/hosts\",\r\n  \"location\": \"eastus\",\r\n
+        \ \"tags\": {\r\n    \"department\": \"HR\"\r\n  },\r\n  \"sku\": {\r\n    \"name\":
+        \"DSv3-Type1\"\r\n  },\r\n  \"properties\": {\r\n    \"platformFaultDomain\":
+        1,\r\n    \"autoReplaceOnFailure\": true,\r\n    \"hostId\": \"e6c02e25-f363-41a9-83a1-19f7b1e1aa54\",\r\n
+        \   \"virtualMachines\": [],\r\n    \"provisioningTime\": \"2021-05-25T10:15:38.7110374+00:00\",\r\n
+        \   \"provisioningState\": \"Succeeded\"\r\n  }\r\n}"
     headers:
       cache-control:
       - no-cache
       content-length:
-      - '2517'
+      - '709'
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 18 May 2020 15:05:10 GMT
+      - Tue, 25 May 2021 10:16:07 GMT
       expires:
       - '-1'
       pragma:
@@ -331,7 +309,7 @@ interactions:
       x-content-type-options:
       - nosniff
       x-ms-ratelimit-remaining-resource:
-      - Microsoft.Compute/GetDedicatedHost3Min;246,Microsoft.Compute/GetDedicatedHost30Min;995
+      - Microsoft.Compute/GetDedicatedHost3Min;247,Microsoft.Compute/GetDedicatedHost30Min;996
     status:
       code: 200
       message: OK
@@ -350,24 +328,26 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - azsdk-python-azure-mgmt-compute/0.1.0 Python/3.6.9 (Linux-4.9.184-linuxkit-x86_64-with-Ubuntu-18.04-bionic)
+      - azsdk-python-azure-mgmt-compute/21.0.0 Python/3.8.10 (Linux-5.4.0-1047-azure-x86_64-with-glibc2.2.5)
+        VSTS_0fb41ef4-5012-48a9-bf39-4ee3de03ee35_build_2384_0
     method: PATCH
-    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b?api-version=2019-12-01
+    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b?api-version=2021-03-01
   response:
     body:
-      string: "{\r\n  \"name\": \"hostgroup640e162b\",\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b\"\
-        ,\r\n  \"location\": \"eastus\",\r\n  \"tags\": {\r\n    \"department\": \"\
-        finance\"\r\n  },\r\n  \"zones\": [\r\n    \"1\"\r\n  ],\r\n  \"properties\"\
-        : {\r\n    \"platformFaultDomainCount\": 3\r\n  }\r\n}"
+      string: "{\r\n  \"name\": \"hostgroup640e162b\",\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/RGPY-2DCIKZZ6JXXQTXBSHXZNNVAK7WGAA76BXRBVM2IKNNXXYUAWMNTF4FOCOEH2PXKVOVXVRULMYQM/providers/Microsoft.Compute/hostGroups/hostgroup640e162b\",\r\n
+        \ \"type\": \"Microsoft.Compute/hostGroups\",\r\n  \"location\": \"eastus\",\r\n
+        \ \"tags\": {\r\n    \"department\": \"finance\"\r\n  },\r\n  \"zones\": [\r\n
+        \   \"1\"\r\n  ],\r\n  \"properties\": {\r\n    \"platformFaultDomainCount\":
+        3,\r\n    \"supportAutomaticPlacement\": false\r\n  }\r\n}"
     headers:
       cache-control:
       - no-cache
       content-length:
-      - '396'
+      - '498'
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 18 May 2020 15:05:12 GMT
+      - Tue, 25 May 2021 10:16:09 GMT
       expires:
       - '-1'
       pragma:
@@ -404,31 +384,32 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - azsdk-python-azure-mgmt-compute/0.1.0 Python/3.6.9 (Linux-4.9.184-linuxkit-x86_64-with-Ubuntu-18.04-bionic)
+      - azsdk-python-azure-mgmt-compute/21.0.0 Python/3.8.10 (Linux-5.4.0-1047-azure-x86_64-with-glibc2.2.5)
+        VSTS_0fb41ef4-5012-48a9-bf39-4ee3de03ee35_build_2384_0
     method: PATCH
-    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b/hosts/hostname640e162b?api-version=2019-12-01
+    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b/hosts/hostname640e162b?api-version=2021-03-01
   response:
     body:
-      string: "{\r\n  \"name\": \"hostname640e162b\",\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b/hosts/hostname640e162b\"\
-        ,\r\n  \"location\": \"eastus\",\r\n  \"tags\": {\r\n    \"department\": \"\
-        HR\"\r\n  },\r\n  \"sku\": {\r\n    \"name\": \"DSv3-Type1\"\r\n  },\r\n \
-        \ \"properties\": {\r\n    \"platformFaultDomain\": 1,\r\n    \"autoReplaceOnFailure\"\
-        : true,\r\n    \"hostId\": \"6506599c-9e55-4339-90b5-6aefb4801133\",\r\n \
-        \   \"provisioningTime\": \"2020-05-18T15:04:40.5494622+00:00\",\r\n    \"\
-        provisioningState\": \"Updating\"\r\n  }\r\n}"
+      string: "{\r\n  \"name\": \"hostname640e162b\",\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b/hosts/hostname640e162b\",\r\n
+        \ \"type\": \"Microsoft.Compute/hostGroups/hosts\",\r\n  \"location\": \"eastus\",\r\n
+        \ \"tags\": {\r\n    \"department\": \"HR\"\r\n  },\r\n  \"sku\": {\r\n    \"name\":
+        \"DSv3-Type1\"\r\n  },\r\n  \"properties\": {\r\n    \"platformFaultDomain\":
+        1,\r\n    \"autoReplaceOnFailure\": true,\r\n    \"hostId\": \"e6c02e25-f363-41a9-83a1-19f7b1e1aa54\",\r\n
+        \   \"provisioningTime\": \"2021-05-25T10:15:38.7110374+00:00\",\r\n    \"provisioningState\":
+        \"Updating\"\r\n  }\r\n}"
     headers:
       azure-asyncnotification:
       - Enabled
       azure-asyncoperation:
-      - https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Compute/locations/eastus/operations/96edac2c-137a-4400-a478-3b2b90906329?api-version=2019-12-01
+      - https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Compute/locations/eastus/operations/a9201799-5a63-47ec-a135-b2025ca7ca71?api-version=2021-03-01
       cache-control:
       - no-cache
       content-length:
-      - '613'
+      - '680'
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 18 May 2020 15:05:14 GMT
+      - Tue, 25 May 2021 10:16:09 GMT
       expires:
       - '-1'
       pragma:
@@ -461,23 +442,24 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - azsdk-python-azure-mgmt-compute/0.1.0 Python/3.6.9 (Linux-4.9.184-linuxkit-x86_64-with-Ubuntu-18.04-bionic)
+      - azsdk-python-azure-mgmt-compute/21.0.0 Python/3.8.10 (Linux-5.4.0-1047-azure-x86_64-with-glibc2.2.5)
+        VSTS_0fb41ef4-5012-48a9-bf39-4ee3de03ee35_build_2384_0
     method: GET
-    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Compute/locations/eastus/operations/96edac2c-137a-4400-a478-3b2b90906329?api-version=2019-12-01
+    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Compute/locations/eastus/operations/a9201799-5a63-47ec-a135-b2025ca7ca71?api-version=2021-03-01
   response:
     body:
-      string: "{\r\n  \"startTime\": \"2020-05-18T15:05:13.8007071+00:00\",\r\n  \"\
-        endTime\": \"2020-05-18T15:05:13.8163453+00:00\",\r\n  \"status\": \"Succeeded\"\
-        ,\r\n  \"name\": \"96edac2c-137a-4400-a478-3b2b90906329\"\r\n}"
+      string: "{\r\n  \"startTime\": \"2021-05-25T10:16:09.382705+00:00\",\r\n  \"endTime\":
+        \"2021-05-25T10:16:09.3983501+00:00\",\r\n  \"status\": \"Succeeded\",\r\n
+        \ \"name\": \"a9201799-5a63-47ec-a135-b2025ca7ca71\"\r\n}"
     headers:
       cache-control:
       - no-cache
       content-length:
-      - '184'
+      - '183'
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 18 May 2020 15:05:44 GMT
+      - Tue, 25 May 2021 10:16:39 GMT
       expires:
       - '-1'
       pragma:
@@ -494,7 +476,7 @@ interactions:
       x-content-type-options:
       - nosniff
       x-ms-ratelimit-remaining-resource:
-      - Microsoft.Compute/GetOperation3Min;14994,Microsoft.Compute/GetOperation30Min;29994
+      - Microsoft.Compute/GetOperation3Min;14988,Microsoft.Compute/GetOperation30Min;29936
     status:
       code: 200
       message: OK
@@ -508,27 +490,28 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - azsdk-python-azure-mgmt-compute/0.1.0 Python/3.6.9 (Linux-4.9.184-linuxkit-x86_64-with-Ubuntu-18.04-bionic)
+      - azsdk-python-azure-mgmt-compute/21.0.0 Python/3.8.10 (Linux-5.4.0-1047-azure-x86_64-with-glibc2.2.5)
+        VSTS_0fb41ef4-5012-48a9-bf39-4ee3de03ee35_build_2384_0
     method: GET
-    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b/hosts/hostname640e162b?api-version=2019-12-01
+    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b/hosts/hostname640e162b?api-version=2021-03-01
   response:
     body:
-      string: "{\r\n  \"name\": \"hostname640e162b\",\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b/hosts/hostname640e162b\"\
-        ,\r\n  \"location\": \"eastus\",\r\n  \"tags\": {\r\n    \"department\": \"\
-        HR\"\r\n  },\r\n  \"sku\": {\r\n    \"name\": \"DSv3-Type1\"\r\n  },\r\n \
-        \ \"properties\": {\r\n    \"platformFaultDomain\": 1,\r\n    \"autoReplaceOnFailure\"\
-        : true,\r\n    \"hostId\": \"6506599c-9e55-4339-90b5-6aefb4801133\",\r\n \
-        \   \"virtualMachines\": [],\r\n    \"provisioningTime\": \"2020-05-18T15:04:40.5494622+00:00\"\
-        ,\r\n    \"provisioningState\": \"Succeeded\"\r\n  }\r\n}"
+      string: "{\r\n  \"name\": \"hostname640e162b\",\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b/hosts/hostname640e162b\",\r\n
+        \ \"type\": \"Microsoft.Compute/hostGroups/hosts\",\r\n  \"location\": \"eastus\",\r\n
+        \ \"tags\": {\r\n    \"department\": \"HR\"\r\n  },\r\n  \"sku\": {\r\n    \"name\":
+        \"DSv3-Type1\"\r\n  },\r\n  \"properties\": {\r\n    \"platformFaultDomain\":
+        1,\r\n    \"autoReplaceOnFailure\": true,\r\n    \"hostId\": \"e6c02e25-f363-41a9-83a1-19f7b1e1aa54\",\r\n
+        \   \"virtualMachines\": [],\r\n    \"provisioningTime\": \"2021-05-25T10:15:38.7110374+00:00\",\r\n
+        \   \"provisioningState\": \"Succeeded\"\r\n  }\r\n}"
     headers:
       cache-control:
       - no-cache
       content-length:
-      - '642'
+      - '709'
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 18 May 2020 15:05:44 GMT
+      - Tue, 25 May 2021 10:16:39 GMT
       expires:
       - '-1'
       pragma:
@@ -545,7 +528,7 @@ interactions:
       x-content-type-options:
       - nosniff
       x-ms-ratelimit-remaining-resource:
-      - Microsoft.Compute/GetDedicatedHost3Min;243,Microsoft.Compute/GetDedicatedHost30Min;992
+      - Microsoft.Compute/GetDedicatedHost3Min;246,Microsoft.Compute/GetDedicatedHost30Min;995
     status:
       code: 200
       message: OK
@@ -561,9 +544,10 @@ interactions:
       Content-Length:
       - '0'
       User-Agent:
-      - azsdk-python-azure-mgmt-compute/0.1.0 Python/3.6.9 (Linux-4.9.184-linuxkit-x86_64-with-Ubuntu-18.04-bionic)
+      - azsdk-python-azure-mgmt-compute/21.0.0 Python/3.8.10 (Linux-5.4.0-1047-azure-x86_64-with-glibc2.2.5)
+        VSTS_0fb41ef4-5012-48a9-bf39-4ee3de03ee35_build_2384_0
     method: DELETE
-    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b/hosts/hostname640e162b?api-version=2019-12-01
+    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b/hosts/hostname640e162b?api-version=2021-03-01
   response:
     body:
       string: ''
@@ -571,17 +555,17 @@ interactions:
       azure-asyncnotification:
       - Enabled
       azure-asyncoperation:
-      - https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Compute/locations/eastus/operations/b60b6b7e-205c-4aa3-8ccb-d86a7c6c0726?api-version=2019-12-01
+      - https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Compute/locations/eastus/operations/36f609dd-c333-4a4f-ba0f-be312fe6f676?api-version=2021-03-01
       cache-control:
       - no-cache
       content-length:
       - '0'
       date:
-      - Mon, 18 May 2020 15:05:44 GMT
+      - Tue, 25 May 2021 10:16:40 GMT
       expires:
       - '-1'
       location:
-      - https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Compute/locations/eastus/operations/b60b6b7e-205c-4aa3-8ccb-d86a7c6c0726?monitor=true&api-version=2019-12-01
+      - https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Compute/locations/eastus/operations/36f609dd-c333-4a4f-ba0f-be312fe6f676?monitor=true&api-version=2021-03-01
       pragma:
       - no-cache
       server:
@@ -608,23 +592,24 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - azsdk-python-azure-mgmt-compute/0.1.0 Python/3.6.9 (Linux-4.9.184-linuxkit-x86_64-with-Ubuntu-18.04-bionic)
+      - azsdk-python-azure-mgmt-compute/21.0.0 Python/3.8.10 (Linux-5.4.0-1047-azure-x86_64-with-glibc2.2.5)
+        VSTS_0fb41ef4-5012-48a9-bf39-4ee3de03ee35_build_2384_0
     method: GET
-    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Compute/locations/eastus/operations/b60b6b7e-205c-4aa3-8ccb-d86a7c6c0726?api-version=2019-12-01
+    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Compute/locations/eastus/operations/36f609dd-c333-4a4f-ba0f-be312fe6f676?api-version=2021-03-01
   response:
     body:
-      string: "{\r\n  \"startTime\": \"2020-05-18T15:05:45.5197967+00:00\",\r\n  \"\
-        endTime\": \"2020-05-18T15:05:45.6604245+00:00\",\r\n  \"status\": \"Succeeded\"\
-        ,\r\n  \"name\": \"b60b6b7e-205c-4aa3-8ccb-d86a7c6c0726\"\r\n}"
+      string: "{\r\n  \"startTime\": \"2021-05-25T10:16:40.4137568+00:00\",\r\n  \"endTime\":
+        \"2021-05-25T10:16:40.616905+00:00\",\r\n  \"status\": \"Succeeded\",\r\n
+        \ \"name\": \"36f609dd-c333-4a4f-ba0f-be312fe6f676\"\r\n}"
     headers:
       cache-control:
       - no-cache
       content-length:
-      - '184'
+      - '183'
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 18 May 2020 15:06:15 GMT
+      - Tue, 25 May 2021 10:17:10 GMT
       expires:
       - '-1'
       pragma:
@@ -641,7 +626,7 @@ interactions:
       x-content-type-options:
       - nosniff
       x-ms-ratelimit-remaining-resource:
-      - Microsoft.Compute/GetOperation3Min;14992,Microsoft.Compute/GetOperation30Min;29992
+      - Microsoft.Compute/GetOperation3Min;14989,Microsoft.Compute/GetOperation30Min;29934
     status:
       code: 200
       message: OK
@@ -657,35 +642,34 @@ interactions:
       Content-Length:
       - '0'
       User-Agent:
-      - azsdk-python-azure-mgmt-compute/0.1.0 Python/3.6.9 (Linux-4.9.184-linuxkit-x86_64-with-Ubuntu-18.04-bionic)
+      - azsdk-python-azure-mgmt-compute/21.0.0 Python/3.8.10 (Linux-5.4.0-1047-azure-x86_64-with-glibc2.2.5)
+        VSTS_0fb41ef4-5012-48a9-bf39-4ee3de03ee35_build_2384_0
     method: DELETE
-    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b?api-version=2019-12-01
+    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Compute/hostGroups/hostgroup640e162b?api-version=2021-03-01
   response:
     body:
-      string: ''
+      string: '{"error":{"code":"CannotDeleteResource","message":"Can not delete resource
+        before nested resources are deleted."}}'
     headers:
       cache-control:
       - no-cache
       content-length:
-      - '0'
+      - '114'
+      content-type:
+      - application/json; charset=utf-8
       date:
-      - Mon, 18 May 2020 15:06:18 GMT
+      - Tue, 25 May 2021 10:17:10 GMT
       expires:
       - '-1'
       pragma:
       - no-cache
-      server:
-      - Microsoft-HTTPAPI/2.0
-      - Microsoft-HTTPAPI/2.0
       strict-transport-security:
       - max-age=31536000; includeSubDomains
       x-content-type-options:
       - nosniff
-      x-ms-ratelimit-remaining-resource:
-      - Microsoft.Compute/PutDeleteDedicatedHost3Min;114,Microsoft.Compute/PutDeleteDedicatedHost30Min;594
-      x-ms-ratelimit-remaining-subscription-deletes:
-      - '14997'
+      x-ms-failure-cause:
+      - gateway
     status:
-      code: 200
-      message: OK
+      code: 409
+      message: Conflict
 version: 1

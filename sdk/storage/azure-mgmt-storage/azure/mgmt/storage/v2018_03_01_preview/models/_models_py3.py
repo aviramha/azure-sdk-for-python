@@ -89,17 +89,17 @@ class AccountSasParameters(msrest.serialization.Model):
 
 
 class Resource(msrest.serialization.Model):
-    """Resource.
+    """Common fields that are returned in the response for all Azure Resource Manager resources.
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
-    :ivar id: Fully qualified resource Id for the resource. Ex -
+    :ivar id: Fully qualified resource ID for the resource. Ex -
      /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}.
     :vartype id: str
     :ivar name: The name of the resource.
     :vartype name: str
-    :ivar type: The type of the resource. Ex- Microsoft.Compute/virtualMachines or
-     Microsoft.Storage/storageAccounts.
+    :ivar type: The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or
+     "Microsoft.Storage/storageAccounts".
     :vartype type: str
     """
 
@@ -126,17 +126,17 @@ class Resource(msrest.serialization.Model):
 
 
 class AzureEntityResource(Resource):
-    """The resource model definition for a Azure Resource Manager resource with an etag.
+    """The resource model definition for an Azure Resource Manager resource with an etag.
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
-    :ivar id: Fully qualified resource Id for the resource. Ex -
+    :ivar id: Fully qualified resource ID for the resource. Ex -
      /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}.
     :vartype id: str
     :ivar name: The name of the resource.
     :vartype name: str
-    :ivar type: The type of the resource. Ex- Microsoft.Compute/virtualMachines or
-     Microsoft.Storage/storageAccounts.
+    :ivar type: The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or
+     "Microsoft.Storage/storageAccounts".
     :vartype type: str
     :ivar etag: Resource Etag.
     :vartype etag: str
@@ -169,13 +169,13 @@ class BlobContainer(AzureEntityResource):
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
-    :ivar id: Fully qualified resource Id for the resource. Ex -
+    :ivar id: Fully qualified resource ID for the resource. Ex -
      /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}.
     :vartype id: str
     :ivar name: The name of the resource.
     :vartype name: str
-    :ivar type: The type of the resource. Ex- Microsoft.Compute/virtualMachines or
-     Microsoft.Storage/storageAccounts.
+    :ivar type: The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or
+     "Microsoft.Storage/storageAccounts".
     :vartype type: str
     :ivar etag: Resource Etag.
     :vartype etag: str
@@ -369,8 +369,8 @@ class Encryption(msrest.serialization.Model):
 
     :param services: List of services which support encryption.
     :type services: ~azure.mgmt.storage.v2018_03_01_preview.models.EncryptionServices
-    :param key_source: Required. The encryption keySource (provider). Possible values (case-
-     insensitive):  Microsoft.Storage, Microsoft.Keyvault. Possible values include:
+    :param key_source: Required. The encryption keySource (provider). Possible values
+     (case-insensitive):  Microsoft.Storage, Microsoft.Keyvault. Possible values include:
      "Microsoft.Storage", "Microsoft.Keyvault". Default value: "Microsoft.Storage".
     :type key_source: str or ~azure.mgmt.storage.v2018_03_01_preview.models.KeySource
     :param key_vault_properties: Properties provided by key vault.
@@ -571,13 +571,13 @@ class ImmutabilityPolicy(AzureEntityResource):
 
     All required parameters must be populated in order to send to Azure.
 
-    :ivar id: Fully qualified resource Id for the resource. Ex -
+    :ivar id: Fully qualified resource ID for the resource. Ex -
      /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}.
     :vartype id: str
     :ivar name: The name of the resource.
     :vartype name: str
-    :ivar type: The type of the resource. Ex- Microsoft.Compute/virtualMachines or
-     Microsoft.Storage/storageAccounts.
+    :ivar type: The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or
+     "Microsoft.Storage/storageAccounts".
     :vartype type: str
     :ivar etag: Resource Etag.
     :vartype etag: str
@@ -909,13 +909,13 @@ class ListContainerItem(AzureEntityResource):
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
-    :ivar id: Fully qualified resource Id for the resource. Ex -
+    :ivar id: Fully qualified resource ID for the resource. Ex -
      /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}.
     :vartype id: str
     :ivar name: The name of the resource.
     :vartype name: str
-    :ivar type: The type of the resource. Ex- Microsoft.Compute/virtualMachines or
-     Microsoft.Storage/storageAccounts.
+    :ivar type: The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or
+     "Microsoft.Storage/storageAccounts".
     :vartype type: str
     :ivar etag: Resource Etag.
     :vartype etag: str
@@ -1054,17 +1054,17 @@ class ManagementPoliciesRules(msrest.serialization.Model):
 
     :param policy: The Storage Account ManagementPolicies Rules, in JSON format. See more details
      in: https://docs.microsoft.com/en-us/azure/storage/common/storage-lifecycle-managment-concepts.
-    :type policy: object
+    :type policy: str
     """
 
     _attribute_map = {
-        'policy': {'key': 'policy', 'type': 'object'},
+        'policy': {'key': 'policy', 'type': 'str'},
     }
 
     def __init__(
         self,
         *,
-        policy: Optional[object] = None,
+        policy: Optional[str] = None,
         **kwargs
     ):
         super(ManagementPoliciesRules, self).__init__(**kwargs)
@@ -1076,17 +1076,17 @@ class ManagementPoliciesRulesSetParameter(msrest.serialization.Model):
 
     :param policy: The Storage Account ManagementPolicies Rules, in JSON format. See more details
      in: https://docs.microsoft.com/en-us/azure/storage/common/storage-lifecycle-managment-concepts.
-    :type policy: object
+    :type policy: str
     """
 
     _attribute_map = {
-        'policy': {'key': 'properties.policy', 'type': 'object'},
+        'policy': {'key': 'properties.policy', 'type': 'str'},
     }
 
     def __init__(
         self,
         *,
-        policy: Optional[object] = None,
+        policy: Optional[str] = None,
         **kwargs
     ):
         super(ManagementPoliciesRulesSetParameter, self).__init__(**kwargs)
@@ -1575,19 +1575,19 @@ class SKUCapability(msrest.serialization.Model):
 
 
 class TrackedResource(Resource):
-    """The resource model definition for a ARM tracked top level resource.
+    """The resource model definition for an Azure Resource Manager tracked top level resource which has 'tags' and a 'location'.
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
     All required parameters must be populated in order to send to Azure.
 
-    :ivar id: Fully qualified resource Id for the resource. Ex -
+    :ivar id: Fully qualified resource ID for the resource. Ex -
      /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}.
     :vartype id: str
     :ivar name: The name of the resource.
     :vartype name: str
-    :ivar type: The type of the resource. Ex- Microsoft.Compute/virtualMachines or
-     Microsoft.Storage/storageAccounts.
+    :ivar type: The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or
+     "Microsoft.Storage/storageAccounts".
     :vartype type: str
     :param tags: A set of tags. Resource tags.
     :type tags: dict[str, str]
@@ -1629,13 +1629,13 @@ class StorageAccount(TrackedResource):
 
     All required parameters must be populated in order to send to Azure.
 
-    :ivar id: Fully qualified resource Id for the resource. Ex -
+    :ivar id: Fully qualified resource ID for the resource. Ex -
      /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}.
     :vartype id: str
     :ivar name: The name of the resource.
     :vartype name: str
-    :ivar type: The type of the resource. Ex- Microsoft.Compute/virtualMachines or
-     Microsoft.Storage/storageAccounts.
+    :ivar type: The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or
+     "Microsoft.Storage/storageAccounts".
     :vartype type: str
     :param tags: A set of tags. Resource tags.
     :type tags: dict[str, str]
@@ -1992,17 +1992,17 @@ class StorageAccountManagementPolicies(Resource):
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
-    :ivar id: Fully qualified resource Id for the resource. Ex -
+    :ivar id: Fully qualified resource ID for the resource. Ex -
      /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}.
     :vartype id: str
     :ivar name: The name of the resource.
     :vartype name: str
-    :ivar type: The type of the resource. Ex- Microsoft.Compute/virtualMachines or
-     Microsoft.Storage/storageAccounts.
+    :ivar type: The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or
+     "Microsoft.Storage/storageAccounts".
     :vartype type: str
     :param policy: The Storage Account ManagementPolicies Rules, in JSON format. See more details
      in: https://docs.microsoft.com/en-us/azure/storage/common/storage-lifecycle-managment-concepts.
-    :type policy: object
+    :type policy: str
     :ivar last_modified_time: Returns the date and time the ManagementPolicies was last modified.
     :vartype last_modified_time: ~datetime.datetime
     """
@@ -2018,14 +2018,14 @@ class StorageAccountManagementPolicies(Resource):
         'id': {'key': 'id', 'type': 'str'},
         'name': {'key': 'name', 'type': 'str'},
         'type': {'key': 'type', 'type': 'str'},
-        'policy': {'key': 'properties.policy', 'type': 'object'},
+        'policy': {'key': 'properties.policy', 'type': 'str'},
         'last_modified_time': {'key': 'properties.lastModifiedTime', 'type': 'iso-8601'},
     }
 
     def __init__(
         self,
         *,
-        policy: Optional[object] = None,
+        policy: Optional[str] = None,
         **kwargs
     ):
         super(StorageAccountManagementPolicies, self).__init__(**kwargs)
@@ -2040,7 +2040,7 @@ class StorageAccountManagementPoliciesRulesProperty(ManagementPoliciesRules):
 
     :param policy: The Storage Account ManagementPolicies Rules, in JSON format. See more details
      in: https://docs.microsoft.com/en-us/azure/storage/common/storage-lifecycle-managment-concepts.
-    :type policy: object
+    :type policy: str
     :ivar last_modified_time: Returns the date and time the ManagementPolicies was last modified.
     :vartype last_modified_time: ~datetime.datetime
     """
@@ -2050,14 +2050,14 @@ class StorageAccountManagementPoliciesRulesProperty(ManagementPoliciesRules):
     }
 
     _attribute_map = {
-        'policy': {'key': 'policy', 'type': 'object'},
+        'policy': {'key': 'policy', 'type': 'str'},
         'last_modified_time': {'key': 'lastModifiedTime', 'type': 'iso-8601'},
     }
 
     def __init__(
         self,
         *,
-        policy: Optional[object] = None,
+        policy: Optional[str] = None,
         **kwargs
     ):
         super(StorageAccountManagementPoliciesRulesProperty, self).__init__(policy=policy, **kwargs)

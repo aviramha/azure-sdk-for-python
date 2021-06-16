@@ -1,9 +1,31 @@
-
 # Release History
 
--------------------
+## 1.2.0b3 (Unreleased)
 
-## 1.1.0 (Unreleased)
+
+## 1.2.0b2 (2021-06-08)
+
+### Features
+- Adds context manager functionality to the sync and async `AzureAppConfigurationClient`s.
+
+### Fixes
+- Fixes a deserialization bug for `FeatureFlagConfigurationSetting` and `SecretReferenceConfigurationSetting`.
+
+## 1.2.0b1 (2021-04-06)
+
+### Features
+
+- Adds method `update_sync_token` to include sync tokens from EventGrid notifications.
+- Added `SecretReferenceConfigurationSetting` type to represent a configuration setting that references a KeyVault Secret.
+Added `FeatureFlagConfigurationSetting` type to represent a configuration setting that controls a feature flag.
+
+## 1.1.1 (2020-10-05)
+
+### Features
+
+- Improve error message if Connection string secret has incorrect padding    #14140
+
+## 1.1.0 (2020-09-08)
 
 ### Features
 

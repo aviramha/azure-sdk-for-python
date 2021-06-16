@@ -107,6 +107,28 @@ class ODataV4Format(object):
 
     http://docs.oasis-open.org/odata/odata-json-format/v4.0/os/odata-json-format-v4.0-os.html#_Toc372793091
 
+    Example of JSON:
+
+    error: {
+        "code": "ValidationError",
+        "message": "One or more fields contain incorrect values: ",
+        "details": [
+            {
+                "code": "ValidationError",
+                "target": "representation",
+                "message": "Parsing error(s): String '' does not match regex pattern '^[^{}/ :]+(?: :\\\\d+)?$'.
+                Path 'host', line 1, position 297."
+            },
+            {
+                "code": "ValidationError",
+                "target": "representation",
+                "message": "Parsing error(s): The input OpenAPI file is not valid for the OpenAPI specificate
+                https: //github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
+                (schema https://github.com/OAI/OpenAPI-Specification/blob/master/schemas/v2.0/schema.json)."
+            }
+        ]
+    }
+
     :param dict json_object: A Python dict representing a ODataV4 JSON
     :ivar str ~.code: Its value is a service-defined error code.
      This code serves as a sub-status for the HTTP error code specified in the response.
@@ -160,7 +182,11 @@ class ODataV4Format(object):
         return self
 
     def __str__(self):
-        return "({}) {}".format(self.code, self.message)
+        return "({}) {}\n{}".format(
+            self.code,
+            self.message,
+            self.message_details()
+        )
 
     def message_details(self):
         """Return a detailled string of the error.
@@ -192,12 +218,14 @@ class AzureError(Exception):
     :paramtype error: Exception
 
     :ivar inner_exception: The exception passed with the 'error' kwarg
-    :type inner_exception: Exception
+    :vartype inner_exception: Exception
     :ivar exc_type: The exc_type from sys.exc_info()
     :ivar exc_value: The exc_value from sys.exc_info()
     :ivar exc_traceback: The exc_traceback from sys.exc_info()
     :ivar exc_msg: A string formatting of message parameter, exc_type and exc_value
     :ivar str message: A stringified version of the message parameter
+    :ivar str continuation_token: A token reference to continue an incomplete operation. This value is optional
+     and will be `None` where continuation is either unavailable or not applicable.
     """
 
     def __init__(self, message, *args, **kwargs):
@@ -208,6 +236,7 @@ class AzureError(Exception):
         )
         self.exc_msg = "{}, {}: {}".format(message, self.exc_type, self.exc_value)
         self.message = str(message)
+        self.continuation_token = kwargs.get('continuation_token')
         super(AzureError, self).__init__(self.message, *args)
 
     def raise_with_traceback(self):
@@ -244,11 +273,15 @@ class HttpResponseError(AzureError):
     :type response: ~azure.core.pipeline.transport.HttpResponse or ~azure.core.pipeline.transport.AsyncHttpResponse
 
     :ivar reason: The HTTP response reason
-    :type reason: str
+    :vartype reason: str
     :ivar status_code: HttpResponse's status code
-    :type status_code: int
+    :vartype status_code: int
     :ivar response: The response that triggered the exception.
-    :type response: ~azure.core.pipeline.transport.HttpResponse or ~azure.core.pipeline.transport.AsyncHttpResponse
+    :vartype response: ~azure.core.pipeline.transport.HttpResponse or ~azure.core.pipeline.transport.AsyncHttpResponse
+    :ivar model: The request body/response body model
+    :vartype model: ~msrest.serialization.Model
+    :ivar error: The formatted error
+    :vartype error: ODataV4Format
     """
 
     def __init__(self, message=None, response=None, **kwargs):

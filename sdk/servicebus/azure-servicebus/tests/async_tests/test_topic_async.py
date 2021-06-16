@@ -14,8 +14,9 @@ from datetime import datetime, timedelta
 
 from devtools_testutils import AzureMgmtTestCase, RandomNameResourceGroupPreparer, CachedResourceGroupPreparer
 
-from azure.servicebus.aio import ServiceBusClient, ServiceBusSharedKeyCredential
-from azure.servicebus._common.message import Message
+from azure.servicebus.aio import ServiceBusClient
+from azure.servicebus.aio._base_handler_async import ServiceBusSharedKeyCredential
+from azure.servicebus._common.message import ServiceBusMessage
 from servicebus_preparer import (
     ServiceBusNamespacePreparer,
     ServiceBusTopicPreparer,
@@ -40,7 +41,7 @@ class ServiceBusTopicsAsyncTests(AzureMgmtTestCase):
             logging_enable=False
         ) as sb_client:
             async with sb_client.get_topic_sender(servicebus_topic.name) as sender:
-                message = Message(b"Sample topic message")
+                message = ServiceBusMessage(b"Sample topic message")
                 await sender.send_messages(message)
 
     @pytest.mark.liveTest
@@ -59,5 +60,5 @@ class ServiceBusTopicsAsyncTests(AzureMgmtTestCase):
             logging_enable=False
         ) as sb_client:
             async with sb_client.get_topic_sender(servicebus_topic.name) as sender:
-                message = Message(b"Sample topic message")
+                message = ServiceBusMessage(b"Sample topic message")
                 await sender.send_messages(message)

@@ -1,18 +1,110 @@
 # Release History
 
-## 5.1.0b1 (Unreleased)
+## 5.1.0b8 (Unreleased)
+
+**Breaking Changes**
+
+- Changed the response structure of `being_analyze_actions`. Now, we return a list of results, where each result is a list of the action results for the document, in the order the documents and actions were passed
+- Removed `AnalyzeActionsType`
+- Removed `AnalyzeActionsResult`
+- Removed `AnalyzeActionsError`
+
+## 5.1.0b7 (2021-05-18)
+
+**Breaking Changes**
+- Renamed `begin_analyze_batch_actions` to `begin_analyze_actions`.
+- Renamed `AnalyzeBatchActionsType` to `AnalyzeActionsType`.
+- Renamed `AnalyzeBatchActionsResult` to `AnalyzeActionsResult`.
+- Renamed `AnalyzeBatchActionsError` to `AnalyzeActionsError`.
+- Renamed `AnalyzeHealthcareEntitiesResultItem` to `AnalyzeHealthcareEntitiesResult`.
+- Fixed `AnalyzeHealthcareEntitiesResult`'s `statistics` to be the correct type, `TextDocumentStatistics`
+- Remove `RequestStatistics`, use `TextDocumentBatchStatistics` instead
+
+**New Features**
+- Added enums `EntityConditionality`, `EntityCertainty`, and `EntityAssociation`.
+- Added `AnalyzeSentimentAction` as a supported action type for `begin_analyze_batch_actions`.
+- Added kwarg `disable_service_logs`. If set to true, you opt-out of having your text input logged on the service side for troubleshooting.
+
+## 5.1.0b6 (2021-03-09)
+
+**Breaking Changes**
+- By default, we now target the service's `v3.1-preview.4` endpoint through enum value `TextAnalyticsApiVersion.V3_1_PREVIEW`
+- Removed property `related_entities` on `HealthcareEntity` and added `entity_relations` onto the document response level for healthcare
+- Renamed properties `aspect` and `opinions` to `target` and `assessments` respectively in class `MinedOpinion`.
+- Renamed classes `AspectSentiment` and `OpinionSentiment` to `TargetSentiment` and `AssessmentSentiment` respectively.
+
+**New Features**
+- Added `RecognizeLinkedEntitiesAction` as a supported action type for `begin_analyze_batch_actions`.
+- Added parameter `categories_filter` to the `recognize_pii_entities` client method.
+- Added enum `PiiEntityCategoryType`.
+- Add property `normalized_text` to `HealthcareEntity`. This property is a normalized version of the `text` property that already
+exists on the `HealthcareEntity`
+- Add property `assertion` onto `HealthcareEntity`. This contains assertions about the entity itself, i.e. if the entity represents a diagnosis,
+is this diagnosis conditional on a symptom?
+
+**Known Issues**
+
+- `begin_analyze_healthcare_entities` is currently in gated preview and can not be used with AAD credentials. For more information, see [the Text Analytics for Health documentation](https://docs.microsoft.com/azure/cognitive-services/text-analytics/how-tos/text-analytics-for-health?tabs=ner#request-access-to-the-public-preview).
+- At time of this SDK release, the service is not respecting the value passed through `model_version` to `begin_analyze_healthcare_entities`, it only uses the latest model.
+
+## 5.1.0b5 (2021-02-10)
+
+**Breaking Changes**
+
+- Rename `begin_analyze` to `begin_analyze_batch_actions`.
+- Now instead of separate parameters for all of the different types of actions you can pass to `begin_analyze_batch_actions`, we accept one parameter `actions`,
+which is a list of actions you would like performed. The results of the actions are returned in the same order as when inputted.
+- The response object from `begin_analyze_batch_actions` has also changed. Now, after the completion of your long running operation, we return a paged iterable
+of action results, in the same order they've been inputted. The actual document results for each action are included under property `document_results` of
+each action result.
+
+**New Features**
+- Renamed `begin_analyze_healthcare` to `begin_analyze_healthcare_entities`.
+- Renamed `AnalyzeHealthcareResult` to `AnalyzeHealthcareEntitiesResult` and `AnalyzeHealthcareResultItem` to `AnalyzeHealthcareEntitiesResultItem`.
+- Renamed `HealthcareEntityLink` to `HealthcareEntityDataSource` and renamed its properties `id` to `entity_id` and `data_source` to `name`.
+- Removed `relations` from `AnalyzeHealthcareEntitiesResultItem` and added `related_entities` to `HealthcareEntity`.
+- Moved the cancellation logic for the Analyze Healthcare Entities service from
+the service client to the poller object returned from `begin_analyze_healthcare_entities`.
+- Exposed Analyze Healthcare Entities operation metadata on the poller object returned from `begin_analyze_healthcare_entities`.
+- No longer need to specify `api_version=TextAnalyticsApiVersion.V3_1_PREVIEW_3` when calling `begin_analyze` and `begin_analyze_healthcare_entities`. `begin_analyze_healthcare_entities` is still in gated preview though.
+- Added a new parameter `string_index_type` to the service client methods `begin_analyze_healthcare_entities`, `analyze_sentiment`, `recognize_entities`, `recognize_pii_entities`, and `recognize_linked_entities` which tells the service how to interpret string offsets.
+- Added property `length` to `CategorizedEntity`, `SentenceSentiment`, `LinkedEntityMatch`, `AspectSentiment`, `OpinionSentiment`, `PiiEntity` and
+`HealthcareEntity`.
+
+## 5.1.0b4 (2021-01-12)
+
+**Bug Fixes**
+
+- Package requires [azure-core](https://pypi.org/project/azure-core/) version 1.8.2 or greater
+
+
+## 5.1.0b3 (2020-11-19)
+
+**New Features**
+- We have added method `begin_analyze`, which supports long-running batch process of Named Entity Recognition, Personally identifiable Information, and Key Phrase Extraction. To use, you must specify `api_version=TextAnalyticsApiVersion.V3_1_PREVIEW_3` when creating your client.
+- We have added method `begin_analyze_healthcare`, which supports the service's Health API. Since the Health API is currently only available in a gated preview, you need to have your subscription on the service's allow list, and you must specify `api_version=TextAnalyticsApiVersion.V3_1_PREVIEW_3` when creating your client. Note that since this is a gated preview, AAD is not supported. More information [here](https://docs.microsoft.com/azure/cognitive-services/text-analytics/how-tos/text-analytics-for-health?tabs=ner#request-access-to-the-public-preview).
+
+
+## 5.1.0b2 (2020-10-06)
+
+**Breaking changes**
+- Removed property `length` from `CategorizedEntity`, `SentenceSentiment`, `LinkedEntityMatch`, `AspectSentiment`, `OpinionSentiment`, and `PiiEntity`.
+To get the length of the text in these models, just call `len()` on the `text` property.
+- When a parameter or endpoint is not compatible with the API version you specify, we will now return a `ValueError` instead of a `NotImplementedError`.
+- Client side validation of input is now disabled by default. This means there will be no `ValidationError`s thrown by the client SDK in the case of malformed input. The error will now be thrown by the service through an `HttpResponseError`.
+
+## 5.1.0b1 (2020-09-17)
 
 **New features**
-- We are now targeting the service's v3.1-preview.1 API as the default. If you would like to still use version v3.0 of the service,
+- We are now targeting the service's v3.1-preview API as the default. If you would like to still use version v3.0 of the service,
 pass in `v3.0` to the kwarg `api_version` when creating your TextAnalyticsClient
-- We have added an API `recognize_pii_entities` which returns entities containing personal information for a batch of documents. Only available for API version v3.1-preview.1 and up.
-  - In API version v3.1-preview.2 and up, the redacted text of the document is returned on the top-level result object `RecognizePiiEntitiesResult` through property `redacted_text`.
-- Added `offset` and `length` properties for `CategorizedEntity`, `SentenceSentiment`, and `LinkedEntityMatch`. These properties are only available for API versions v3.1-preview.1 and up.
+- We have added an API `recognize_pii_entities` which returns entities containing personally identifiable information for a batch of documents. Only available for API version v3.1-preview and up.
+- Added `offset` and `length` properties for `CategorizedEntity`, `SentenceSentiment`, and `LinkedEntityMatch`. These properties are only available for API versions v3.1-preview and up.
   - `length` is the number of characters in the text of these models
   - `offset` is the offset of the text from the start of the document
 - We now have added support for opinion mining. To use this feature, you need to make sure you are using the service's
-v3.1-preview.1 API. To get this support pass `show_opinion_mining` as True when calling the `analyze_sentiment` endpoint
-- Add property `bing_entity_search_api_id` to the `LinkedEntity` class. This property is only available for v3.1-preview.2 and up, and it is to be
+v3.1-preview API. To get this support pass `show_opinion_mining` as True when calling the `analyze_sentiment` endpoint
+- Add property `bing_entity_search_api_id` to the `LinkedEntity` class. This property is only available for v3.1-preview and up, and it is to be
 used in conjunction with the Bing Entity Search API to fetch additional relevant information about the returned entity.
 
 ## 5.0.0 (2020-07-27)

@@ -8,13 +8,13 @@
 from typing import TYPE_CHECKING
 import warnings
 
-from azure.core.exceptions import HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
+from azure.core.exceptions import ClientAuthenticationError, HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
 from azure.core.paging import ItemPaged
 from azure.core.pipeline import PipelineResponse
 from azure.core.pipeline.transport import HttpRequest, HttpResponse
 from azure.mgmt.core.exceptions import ARMErrorFormat
 
-from .. import models
+from .. import models as _models
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,ungrouped-imports
@@ -37,7 +37,7 @@ class TenantActivityLogsOperations(object):
     :param deserializer: An object model deserializer.
     """
 
-    models = models
+    models = _models
 
     def __init__(self, client, config, serializer, deserializer):
         self._client = client
@@ -51,47 +51,54 @@ class TenantActivityLogsOperations(object):
         select=None,  # type: Optional[str]
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.EventDataCollection"]
+        # type: (...) -> Iterable["_models.EventDataCollection"]
         """Gets the Activity Logs for the Tenant.:code:`<br>`Everything that is applicable to the API to
-    get the Activity Logs for the subscription is applicable to this API (the parameters, $filter,
-    etc.).:code:`<br>`One thing to point out here is that this API does *not* retrieve the logs at
-    the individual subscription of the tenant but only surfaces the logs that were generated at the
-    tenant level.
+        get the Activity Logs for the subscription is applicable to this API (the parameters, $filter,
+        etc.).:code:`<br>`One thing to point out here is that this API does *not* retrieve the logs at
+        the individual subscription of the tenant but only surfaces the logs that were generated at the
+        tenant level.
 
         :param filter: Reduces the set of data collected. :code:`<br>`The **$filter** is very
-     restricted and allows only the following patterns.:code:`<br>`- List events for a resource
-     group: $filter=eventTimestamp ge ':code:`<Start Time>`' and eventTimestamp le ':code:`<End
-     Time>`' and eventChannels eq 'Admin, Operation' and resourceGroupName eq
-     ':code:`<ResourceGroupName>`'.:code:`<br>`- List events for resource: $filter=eventTimestamp ge
-     ':code:`<Start Time>`' and eventTimestamp le ':code:`<End Time>`' and eventChannels eq 'Admin,
-     Operation' and resourceUri eq ':code:`<ResourceURI>`'.:code:`<br>`- List events for a
-     subscription: $filter=eventTimestamp ge ':code:`<Start Time>`' and eventTimestamp le
-     ':code:`<End Time>`' and eventChannels eq 'Admin, Operation'.:code:`<br>`- List events for a
-     resource provider: $filter=eventTimestamp ge ':code:`<Start Time>`' and eventTimestamp le
-     ':code:`<End Time>`' and eventChannels eq 'Admin, Operation' and resourceProvider eq
-     ':code:`<ResourceProviderName>`'.:code:`<br>`- List events for a correlation Id: api-
-     version=2014-04-01&$filter=eventTimestamp ge '2014-07-16T04:36:37.6407898Z' and eventTimestamp
-     le '2014-07-20T04:36:37.6407898Z' and eventChannels eq 'Admin, Operation' and correlationId eq
-     ':code:`<CorrelationID>`'.:code:`<br>`\ **NOTE**\ : No other syntax is allowed.
+         restricted and allows only the following patterns.:code:`<br>`- List events for a resource
+         group: $filter=eventTimestamp ge ':code:`<Start Time>`' and eventTimestamp le ':code:`<End
+         Time>`' and eventChannels eq 'Admin, Operation' and resourceGroupName eq
+         ':code:`<ResourceGroupName>`'.:code:`<br>`- List events for resource: $filter=eventTimestamp ge
+         ':code:`<Start Time>`' and eventTimestamp le ':code:`<End Time>`' and eventChannels eq 'Admin,
+         Operation' and resourceUri eq ':code:`<ResourceURI>`'.:code:`<br>`- List events for a
+         subscription: $filter=eventTimestamp ge ':code:`<Start Time>`' and eventTimestamp le
+         ':code:`<End Time>`' and eventChannels eq 'Admin, Operation'.:code:`<br>`- List events for a
+         resource provider: $filter=eventTimestamp ge ':code:`<Start Time>`' and eventTimestamp le
+         ':code:`<End Time>`' and eventChannels eq 'Admin, Operation' and resourceProvider eq
+         ':code:`<ResourceProviderName>`'.:code:`<br>`- List events for a correlation Id: api-
+         version=2014-04-01&$filter=eventTimestamp ge '2014-07-16T04:36:37.6407898Z' and eventTimestamp
+         le '2014-07-20T04:36:37.6407898Z' and eventChannels eq 'Admin, Operation' and correlationId eq
+         ':code:`<CorrelationID>`'.:code:`<br>`\ **NOTE**\ : No other syntax is allowed.
         :type filter: str
         :param select: Used to fetch events with only the given properties.:code:`<br>`The **$select**
-     argument is a comma separated list of property names to be returned. Possible values are:
-     *authorization*\ , *claims*\ , *correlationId*\ , *description*\ , *eventDataId*\ ,
-     *eventName*\ , *eventTimestamp*\ , *httpRequest*\ , *level*\ , *operationId*\ ,
-     *operationName*\ , *properties*\ , *resourceGroupName*\ , *resourceProviderName*\ ,
-     *resourceId*\ , *status*\ , *submissionTimestamp*\ , *subStatus*\ , *subscriptionId*.
+         argument is a comma separated list of property names to be returned. Possible values are:
+         *authorization*\ , *claims*\ , *correlationId*\ , *description*\ , *eventDataId*\ ,
+         *eventName*\ , *eventTimestamp*\ , *httpRequest*\ , *level*\ , *operationId*\ ,
+         *operationName*\ , *properties*\ , *resourceGroupName*\ , *resourceProviderName*\ ,
+         *resourceId*\ , *status*\ , *submissionTimestamp*\ , *subStatus*\ , *subscriptionId*.
         :type select: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :return: An iterator like instance of either EventDataCollection or the result of cls(response)
         :rtype: ~azure.core.paging.ItemPaged[~$(python-base-namespace).v2015_04_01.models.EventDataCollection]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.EventDataCollection"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.EventDataCollection"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2015-04-01"
+        accept = "application/json"
 
         def prepare_request(next_link=None):
+            # Construct headers
+            header_parameters = {}  # type: Dict[str, Any]
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
+
             if not next_link:
                 # Construct URL
                 url = self.list.metadata['url']  # type: ignore
@@ -103,15 +110,11 @@ class TenantActivityLogsOperations(object):
                 if select is not None:
                     query_parameters['$select'] = self._serialize.query("select", select, 'str')
 
+                request = self._client.get(url, query_parameters, header_parameters)
             else:
                 url = next_link
                 query_parameters = {}  # type: Dict[str, Any]
-            # Construct headers
-            header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
-
-            # Construct and send request
-            request = self._client.get(url, query_parameters, header_parameters)
+                request = self._client.get(url, query_parameters, header_parameters)
             return request
 
         def extract_data(pipeline_response):
@@ -128,7 +131,7 @@ class TenantActivityLogsOperations(object):
             response = pipeline_response.http_response
 
             if response.status_code not in [200]:
-                error = self._deserialize(models.ErrorResponse, response)
+                error = self._deserialize(_models.ErrorResponse, response)
                 map_error(status_code=response.status_code, response=response, error_map=error_map)
                 raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
 

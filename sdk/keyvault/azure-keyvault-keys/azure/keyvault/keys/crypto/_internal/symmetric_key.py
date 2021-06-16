@@ -4,9 +4,11 @@
 # ------------------------------------
 import uuid
 import os
+
+from azure.core.exceptions import AzureError
 from .key import Key
-from .algorithms.aes_cbc import Aes256Cbc, Aes192Cbc, Aes128Cbc
-from .algorithms.aes_cbc_hmac import Aes256CbcHmacSha512, Aes192CbcHmacSha384, Aes128CbcHmacSha256
+from .algorithms.aes_cbc import Aes256CbcPad, Aes192CbcPad, Aes128CbcPad
+from .algorithms.aes_cbc_hmac import Aes256CbcHmacSha512, Aes192CbcHmacSha384
 from .algorithms.aes_kw import AesKw256, AesKw192, AesKw128
 
 key_size_128 = 128 >> 3
@@ -20,9 +22,9 @@ _default_key_size = key_size_256
 _supported_key_sizes = [key_size_128, key_size_192, key_size_256, key_size_384, key_size_512]
 
 _default_enc_alg_by_size = {
-    key_size_128: Aes128Cbc.name(),
-    key_size_192: Aes192Cbc.name(),
-    key_size_256: Aes128CbcHmacSha256.name(),
+    key_size_128: Aes128CbcPad.name(),
+    key_size_192: Aes192CbcPad.name(),
+    key_size_256: Aes256CbcPad.name(),
     key_size_384: Aes192CbcHmacSha384.name(),
     key_size_512: Aes256CbcHmacSha512.name(),
 }
@@ -34,6 +36,11 @@ _default_kw_alg_by_size = {
     key_size_384: AesKw256.name(),
     key_size_512: AesKw256.name(),
 }
+
+
+def raise_if_incorrect_key_size(algorithm, key_size):
+    if algorithm._key_size >> 3 != key_size:  # pylint:disable=protected-access
+        raise AzureError("Invalid AES encryption algorithm for key size. The algorithm must match the size of the key.")
 
 
 class SymmetricKey(Key):
@@ -55,6 +62,21 @@ class SymmetricKey(Key):
 
         self._key = key_bytes
 
+        supported_encryption_algorithms = []
+        supported_key_wrap_algorithms = []
+        key_size = len(self._key)
+        if key_size >= key_size_128:
+            supported_encryption_algorithms.append(Aes128CbcPad.name())
+            supported_key_wrap_algorithms.append(AesKw128.name())
+        if key_size >= key_size_192:
+            supported_encryption_algorithms.append(Aes192CbcPad.name())
+            supported_key_wrap_algorithms.append(AesKw192.name())
+        if key_size >= key_size_256:
+            supported_encryption_algorithms.append(Aes256CbcPad.name())
+            supported_key_wrap_algorithms.append(AesKw256.name())
+        self._supported_encryption_algorithms = frozenset(supported_encryption_algorithms)
+        self._supported_key_wrap_algorithms = frozenset(supported_key_wrap_algorithms)
+
     def is_private_key(self):
         return True
 
@@ -74,48 +96,17 @@ class SymmetricKey(Key):
     def default_key_wrap_algorithm(self):
         return _default_kw_alg_by_size[len(self._key)]
 
-    @property
-    def supported_encryption_algorithms(self):
-        supported = []
-        key_size = len(self._key)
-
-        if key_size >= key_size_128:
-            supported.append(Aes128Cbc.name())
-        if key_size >= key_size_192:
-            supported.append(Aes192Cbc.name())
-        if key_size >= key_size_256:
-            supported.append(Aes256Cbc.name())
-            supported.append(Aes128CbcHmacSha256.name())
-        if key_size >= key_size_384:
-            supported.append(Aes192CbcHmacSha384.name())
-        if key_size >= key_size_512:
-            supported.append(Aes256CbcHmacSha512.name())
-
-        return supported
-
-    @property
-    def supported_key_wrap_algorithms(self):
-        supported = []
-        key_size = len(self._key)
-
-        if key_size >= key_size_128:
-            supported.append(AesKw128.name())
-        if key_size >= key_size_192:
-            supported.append(AesKw192.name())
-        if key_size >= key_size_256:
-            supported.append(AesKw256.name())
-
-        return supported
-
     def encrypt(self, plain_text, iv, **kwargs):  # pylint:disable=arguments-differ
         algorithm = self._get_algorithm("encrypt", **kwargs)
+        raise_if_incorrect_key_size(algorithm, len(self._key))
         encryptor = algorithm.create_encryptor(key=self._key, iv=iv)
-        return encryptor.transform(plain_text, **kwargs)
+        return encryptor.transform(plain_text)
 
     def decrypt(self, cipher_text, iv, **kwargs):  # pylint:disable=arguments-differ
         algorithm = self._get_algorithm("decrypt", **kwargs)
+        raise_if_incorrect_key_size(algorithm, len(self._key))
         decryptor = algorithm.create_decryptor(key=self._key, iv=iv)
-        return decryptor.transform(cipher_text, **kwargs)
+        return decryptor.transform(cipher_text)
 
     def wrap_key(self, key, **kwargs):
         algorithm = self._get_algorithm("wrapKey", **kwargs)
@@ -128,7 +119,7 @@ class SymmetricKey(Key):
         return decryptor.transform(encrypted_key)
 
     def sign(self, digest, **kwargs):
-        raise NotImplementedError()
+        raise NotImplementedError("Local signing isn't supported with symmetric keys")
 
     def verify(self, digest, signature, **kwargs):
-        raise NotImplementedError()
+        raise NotImplementedError("Local signature verification isn't supported with symmetric keys")

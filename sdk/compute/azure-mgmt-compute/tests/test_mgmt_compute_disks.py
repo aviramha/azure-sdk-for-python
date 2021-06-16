@@ -24,6 +24,10 @@ class MgmtComputeTestMultiVersion(AzureMgmtTestCase):
 
     def setUp(self):
         super(MgmtComputeTestMultiVersion, self).setUp()
+        self.re_replacer.register_pattern_pair(
+          '\"accessSAS\": \"https://.*\"',
+          '\"accessSAS\": \"FakeUrl\"'
+        )
         self.mgmt_client = self.create_mgmt_client(
             azure.mgmt.compute.ComputeManagementClient
         )
@@ -109,6 +113,10 @@ class MgmtComputeTest(AzureMgmtTestCase):
 
     def setUp(self):
         super(MgmtComputeTest, self).setUp()
+        self.re_replacer.register_pattern_pair(
+          '\"accessSAS\": \"https://.*\"',
+          '\"accessSAS\": \"FakeUrl\"'
+        )
         self.mgmt_client = self.create_mgmt_client(
             azure.mgmt.compute.ComputeManagementClient
         )
@@ -123,13 +131,14 @@ class MgmtComputeTest(AzureMgmtTestCase):
 
     def create_key(self, group_name, location, key_vault, tenant_id, object_id):
         if self.is_live:
-            result = self.keyvault_client.vaults.create_or_update(
+            result = self.keyvault_client.vaults.begin_create_or_update(
                 group_name,
                 key_vault,
                 {
                   'location': location,
                   'properties': {
                     'sku': {
+                      'family': "A",
                       'name': 'standard'
                     },
                     'tenant_id': tenant_id,
@@ -184,13 +193,14 @@ class MgmtComputeTest(AzureMgmtTestCase):
         else:
             return ('000', '000')
 
+    @unittest.skip("The KEY_VAULT_NAME need artificially generated,skip for now")
     @RandomNameResourceGroupPreparer(location=AZURE_LOCATION)
     def test_compute_disk_encryption(self, resource_group):
         SUBSCRIPTION_ID = self.settings.SUBSCRIPTION_ID
         TENANT_ID = self.settings.TENANT_ID
         CLIENT_OID = self.settings.CLIENT_OID if self.is_live else "000"
         RESOURCE_GROUP = resource_group.name
-        KEY_VAULT_NAME = self.get_resource_name("keyvaultxmm")
+        KEY_VAULT_NAME = self.get_resource_name("keyvaultxmmkyxy")
         DISK_ENCRYPTION_SET_NAME = self.get_resource_name("diskencryptionset")
 
         VAULT_ID, KEY_URI = self.create_key(RESOURCE_GROUP, AZURE_LOCATION, KEY_VAULT_NAME, TENANT_ID, CLIENT_OID)

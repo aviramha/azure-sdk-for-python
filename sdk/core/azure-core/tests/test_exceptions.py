@@ -99,6 +99,16 @@ class TestExceptions(object):
         assert error.error is None
         assert error.status_code is None
 
+    def test_error_continuation_token(self):
+        error = HttpResponseError(message="Specific error message", continuation_token='foo')
+        assert str(error) == "Specific error message"
+        assert error.message == "Specific error message"
+        assert error.response is None
+        assert error.reason is None
+        assert error.error is None
+        assert error.status_code is None
+        assert error.continuation_token == 'foo'
+
     def test_deserialized_httpresponse_error_code(self):
         """This is backward compat support of autorest azure-core (KV 4.0.0, Storage 12.0.0).
 
@@ -112,8 +122,8 @@ class TestExceptions(object):
         }
         response = _build_response(json.dumps(message).encode("utf-8"))
         error = FakeHttpResponse(response, FakeErrorOne())
-        assert error.message == "(FakeErrorOne) A fake error"
-        assert str(error.error) == "(FakeErrorOne) A fake error"
+        assert "(FakeErrorOne) A fake error" in error.message
+        assert "(FakeErrorOne) A fake error" in str(error.error)
         assert error.error.code == "FakeErrorOne"
         assert error.error.message == "A fake error"
         assert error.response is response
@@ -139,8 +149,8 @@ class TestExceptions(object):
         }
         response = _build_response(json.dumps(message).encode("utf-8"))
         error = FakeHttpResponse(response, FakeErrorTwo())
-        assert error.message == "(FakeErrorTwo) A different fake error"
-        assert str(error.error) == "(FakeErrorTwo) A different fake error"
+        assert "(FakeErrorTwo) A different fake error" in error.message
+        assert "(FakeErrorTwo) A different fake error" in str(error.error)
         assert error.error.code == "FakeErrorTwo"
         assert error.error.message == "A different fake error"
         assert error.response is response

@@ -13,30 +13,31 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - azsdk-python-azure-mgmt-network/11.0.0 Python/3.6.9 (Linux-4.9.184-linuxkit-x86_64-with-Ubuntu-18.04-bionic)
+      - azsdk-python-azure-mgmt-network/19.0.0 Python/3.8.10 (Linux-5.4.0-1047-azure-x86_64-with-glibc2.2.5)
+        VSTS_0fb41ef4-5012-48a9-bf39-4ee3de03ee35_build_2500_0
     method: PUT
-    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy?api-version=2020-04-01
+    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy?api-version=2021-02-01
   response:
     body:
-      string: "{\r\n  \"name\": \"myServiceEndpointPolicy\",\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy\"\
-        ,\r\n  \"etag\": \"W/\\\"ffa0d2e0-c269-4a1a-abe2-c87e7f8edd21\\\"\",\r\n \
-        \ \"type\": \"Microsoft.Network/serviceEndpointPolicies\",\r\n  \"location\"\
-        : \"eastus\",\r\n  \"properties\": {\r\n    \"provisioningState\": \"Updating\"\
-        ,\r\n    \"resourceGuid\": \"7b78a566-f2f9-4164-94bb-9e1aee22f9b8\",\r\n \
-        \   \"serviceEndpointPolicyDefinitions\": []\r\n  }\r\n}"
+      string: "{\r\n  \"name\": \"myServiceEndpointPolicy\",\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy\",\r\n
+        \ \"etag\": \"W/\\\"4f27a6b2-ea02-408e-88e2-b9b65e6cd8b2\\\"\",\r\n  \"type\":
+        \"Microsoft.Network/serviceEndpointPolicies\",\r\n  \"location\": \"eastus\",\r\n
+        \ \"properties\": {\r\n    \"provisioningState\": \"Updating\",\r\n    \"resourceGuid\":
+        \"4774e549-f823-429f-953d-761467aff6a3\",\r\n    \"serviceEndpointPolicyDefinitions\":
+        []\r\n  }\r\n}"
     headers:
       azure-asyncnotification:
       - Enabled
       azure-asyncoperation:
-      - https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Network/locations/eastus/operations/a805a1c0-945b-4fa5-9bbe-572c32cb8419?api-version=2020-04-01
+      - https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Network/locations/eastus/operations/e22d1e10-fb74-4cc5-8780-00e08213be1a?api-version=2021-02-01
       cache-control:
       - no-cache
       content-length:
-      - '561'
+      - '583'
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 18 May 2020 16:20:27 GMT
+      - Fri, 14 May 2021 04:37:07 GMT
       expires:
       - '-1'
       pragma:
@@ -49,7 +50,7 @@ interactions:
       x-content-type-options:
       - nosniff
       x-ms-arm-service-request-id:
-      - 2d39ebf0-cbaf-4c4d-bcdc-7749c428cb5f
+      - 77a26bf2-ac8e-48f8-8fdd-a7de2adb4fd4
       x-ms-ratelimit-remaining-subscription-writes:
       - '1199'
     status:
@@ -65,9 +66,10 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - azsdk-python-azure-mgmt-network/11.0.0 Python/3.6.9 (Linux-4.9.184-linuxkit-x86_64-with-Ubuntu-18.04-bionic)
+      - azsdk-python-azure-mgmt-network/19.0.0 Python/3.8.10 (Linux-5.4.0-1047-azure-x86_64-with-glibc2.2.5)
+        VSTS_0fb41ef4-5012-48a9-bf39-4ee3de03ee35_build_2500_0
     method: GET
-    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Network/locations/eastus/operations/a805a1c0-945b-4fa5-9bbe-572c32cb8419?api-version=2020-04-01
+    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Network/locations/eastus/operations/e22d1e10-fb74-4cc5-8780-00e08213be1a?api-version=2021-02-01
   response:
     body:
       string: "{\r\n  \"status\": \"Succeeded\"\r\n}"
@@ -79,7 +81,7 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 18 May 2020 16:20:38 GMT
+      - Fri, 14 May 2021 04:37:17 GMT
       expires:
       - '-1'
       pragma:
@@ -96,7 +98,7 @@ interactions:
       x-content-type-options:
       - nosniff
       x-ms-arm-service-request-id:
-      - fbc3190e-f688-4aa7-a118-600b7d365c45
+      - dccad7cd-bc94-4df0-b650-dbd97a9108cb
     status:
       code: 200
       message: OK
@@ -110,28 +112,29 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - azsdk-python-azure-mgmt-network/11.0.0 Python/3.6.9 (Linux-4.9.184-linuxkit-x86_64-with-Ubuntu-18.04-bionic)
+      - azsdk-python-azure-mgmt-network/19.0.0 Python/3.8.10 (Linux-5.4.0-1047-azure-x86_64-with-glibc2.2.5)
+        VSTS_0fb41ef4-5012-48a9-bf39-4ee3de03ee35_build_2500_0
     method: GET
-    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy?api-version=2020-04-01
+    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy?api-version=2021-02-01
   response:
     body:
-      string: "{\r\n  \"name\": \"myServiceEndpointPolicy\",\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy\"\
-        ,\r\n  \"etag\": \"W/\\\"ada7c4da-18a8-4466-8dfb-8e4662504a39\\\"\",\r\n \
-        \ \"type\": \"Microsoft.Network/serviceEndpointPolicies\",\r\n  \"location\"\
-        : \"eastus\",\r\n  \"properties\": {\r\n    \"provisioningState\": \"Succeeded\"\
-        ,\r\n    \"resourceGuid\": \"7b78a566-f2f9-4164-94bb-9e1aee22f9b8\",\r\n \
-        \   \"serviceEndpointPolicyDefinitions\": []\r\n  }\r\n}"
+      string: "{\r\n  \"name\": \"myServiceEndpointPolicy\",\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy\",\r\n
+        \ \"etag\": \"W/\\\"112d3b74-9145-41a1-a3c5-39c376557180\\\"\",\r\n  \"type\":
+        \"Microsoft.Network/serviceEndpointPolicies\",\r\n  \"location\": \"eastus\",\r\n
+        \ \"properties\": {\r\n    \"provisioningState\": \"Succeeded\",\r\n    \"resourceGuid\":
+        \"4774e549-f823-429f-953d-761467aff6a3\",\r\n    \"serviceEndpointPolicyDefinitions\":
+        []\r\n  }\r\n}"
     headers:
       cache-control:
       - no-cache
       content-length:
-      - '562'
+      - '584'
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 18 May 2020 16:20:38 GMT
+      - Fri, 14 May 2021 04:37:17 GMT
       etag:
-      - W/"ada7c4da-18a8-4466-8dfb-8e4662504a39"
+      - W/"112d3b74-9145-41a1-a3c5-39c376557180"
       expires:
       - '-1'
       pragma:
@@ -148,13 +151,13 @@ interactions:
       x-content-type-options:
       - nosniff
       x-ms-arm-service-request-id:
-      - 25068955-a9ec-4a4b-b3d6-b59107b64cc7
+      - 1a523234-534b-4627-ae2c-0903652a6307
     status:
       code: 200
       message: OK
 - request:
-    body: 'b''{"properties": {"description": "Storage Service EndpointPolicy Definition",
-      "service": "Microsoft.Storage", "serviceResources": ["/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname"]}}'''
+    body: '{"properties": {"description": "Storage Service EndpointPolicy Definition",
+      "service": "Microsoft.Storage", "serviceResources": ["/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname"]}}'
     headers:
       Accept:
       - application/json
@@ -163,35 +166,34 @@ interactions:
       Connection:
       - keep-alive
       Content-Length:
-      - '259'
+      - '281'
       Content-Type:
       - application/json
       User-Agent:
-      - azsdk-python-azure-mgmt-network/11.0.0 Python/3.6.9 (Linux-4.9.184-linuxkit-x86_64-with-Ubuntu-18.04-bionic)
+      - azsdk-python-azure-mgmt-network/19.0.0 Python/3.8.10 (Linux-5.4.0-1047-azure-x86_64-with-glibc2.2.5)
+        VSTS_0fb41ef4-5012-48a9-bf39-4ee3de03ee35_build_2500_0
     method: PUT
-    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy/serviceEndpointPolicyDefinitions/myServiceEndpointPolicyDefinition?api-version=2020-04-01
+    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy/serviceEndpointPolicyDefinitions/myServiceEndpointPolicyDefinition?api-version=2021-02-01
   response:
     body:
-      string: "{\r\n  \"name\": \"myServiceEndpointPolicyDefinition\",\r\n  \"id\"\
-        : \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy/serviceEndpointPolicyDefinitions/myServiceEndpointPolicyDefinition\"\
-        ,\r\n  \"etag\": \"W/\\\"2e5a8bb6-d988-4c20-9ae4-a398149acb64\\\"\",\r\n \
-        \ \"properties\": {\r\n    \"provisioningState\": \"Updating\",\r\n    \"\
-        service\": \"Microsoft.Storage\",\r\n    \"description\": \"Storage Service\
-        \ EndpointPolicy Definition\",\r\n    \"serviceResources\": [\r\n      \"\
-        /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname\"\
-        \r\n    ]\r\n  },\r\n  \"type\": \"Microsoft.Network/serviceEndpointPolicies/serviceEndpointPolicyDefinitions\"\
-        \r\n}"
+      string: "{\r\n  \"name\": \"myServiceEndpointPolicyDefinition\",\r\n  \"id\":
+        \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy/serviceEndpointPolicyDefinitions/myServiceEndpointPolicyDefinition\",\r\n
+        \ \"etag\": \"W/\\\"be37eeb6-dca5-418e-a1ba-691900ca994e\\\"\",\r\n  \"properties\":
+        {\r\n    \"provisioningState\": \"Updating\",\r\n    \"service\": \"Microsoft.Storage\",\r\n
+        \   \"description\": \"Storage Service EndpointPolicy Definition\",\r\n    \"serviceResources\":
+        [\r\n      \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname\"\r\n
+        \   ]\r\n  },\r\n  \"type\": \"Microsoft.Network/serviceEndpointPolicies/serviceEndpointPolicyDefinitions\"\r\n}"
     headers:
       azure-asyncoperation:
-      - https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Network/locations/eastus/operations/a08a4a7c-89c6-48a0-b51d-958aee2cfaab?api-version=2020-04-01
+      - https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Network/locations/eastus/operations/d469bf19-f82d-462f-a705-bda6713a931f?api-version=2021-02-01
       cache-control:
       - no-cache
       content-length:
-      - '812'
+      - '856'
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 18 May 2020 16:20:39 GMT
+      - Fri, 14 May 2021 04:37:17 GMT
       expires:
       - '-1'
       pragma:
@@ -204,7 +206,7 @@ interactions:
       x-content-type-options:
       - nosniff
       x-ms-arm-service-request-id:
-      - d3a30831-9192-4995-a264-0d2c95e89a23
+      - f736cbe2-c293-4463-a0ef-640f4a75f926
       x-ms-ratelimit-remaining-subscription-writes:
       - '1198'
     status:
@@ -220,9 +222,10 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - azsdk-python-azure-mgmt-network/11.0.0 Python/3.6.9 (Linux-4.9.184-linuxkit-x86_64-with-Ubuntu-18.04-bionic)
+      - azsdk-python-azure-mgmt-network/19.0.0 Python/3.8.10 (Linux-5.4.0-1047-azure-x86_64-with-glibc2.2.5)
+        VSTS_0fb41ef4-5012-48a9-bf39-4ee3de03ee35_build_2500_0
     method: GET
-    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Network/locations/eastus/operations/a08a4a7c-89c6-48a0-b51d-958aee2cfaab?api-version=2020-04-01
+    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Network/locations/eastus/operations/d469bf19-f82d-462f-a705-bda6713a931f?api-version=2021-02-01
   response:
     body:
       string: "{\r\n  \"status\": \"Succeeded\"\r\n}"
@@ -234,7 +237,7 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 18 May 2020 16:20:49 GMT
+      - Fri, 14 May 2021 04:37:28 GMT
       expires:
       - '-1'
       pragma:
@@ -251,7 +254,7 @@ interactions:
       x-content-type-options:
       - nosniff
       x-ms-arm-service-request-id:
-      - 7c202ff4-7992-4c6b-9a9d-42154ba79a71
+      - 074cff92-423c-43bf-87ad-92990a88b89f
     status:
       code: 200
       message: OK
@@ -265,31 +268,30 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - azsdk-python-azure-mgmt-network/11.0.0 Python/3.6.9 (Linux-4.9.184-linuxkit-x86_64-with-Ubuntu-18.04-bionic)
+      - azsdk-python-azure-mgmt-network/19.0.0 Python/3.8.10 (Linux-5.4.0-1047-azure-x86_64-with-glibc2.2.5)
+        VSTS_0fb41ef4-5012-48a9-bf39-4ee3de03ee35_build_2500_0
     method: GET
-    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy/serviceEndpointPolicyDefinitions/myServiceEndpointPolicyDefinition?api-version=2020-04-01
+    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy/serviceEndpointPolicyDefinitions/myServiceEndpointPolicyDefinition?api-version=2021-02-01
   response:
     body:
-      string: "{\r\n  \"name\": \"myServiceEndpointPolicyDefinition\",\r\n  \"id\"\
-        : \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy/serviceEndpointPolicyDefinitions/myServiceEndpointPolicyDefinition\"\
-        ,\r\n  \"etag\": \"W/\\\"f0d34fc8-1830-42c9-b6bf-1bf9d2775313\\\"\",\r\n \
-        \ \"properties\": {\r\n    \"provisioningState\": \"Succeeded\",\r\n    \"\
-        service\": \"Microsoft.Storage\",\r\n    \"description\": \"Storage Service\
-        \ EndpointPolicy Definition\",\r\n    \"serviceResources\": [\r\n      \"\
-        /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname\"\
-        \r\n    ]\r\n  },\r\n  \"type\": \"Microsoft.Network/serviceEndpointPolicies/serviceEndpointPolicyDefinitions\"\
-        \r\n}"
+      string: "{\r\n  \"name\": \"myServiceEndpointPolicyDefinition\",\r\n  \"id\":
+        \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy/serviceEndpointPolicyDefinitions/myServiceEndpointPolicyDefinition\",\r\n
+        \ \"etag\": \"W/\\\"2da1b09f-755a-4c07-83c5-18a2054cebdd\\\"\",\r\n  \"properties\":
+        {\r\n    \"provisioningState\": \"Succeeded\",\r\n    \"service\": \"Microsoft.Storage\",\r\n
+        \   \"description\": \"Storage Service EndpointPolicy Definition\",\r\n    \"serviceResources\":
+        [\r\n      \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname\"\r\n
+        \   ]\r\n  },\r\n  \"type\": \"Microsoft.Network/serviceEndpointPolicies/serviceEndpointPolicyDefinitions\"\r\n}"
     headers:
       cache-control:
       - no-cache
       content-length:
-      - '813'
+      - '857'
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 18 May 2020 16:20:49 GMT
+      - Fri, 14 May 2021 04:37:28 GMT
       etag:
-      - W/"f0d34fc8-1830-42c9-b6bf-1bf9d2775313"
+      - W/"2da1b09f-755a-4c07-83c5-18a2054cebdd"
       expires:
       - '-1'
       pragma:
@@ -306,7 +308,7 @@ interactions:
       x-content-type-options:
       - nosniff
       x-ms-arm-service-request-id:
-      - 605a9568-1dec-4057-a943-e108d95fc772
+      - 369746b7-ef15-4678-a02c-5be9bc0f8926
     status:
       code: 200
       message: OK
@@ -320,31 +322,30 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - azsdk-python-azure-mgmt-network/11.0.0 Python/3.6.9 (Linux-4.9.184-linuxkit-x86_64-with-Ubuntu-18.04-bionic)
+      - azsdk-python-azure-mgmt-network/19.0.0 Python/3.8.10 (Linux-5.4.0-1047-azure-x86_64-with-glibc2.2.5)
+        VSTS_0fb41ef4-5012-48a9-bf39-4ee3de03ee35_build_2500_0
     method: GET
-    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy/serviceEndpointPolicyDefinitions/myServiceEndpointPolicyDefinition?api-version=2020-04-01
+    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy/serviceEndpointPolicyDefinitions/myServiceEndpointPolicyDefinition?api-version=2021-02-01
   response:
     body:
-      string: "{\r\n  \"name\": \"myServiceEndpointPolicyDefinition\",\r\n  \"id\"\
-        : \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy/serviceEndpointPolicyDefinitions/myServiceEndpointPolicyDefinition\"\
-        ,\r\n  \"etag\": \"W/\\\"f0d34fc8-1830-42c9-b6bf-1bf9d2775313\\\"\",\r\n \
-        \ \"properties\": {\r\n    \"provisioningState\": \"Succeeded\",\r\n    \"\
-        service\": \"Microsoft.Storage\",\r\n    \"description\": \"Storage Service\
-        \ EndpointPolicy Definition\",\r\n    \"serviceResources\": [\r\n      \"\
-        /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname\"\
-        \r\n    ]\r\n  },\r\n  \"type\": \"Microsoft.Network/serviceEndpointPolicies/serviceEndpointPolicyDefinitions\"\
-        \r\n}"
+      string: "{\r\n  \"name\": \"myServiceEndpointPolicyDefinition\",\r\n  \"id\":
+        \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy/serviceEndpointPolicyDefinitions/myServiceEndpointPolicyDefinition\",\r\n
+        \ \"etag\": \"W/\\\"2da1b09f-755a-4c07-83c5-18a2054cebdd\\\"\",\r\n  \"properties\":
+        {\r\n    \"provisioningState\": \"Succeeded\",\r\n    \"service\": \"Microsoft.Storage\",\r\n
+        \   \"description\": \"Storage Service EndpointPolicy Definition\",\r\n    \"serviceResources\":
+        [\r\n      \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname\"\r\n
+        \   ]\r\n  },\r\n  \"type\": \"Microsoft.Network/serviceEndpointPolicies/serviceEndpointPolicyDefinitions\"\r\n}"
     headers:
       cache-control:
       - no-cache
       content-length:
-      - '813'
+      - '857'
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 18 May 2020 16:20:49 GMT
+      - Fri, 14 May 2021 04:37:28 GMT
       etag:
-      - W/"f0d34fc8-1830-42c9-b6bf-1bf9d2775313"
+      - W/"2da1b09f-755a-4c07-83c5-18a2054cebdd"
       expires:
       - '-1'
       pragma:
@@ -361,7 +362,7 @@ interactions:
       x-content-type-options:
       - nosniff
       x-ms-arm-service-request-id:
-      - a57c6cd0-ef88-4246-90c5-4fc904636102
+      - adcd5810-8e43-4d58-94a4-6f5f89c625af
     status:
       code: 200
       message: OK
@@ -375,36 +376,37 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - azsdk-python-azure-mgmt-network/11.0.0 Python/3.6.9 (Linux-4.9.184-linuxkit-x86_64-with-Ubuntu-18.04-bionic)
+      - azsdk-python-azure-mgmt-network/19.0.0 Python/3.8.10 (Linux-5.4.0-1047-azure-x86_64-with-glibc2.2.5)
+        VSTS_0fb41ef4-5012-48a9-bf39-4ee3de03ee35_build_2500_0
     method: GET
-    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy?api-version=2020-04-01
+    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy?api-version=2021-02-01
   response:
     body:
-      string: "{\r\n  \"name\": \"myServiceEndpointPolicy\",\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy\"\
-        ,\r\n  \"etag\": \"W/\\\"f0d34fc8-1830-42c9-b6bf-1bf9d2775313\\\"\",\r\n \
-        \ \"type\": \"Microsoft.Network/serviceEndpointPolicies\",\r\n  \"location\"\
-        : \"eastus\",\r\n  \"properties\": {\r\n    \"provisioningState\": \"Succeeded\"\
-        ,\r\n    \"resourceGuid\": \"7b78a566-f2f9-4164-94bb-9e1aee22f9b8\",\r\n \
-        \   \"serviceEndpointPolicyDefinitions\": [\r\n      {\r\n        \"name\"\
-        : \"myServiceEndpointPolicyDefinition\",\r\n        \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy/serviceEndpointPolicyDefinitions/myServiceEndpointPolicyDefinition\"\
-        ,\r\n        \"etag\": \"W/\\\"f0d34fc8-1830-42c9-b6bf-1bf9d2775313\\\"\"\
-        ,\r\n        \"properties\": {\r\n          \"provisioningState\": \"Succeeded\"\
-        ,\r\n          \"service\": \"Microsoft.Storage\",\r\n          \"description\"\
-        : \"Storage Service EndpointPolicy Definition\",\r\n          \"serviceResources\"\
-        : [\r\n            \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname\"\
-        \r\n          ]\r\n        },\r\n        \"type\": \"Microsoft.Network/serviceEndpointPolicies/serviceEndpointPolicyDefinitions\"\
-        \r\n      }\r\n    ]\r\n  }\r\n}"
+      string: "{\r\n  \"name\": \"myServiceEndpointPolicy\",\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy\",\r\n
+        \ \"etag\": \"W/\\\"2da1b09f-755a-4c07-83c5-18a2054cebdd\\\"\",\r\n  \"type\":
+        \"Microsoft.Network/serviceEndpointPolicies\",\r\n  \"location\": \"eastus\",\r\n
+        \ \"properties\": {\r\n    \"provisioningState\": \"Succeeded\",\r\n    \"resourceGuid\":
+        \"4774e549-f823-429f-953d-761467aff6a3\",\r\n    \"serviceEndpointPolicyDefinitions\":
+        [\r\n      {\r\n        \"name\": \"myServiceEndpointPolicyDefinition\",\r\n
+        \       \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy/serviceEndpointPolicyDefinitions/myServiceEndpointPolicyDefinition\",\r\n
+        \       \"etag\": \"W/\\\"2da1b09f-755a-4c07-83c5-18a2054cebdd\\\"\",\r\n
+        \       \"properties\": {\r\n          \"provisioningState\": \"Succeeded\",\r\n
+        \         \"service\": \"Microsoft.Storage\",\r\n          \"description\":
+        \"Storage Service EndpointPolicy Definition\",\r\n          \"serviceResources\":
+        [\r\n            \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname\"\r\n
+        \         ]\r\n        },\r\n        \"type\": \"Microsoft.Network/serviceEndpointPolicies/serviceEndpointPolicyDefinitions\"\r\n
+        \     }\r\n    ]\r\n  }\r\n}"
     headers:
       cache-control:
       - no-cache
       content-length:
-      - '1467'
+      - '1533'
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 18 May 2020 16:20:50 GMT
+      - Fri, 14 May 2021 04:37:28 GMT
       etag:
-      - W/"f0d34fc8-1830-42c9-b6bf-1bf9d2775313"
+      - W/"2da1b09f-755a-4c07-83c5-18a2054cebdd"
       expires:
       - '-1'
       pragma:
@@ -421,7 +423,7 @@ interactions:
       x-content-type-options:
       - nosniff
       x-ms-arm-service-request-id:
-      - 7368e658-074e-4558-ad95-ed8c8df258e8
+      - d5c97862-937c-42cb-b4ee-7cf505d1994f
     status:
       code: 200
       message: OK
@@ -439,37 +441,38 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - azsdk-python-azure-mgmt-network/11.0.0 Python/3.6.9 (Linux-4.9.184-linuxkit-x86_64-with-Ubuntu-18.04-bionic)
+      - azsdk-python-azure-mgmt-network/19.0.0 Python/3.8.10 (Linux-5.4.0-1047-azure-x86_64-with-glibc2.2.5)
+        VSTS_0fb41ef4-5012-48a9-bf39-4ee3de03ee35_build_2500_0
     method: PATCH
-    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy?api-version=2020-04-01
+    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy?api-version=2021-02-01
   response:
     body:
-      string: "{\r\n  \"name\": \"myServiceEndpointPolicy\",\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy\"\
-        ,\r\n  \"etag\": \"W/\\\"f66bba06-d936-45dd-a84b-0ff1aef044f1\\\"\",\r\n \
-        \ \"type\": \"Microsoft.Network/serviceEndpointPolicies\",\r\n  \"location\"\
-        : \"eastus\",\r\n  \"tags\": {\r\n    \"tag1\": \"value1\",\r\n    \"tag2\"\
-        : \"value2\"\r\n  },\r\n  \"properties\": {\r\n    \"provisioningState\":\
-        \ \"Succeeded\",\r\n    \"resourceGuid\": \"7b78a566-f2f9-4164-94bb-9e1aee22f9b8\"\
-        ,\r\n    \"serviceEndpointPolicyDefinitions\": [\r\n      {\r\n        \"\
-        name\": \"myServiceEndpointPolicyDefinition\",\r\n        \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy/serviceEndpointPolicyDefinitions/myServiceEndpointPolicyDefinition\"\
-        ,\r\n        \"etag\": \"W/\\\"f66bba06-d936-45dd-a84b-0ff1aef044f1\\\"\"\
-        ,\r\n        \"properties\": {\r\n          \"provisioningState\": \"Succeeded\"\
-        ,\r\n          \"service\": \"Microsoft.Storage\",\r\n          \"description\"\
-        : \"Storage Service EndpointPolicy Definition\",\r\n          \"serviceResources\"\
-        : [\r\n            \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname\"\
-        \r\n          ]\r\n        },\r\n        \"type\": \"Microsoft.Network/serviceEndpointPolicies/serviceEndpointPolicyDefinitions\"\
-        \r\n      }\r\n    ]\r\n  }\r\n}"
+      string: "{\r\n  \"name\": \"myServiceEndpointPolicy\",\r\n  \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy\",\r\n
+        \ \"etag\": \"W/\\\"10e35826-cbba-41ed-957b-e6c288e423d9\\\"\",\r\n  \"type\":
+        \"Microsoft.Network/serviceEndpointPolicies\",\r\n  \"location\": \"eastus\",\r\n
+        \ \"tags\": {\r\n    \"tag1\": \"value1\",\r\n    \"tag2\": \"value2\"\r\n
+        \ },\r\n  \"properties\": {\r\n    \"provisioningState\": \"Succeeded\",\r\n
+        \   \"resourceGuid\": \"4774e549-f823-429f-953d-761467aff6a3\",\r\n    \"serviceEndpointPolicyDefinitions\":
+        [\r\n      {\r\n        \"name\": \"myServiceEndpointPolicyDefinition\",\r\n
+        \       \"id\": \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy/serviceEndpointPolicyDefinitions/myServiceEndpointPolicyDefinition\",\r\n
+        \       \"etag\": \"W/\\\"10e35826-cbba-41ed-957b-e6c288e423d9\\\"\",\r\n
+        \       \"properties\": {\r\n          \"provisioningState\": \"Succeeded\",\r\n
+        \         \"service\": \"Microsoft.Storage\",\r\n          \"description\":
+        \"Storage Service EndpointPolicy Definition\",\r\n          \"serviceResources\":
+        [\r\n            \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname\"\r\n
+        \         ]\r\n        },\r\n        \"type\": \"Microsoft.Network/serviceEndpointPolicies/serviceEndpointPolicyDefinitions\"\r\n
+        \     }\r\n    ]\r\n  }\r\n}"
     headers:
       azure-asyncnotification:
       - Enabled
       cache-control:
       - no-cache
       content-length:
-      - '1531'
+      - '1597'
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 18 May 2020 16:20:52 GMT
+      - Fri, 14 May 2021 04:37:29 GMT
       expires:
       - '-1'
       pragma:
@@ -486,7 +489,7 @@ interactions:
       x-content-type-options:
       - nosniff
       x-ms-arm-service-request-id:
-      - 856035fd-2a4a-45ad-b5a8-1939318567af
+      - 397a9c18-a8c1-453b-842c-45566ee22f96
       x-ms-ratelimit-remaining-subscription-writes:
       - '1197'
     status:
@@ -496,7 +499,7 @@ interactions:
     body: null
     headers:
       Accept:
-      - '*/*'
+      - application/json
       Accept-Encoding:
       - gzip, deflate
       Connection:
@@ -504,25 +507,26 @@ interactions:
       Content-Length:
       - '0'
       User-Agent:
-      - azsdk-python-azure-mgmt-network/11.0.0 Python/3.6.9 (Linux-4.9.184-linuxkit-x86_64-with-Ubuntu-18.04-bionic)
+      - azsdk-python-azure-mgmt-network/19.0.0 Python/3.8.10 (Linux-5.4.0-1047-azure-x86_64-with-glibc2.2.5)
+        VSTS_0fb41ef4-5012-48a9-bf39-4ee3de03ee35_build_2500_0
     method: DELETE
-    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy/serviceEndpointPolicyDefinitions/myServiceEndpointPolicyDefinition?api-version=2020-04-01
+    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy/serviceEndpointPolicyDefinitions/myServiceEndpointPolicyDefinition?api-version=2021-02-01
   response:
     body:
       string: ''
     headers:
       azure-asyncoperation:
-      - https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Network/locations/eastus/operations/4f883bf7-1b41-473c-be8c-887dcc35fedb?api-version=2020-04-01
+      - https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Network/locations/eastus/operations/4df0a9e5-7c60-4aa0-92be-be187464915c?api-version=2021-02-01
       cache-control:
       - no-cache
       content-length:
       - '0'
       date:
-      - Mon, 18 May 2020 16:20:53 GMT
+      - Fri, 14 May 2021 04:37:29 GMT
       expires:
       - '-1'
       location:
-      - https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Network/locations/eastus/operationResults/4f883bf7-1b41-473c-be8c-887dcc35fedb?api-version=2020-04-01
+      - https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Network/locations/eastus/operationResults/4df0a9e5-7c60-4aa0-92be-be187464915c?api-version=2021-02-01
       pragma:
       - no-cache
       server:
@@ -533,7 +537,7 @@ interactions:
       x-content-type-options:
       - nosniff
       x-ms-arm-service-request-id:
-      - 7c1de8ba-d455-411a-aba7-49f7d133238a
+      - d4186511-6855-4b1c-8ec9-9c171efcb92d
       x-ms-ratelimit-remaining-subscription-deletes:
       - '14999'
     status:
@@ -549,9 +553,10 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - azsdk-python-azure-mgmt-network/11.0.0 Python/3.6.9 (Linux-4.9.184-linuxkit-x86_64-with-Ubuntu-18.04-bionic)
+      - azsdk-python-azure-mgmt-network/19.0.0 Python/3.8.10 (Linux-5.4.0-1047-azure-x86_64-with-glibc2.2.5)
+        VSTS_0fb41ef4-5012-48a9-bf39-4ee3de03ee35_build_2500_0
     method: GET
-    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Network/locations/eastus/operations/4f883bf7-1b41-473c-be8c-887dcc35fedb?api-version=2020-04-01
+    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Network/locations/eastus/operations/4df0a9e5-7c60-4aa0-92be-be187464915c?api-version=2021-02-01
   response:
     body:
       string: "{\r\n  \"status\": \"Succeeded\"\r\n}"
@@ -563,7 +568,7 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 18 May 2020 16:21:02 GMT
+      - Fri, 14 May 2021 04:37:39 GMT
       expires:
       - '-1'
       pragma:
@@ -580,7 +585,7 @@ interactions:
       x-content-type-options:
       - nosniff
       x-ms-arm-service-request-id:
-      - 5bf7c82d-7882-4a29-b5c3-f6f7dc3bcb9d
+      - c1b1e500-5bb2-471a-b6ed-a0ef92b4dfb4
     status:
       code: 200
       message: OK
@@ -588,7 +593,7 @@ interactions:
     body: null
     headers:
       Accept:
-      - '*/*'
+      - application/json
       Accept-Encoding:
       - gzip, deflate
       Connection:
@@ -596,9 +601,10 @@ interactions:
       Content-Length:
       - '0'
       User-Agent:
-      - azsdk-python-azure-mgmt-network/11.0.0 Python/3.6.9 (Linux-4.9.184-linuxkit-x86_64-with-Ubuntu-18.04-bionic)
+      - azsdk-python-azure-mgmt-network/19.0.0 Python/3.8.10 (Linux-5.4.0-1047-azure-x86_64-with-glibc2.2.5)
+        VSTS_0fb41ef4-5012-48a9-bf39-4ee3de03ee35_build_2500_0
     method: DELETE
-    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy?api-version=2020-04-01
+    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rgname/providers/Microsoft.Network/serviceEndpointPolicies/myServiceEndpointPolicy?api-version=2021-02-01
   response:
     body:
       string: ''
@@ -606,17 +612,17 @@ interactions:
       azure-asyncnotification:
       - Enabled
       azure-asyncoperation:
-      - https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Network/locations/eastus/operations/eea3e2b5-20c9-4c99-b1ef-b6b7c4848009?api-version=2020-04-01
+      - https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Network/locations/eastus/operations/f9f4402c-6950-423e-9152-6260fbb83f80?api-version=2021-02-01
       cache-control:
       - no-cache
       content-length:
       - '0'
       date:
-      - Mon, 18 May 2020 16:21:03 GMT
+      - Fri, 14 May 2021 04:37:39 GMT
       expires:
       - '-1'
       location:
-      - https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Network/locations/eastus/operationResults/eea3e2b5-20c9-4c99-b1ef-b6b7c4848009?api-version=2020-04-01
+      - https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Network/locations/eastus/operationResults/f9f4402c-6950-423e-9152-6260fbb83f80?api-version=2021-02-01
       pragma:
       - no-cache
       server:
@@ -627,7 +633,7 @@ interactions:
       x-content-type-options:
       - nosniff
       x-ms-arm-service-request-id:
-      - 1990ebab-3330-4116-8630-d2db8d7dfaf1
+      - 2e0f4ed1-b1be-4d10-8a17-ce3b71f3fb7f
       x-ms-ratelimit-remaining-subscription-deletes:
       - '14998'
     status:
@@ -643,9 +649,10 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - azsdk-python-azure-mgmt-network/11.0.0 Python/3.6.9 (Linux-4.9.184-linuxkit-x86_64-with-Ubuntu-18.04-bionic)
+      - azsdk-python-azure-mgmt-network/19.0.0 Python/3.8.10 (Linux-5.4.0-1047-azure-x86_64-with-glibc2.2.5)
+        VSTS_0fb41ef4-5012-48a9-bf39-4ee3de03ee35_build_2500_0
     method: GET
-    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Network/locations/eastus/operations/eea3e2b5-20c9-4c99-b1ef-b6b7c4848009?api-version=2020-04-01
+    uri: https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Network/locations/eastus/operations/f9f4402c-6950-423e-9152-6260fbb83f80?api-version=2021-02-01
   response:
     body:
       string: "{\r\n  \"status\": \"Succeeded\"\r\n}"
@@ -657,7 +664,7 @@ interactions:
       content-type:
       - application/json; charset=utf-8
       date:
-      - Mon, 18 May 2020 16:21:13 GMT
+      - Fri, 14 May 2021 04:37:49 GMT
       expires:
       - '-1'
       pragma:
@@ -674,7 +681,7 @@ interactions:
       x-content-type-options:
       - nosniff
       x-ms-arm-service-request-id:
-      - 8da28de5-23ca-4da2-a42b-3eef5678a8ca
+      - aee88e01-b349-4ef5-bc99-6631cc04b7e2
     status:
       code: 200
       message: OK

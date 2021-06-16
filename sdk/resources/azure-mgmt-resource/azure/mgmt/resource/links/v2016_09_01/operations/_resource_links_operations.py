@@ -8,13 +8,13 @@
 from typing import TYPE_CHECKING
 import warnings
 
-from azure.core.exceptions import HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
+from azure.core.exceptions import ClientAuthenticationError, HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
 from azure.core.paging import ItemPaged
 from azure.core.pipeline import PipelineResponse
 from azure.core.pipeline.transport import HttpRequest, HttpResponse
 from azure.mgmt.core.exceptions import ARMErrorFormat
 
-from .. import models
+from .. import models as _models
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,ungrouped-imports
@@ -37,7 +37,7 @@ class ResourceLinksOperations(object):
     :param deserializer: An object model deserializer.
     """
 
-    models = models
+    models = _models
 
     def __init__(self, client, config, serializer, deserializer):
         self._client = client
@@ -54,8 +54,8 @@ class ResourceLinksOperations(object):
         """Deletes a resource link with the specified ID.
 
         :param link_id: The fully qualified ID of the resource link. Use the format,
-         /subscriptions/{subscription-id}/resourceGroups/{resource-group-name}/{provider-
-         namespace}/{resource-type}/{resource-name}/Microsoft.Resources/links/{link-name}. For example,
+         /subscriptions/{subscription-id}/resourceGroups/{resource-group-name}/{provider-namespace}/{resource-type}/{resource-name}/Microsoft.Resources/links/{link-name}.
+         For example,
          /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/myGroup/Microsoft.Web/sites/mySite/Microsoft.Resources/links/myLink.
         :type link_id: str
         :keyword callable cls: A custom type or function that will be passed the direct response
@@ -64,7 +64,9 @@ class ResourceLinksOperations(object):
         :raises: ~azure.core.exceptions.HttpResponseError
         """
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2016-09-01"
 
@@ -82,7 +84,6 @@ class ResourceLinksOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
 
-        # Construct and send request
         request = self._client.delete(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -99,15 +100,15 @@ class ResourceLinksOperations(object):
     def create_or_update(
         self,
         link_id,  # type: str
-        parameters,  # type: "models.ResourceLink"
+        parameters,  # type: "_models.ResourceLink"
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.ResourceLink"
+        # type: (...) -> "_models.ResourceLink"
         """Creates or updates a resource link between the specified resources.
 
         :param link_id: The fully qualified ID of the resource link. Use the format,
-         /subscriptions/{subscription-id}/resourceGroups/{resource-group-name}/{provider-
-         namespace}/{resource-type}/{resource-name}/Microsoft.Resources/links/{link-name}. For example,
+         /subscriptions/{subscription-id}/resourceGroups/{resource-group-name}/{provider-namespace}/{resource-type}/{resource-name}/Microsoft.Resources/links/{link-name}.
+         For example,
          /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/myGroup/Microsoft.Web/sites/mySite/Microsoft.Resources/links/myLink.
         :type link_id: str
         :param parameters: Parameters for creating or updating a resource link.
@@ -117,11 +118,14 @@ class ResourceLinksOperations(object):
         :rtype: ~azure.mgmt.resource.links.v2016_09_01.models.ResourceLink
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.ResourceLink"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.ResourceLink"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2016-09-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self.create_or_update.metadata['url']  # type: ignore
@@ -137,14 +141,12 @@ class ResourceLinksOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(parameters, 'ResourceLink')
         body_content_kwargs['content'] = body_content
         request = self._client.put(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
@@ -152,7 +154,6 @@ class ResourceLinksOperations(object):
             map_error(status_code=response.status_code, response=response, error_map=error_map)
             raise HttpResponseError(response=response, error_format=ARMErrorFormat)
 
-        deserialized = None
         if response.status_code == 200:
             deserialized = self._deserialize('ResourceLink', pipeline_response)
 
@@ -170,7 +171,7 @@ class ResourceLinksOperations(object):
         link_id,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.ResourceLink"
+        # type: (...) -> "_models.ResourceLink"
         """Gets a resource link with the specified ID.
 
         :param link_id: The fully qualified Id of the resource link. For example,
@@ -181,10 +182,13 @@ class ResourceLinksOperations(object):
         :rtype: ~azure.mgmt.resource.links.v2016_09_01.models.ResourceLink
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.ResourceLink"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.ResourceLink"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2016-09-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.get.metadata['url']  # type: ignore
@@ -199,9 +203,8 @@ class ResourceLinksOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -223,23 +226,30 @@ class ResourceLinksOperations(object):
         filter=None,  # type: Optional[str]
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.ResourceLinkResult"]
+        # type: (...) -> Iterable["_models.ResourceLinkResult"]
         """Gets all the linked resources for the subscription.
 
         :param filter: The filter to apply on the list resource links operation. The supported filter
-     for list resource links is targetId. For example, $filter=targetId eq {value}.
+         for list resource links is targetId. For example, $filter=targetId eq {value}.
         :type filter: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :return: An iterator like instance of either ResourceLinkResult or the result of cls(response)
         :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.resource.links.v2016_09_01.models.ResourceLinkResult]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.ResourceLinkResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.ResourceLinkResult"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2016-09-01"
+        accept = "application/json"
 
         def prepare_request(next_link=None):
+            # Construct headers
+            header_parameters = {}  # type: Dict[str, Any]
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
+
             if not next_link:
                 # Construct URL
                 url = self.list_at_subscription.metadata['url']  # type: ignore
@@ -253,15 +263,11 @@ class ResourceLinksOperations(object):
                     query_parameters['$filter'] = self._serialize.query("filter", filter, 'str')
                 query_parameters['api-version'] = self._serialize.query("api_version", api_version, 'str')
 
+                request = self._client.get(url, query_parameters, header_parameters)
             else:
                 url = next_link
                 query_parameters = {}  # type: Dict[str, Any]
-            # Construct headers
-            header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
-
-            # Construct and send request
-            request = self._client.get(url, query_parameters, header_parameters)
+                request = self._client.get(url, query_parameters, header_parameters)
             return request
 
         def extract_data(pipeline_response):
@@ -294,27 +300,34 @@ class ResourceLinksOperations(object):
         filter="atScope()",  # type: Optional[str]
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.ResourceLinkResult"]
+        # type: (...) -> Iterable["_models.ResourceLinkResult"]
         """Gets a list of resource links at and below the specified source scope.
 
         :param scope: The fully qualified ID of the scope for getting the resource links. For example,
-     to list resource links at and under a resource group, set the scope to
-     /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/myGroup.
+         to list resource links at and under a resource group, set the scope to
+         /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/myGroup.
         :type scope: str
         :param filter: The filter to apply when getting resource links. To get links only at the
-     specified scope (not below the scope), use Filter.atScope().
+         specified scope (not below the scope), use Filter.atScope().
         :type filter: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :return: An iterator like instance of either ResourceLinkResult or the result of cls(response)
         :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.resource.links.v2016_09_01.models.ResourceLinkResult]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.ResourceLinkResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.ResourceLinkResult"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2016-09-01"
+        accept = "application/json"
 
         def prepare_request(next_link=None):
+            # Construct headers
+            header_parameters = {}  # type: Dict[str, Any]
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
+
             if not next_link:
                 # Construct URL
                 url = self.list_at_source_scope.metadata['url']  # type: ignore
@@ -328,15 +341,11 @@ class ResourceLinksOperations(object):
                     query_parameters['$filter'] = self._serialize.query("filter", filter, 'str')
                 query_parameters['api-version'] = self._serialize.query("api_version", api_version, 'str')
 
+                request = self._client.get(url, query_parameters, header_parameters)
             else:
                 url = next_link
                 query_parameters = {}  # type: Dict[str, Any]
-            # Construct headers
-            header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
-
-            # Construct and send request
-            request = self._client.get(url, query_parameters, header_parameters)
+                request = self._client.get(url, query_parameters, header_parameters)
             return request
 
         def extract_data(pipeline_response):

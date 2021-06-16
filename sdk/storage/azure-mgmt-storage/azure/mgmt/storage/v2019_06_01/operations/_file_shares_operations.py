@@ -8,13 +8,13 @@
 from typing import TYPE_CHECKING
 import warnings
 
-from azure.core.exceptions import HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
+from azure.core.exceptions import ClientAuthenticationError, HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
 from azure.core.paging import ItemPaged
 from azure.core.pipeline import PipelineResponse
 from azure.core.pipeline.transport import HttpRequest, HttpResponse
 from azure.mgmt.core.exceptions import ARMErrorFormat
 
-from .. import models
+from .. import models as _models
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,ungrouped-imports
@@ -37,7 +37,7 @@ class FileSharesOperations(object):
     :param deserializer: An object model deserializer.
     """
 
-    models = models
+    models = _models
 
     def __init__(self, client, config, serializer, deserializer):
         self._client = client
@@ -54,21 +54,21 @@ class FileSharesOperations(object):
         expand="deleted",  # type: Optional[str]
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.FileShareItems"]
+        # type: (...) -> Iterable["_models.FileShareItems"]
         """Lists all shares.
 
         :param resource_group_name: The name of the resource group within the user's subscription. The
-     name is case insensitive.
+         name is case insensitive.
         :type resource_group_name: str
         :param account_name: The name of the storage account within the specified resource group.
-     Storage account names must be between 3 and 24 characters in length and use numbers and lower-
-     case letters only.
+         Storage account names must be between 3 and 24 characters in length and use numbers and
+         lower-case letters only.
         :type account_name: str
         :param maxpagesize: Optional. Specified maximum number of shares that can be included in the
-     list.
+         list.
         :type maxpagesize: str
         :param filter: Optional. When specified, only share names starting with the filter will be
-     listed.
+         listed.
         :type filter: str
         :param expand: Optional, used to expand the properties within share's properties.
         :type expand: str
@@ -77,15 +77,18 @@ class FileSharesOperations(object):
         :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.storage.v2019_06_01.models.FileShareItems]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.FileShareItems"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.FileShareItems"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-06-01"
+        accept = "application/json"
 
         def prepare_request(next_link=None):
             # Construct headers
             header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
             if not next_link:
                 # Construct URL
@@ -142,10 +145,10 @@ class FileSharesOperations(object):
         resource_group_name,  # type: str
         account_name,  # type: str
         share_name,  # type: str
-        file_share,  # type: "models.FileShare"
+        file_share,  # type: "_models.FileShare"
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.FileShare"
+        # type: (...) -> "_models.FileShare"
         """Creates a new share under the specified account as described by request body. The share
         resource includes metadata and properties for that share. It does not include a list of the
         files contained by the share.
@@ -154,8 +157,8 @@ class FileSharesOperations(object):
          name is case insensitive.
         :type resource_group_name: str
         :param account_name: The name of the storage account within the specified resource group.
-         Storage account names must be between 3 and 24 characters in length and use numbers and lower-
-         case letters only.
+         Storage account names must be between 3 and 24 characters in length and use numbers and
+         lower-case letters only.
         :type account_name: str
         :param share_name: The name of the file share within the specified storage account. File share
          names must be between 3 and 63 characters in length and use numbers, lower-case letters and
@@ -169,11 +172,14 @@ class FileSharesOperations(object):
         :rtype: ~azure.mgmt.storage.v2019_06_01.models.FileShare
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.FileShare"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.FileShare"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-06-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self.create.metadata['url']  # type: ignore
@@ -192,13 +198,12 @@ class FileSharesOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(file_share, 'FileShare')
         body_content_kwargs['content'] = body_content
         request = self._client.put(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
@@ -223,10 +228,10 @@ class FileSharesOperations(object):
         resource_group_name,  # type: str
         account_name,  # type: str
         share_name,  # type: str
-        file_share,  # type: "models.FileShare"
+        file_share,  # type: "_models.FileShare"
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.FileShare"
+        # type: (...) -> "_models.FileShare"
         """Updates share properties as specified in request body. Properties not mentioned in the request
         will not be changed. Update fails if the specified share does not already exist.
 
@@ -234,8 +239,8 @@ class FileSharesOperations(object):
          name is case insensitive.
         :type resource_group_name: str
         :param account_name: The name of the storage account within the specified resource group.
-         Storage account names must be between 3 and 24 characters in length and use numbers and lower-
-         case letters only.
+         Storage account names must be between 3 and 24 characters in length and use numbers and
+         lower-case letters only.
         :type account_name: str
         :param share_name: The name of the file share within the specified storage account. File share
          names must be between 3 and 63 characters in length and use numbers, lower-case letters and
@@ -249,11 +254,14 @@ class FileSharesOperations(object):
         :rtype: ~azure.mgmt.storage.v2019_06_01.models.FileShare
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.FileShare"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.FileShare"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-06-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self.update.metadata['url']  # type: ignore
@@ -272,13 +280,12 @@ class FileSharesOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(file_share, 'FileShare')
         body_content_kwargs['content'] = body_content
         request = self._client.patch(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
@@ -302,15 +309,15 @@ class FileSharesOperations(object):
         expand="stats",  # type: Optional[str]
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.FileShare"
+        # type: (...) -> "_models.FileShare"
         """Gets properties of a specified share.
 
         :param resource_group_name: The name of the resource group within the user's subscription. The
          name is case insensitive.
         :type resource_group_name: str
         :param account_name: The name of the storage account within the specified resource group.
-         Storage account names must be between 3 and 24 characters in length and use numbers and lower-
-         case letters only.
+         Storage account names must be between 3 and 24 characters in length and use numbers and
+         lower-case letters only.
         :type account_name: str
         :param share_name: The name of the file share within the specified storage account. File share
          names must be between 3 and 63 characters in length and use numbers, lower-case letters and
@@ -324,10 +331,13 @@ class FileSharesOperations(object):
         :rtype: ~azure.mgmt.storage.v2019_06_01.models.FileShare
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.FileShare"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.FileShare"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-06-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.get.metadata['url']  # type: ignore
@@ -347,7 +357,7 @@ class FileSharesOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
@@ -379,8 +389,8 @@ class FileSharesOperations(object):
          name is case insensitive.
         :type resource_group_name: str
         :param account_name: The name of the storage account within the specified resource group.
-         Storage account names must be between 3 and 24 characters in length and use numbers and lower-
-         case letters only.
+         Storage account names must be between 3 and 24 characters in length and use numbers and
+         lower-case letters only.
         :type account_name: str
         :param share_name: The name of the file share within the specified storage account. File share
          names must be between 3 and 63 characters in length and use numbers, lower-case letters and
@@ -393,9 +403,12 @@ class FileSharesOperations(object):
         :raises: ~azure.core.exceptions.HttpResponseError
         """
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-06-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.delete.metadata['url']  # type: ignore
@@ -413,6 +426,7 @@ class FileSharesOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         request = self._client.delete(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
@@ -432,7 +446,7 @@ class FileSharesOperations(object):
         resource_group_name,  # type: str
         account_name,  # type: str
         share_name,  # type: str
-        deleted_share,  # type: "models.DeletedShare"
+        deleted_share,  # type: "_models.DeletedShare"
         **kwargs  # type: Any
     ):
         # type: (...) -> None
@@ -442,8 +456,8 @@ class FileSharesOperations(object):
          name is case insensitive.
         :type resource_group_name: str
         :param account_name: The name of the storage account within the specified resource group.
-         Storage account names must be between 3 and 24 characters in length and use numbers and lower-
-         case letters only.
+         Storage account names must be between 3 and 24 characters in length and use numbers and
+         lower-case letters only.
         :type account_name: str
         :param share_name: The name of the file share within the specified storage account. File share
          names must be between 3 and 63 characters in length and use numbers, lower-case letters and
@@ -458,10 +472,13 @@ class FileSharesOperations(object):
         :raises: ~azure.core.exceptions.HttpResponseError
         """
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-06-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self.restore.metadata['url']  # type: ignore
@@ -480,12 +497,12 @@ class FileSharesOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(deleted_share, 'DeletedShare')
         body_content_kwargs['content'] = body_content
         request = self._client.post(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 

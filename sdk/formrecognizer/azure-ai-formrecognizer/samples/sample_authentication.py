@@ -28,7 +28,6 @@ USAGE:
     3) AZURE_CLIENT_ID - the client ID of your active directory application.
     4) AZURE_TENANT_ID - the tenant ID of your active directory application.
     5) AZURE_CLIENT_SECRET - the secret of your active directory application.
-    6) AZURE_FORM_RECOGNIZER_AAD_ENDPOINT - the endpoint to your Form Recognizer resource for using AAD.
 """
 
 import os
@@ -36,7 +35,7 @@ import os
 
 class AuthenticationSample(object):
 
-    url = "https://raw.githubusercontent.com/Azure/azure-sdk-for-python/master/sdk/formrecognizer/azure-ai-formrecognizer/tests/sample_forms/receipt/contoso-receipt.png"
+    url = "https://raw.githubusercontent.com/Azure/azure-sdk-for-python/master/sdk/formrecognizer/azure-ai-formrecognizer/tests/sample_forms/forms/Form_1.jpg"
 
     def authentication_with_api_key_credential_form_recognizer_client(self):
         # [START create_fr_client_with_key]
@@ -47,8 +46,8 @@ class AuthenticationSample(object):
 
         form_recognizer_client = FormRecognizerClient(endpoint, AzureKeyCredential(key))
         # [END create_fr_client_with_key]
-        poller = form_recognizer_client.begin_recognize_receipts_from_url(self.url)
-        receipt = poller.result()
+        poller = form_recognizer_client.begin_recognize_content_from_url(self.url)
+        result = poller.result()
 
     def authentication_with_azure_active_directory_form_recognizer_client(self):
         # [START create_fr_client_with_aad]
@@ -58,13 +57,13 @@ class AuthenticationSample(object):
         from azure.ai.formrecognizer import FormRecognizerClient
         from azure.identity import DefaultAzureCredential
 
-        endpoint = os.environ["AZURE_FORM_RECOGNIZER_AAD_ENDPOINT"]
+        endpoint = os.environ["AZURE_FORM_RECOGNIZER_ENDPOINT"]
         credential = DefaultAzureCredential()
 
         form_recognizer_client = FormRecognizerClient(endpoint, credential)
         # [END create_fr_client_with_aad]
-        poller = form_recognizer_client.begin_recognize_receipts_from_url(self.url)
-        receipt = poller.result()
+        poller = form_recognizer_client.begin_recognize_content_from_url(self.url)
+        result = poller.result()
 
     def authentication_with_api_key_credential_form_training_client(self):
         # [START create_ft_client_with_key]
@@ -85,7 +84,7 @@ class AuthenticationSample(object):
         from azure.ai.formrecognizer import FormTrainingClient
         from azure.identity import DefaultAzureCredential
 
-        endpoint = os.environ["AZURE_FORM_RECOGNIZER_AAD_ENDPOINT"]
+        endpoint = os.environ["AZURE_FORM_RECOGNIZER_ENDPOINT"]
         credential = DefaultAzureCredential()
 
         form_training_client = FormTrainingClient(endpoint, credential)

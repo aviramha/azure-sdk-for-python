@@ -1,5 +1,223 @@
 # Release History
 
+## 21.0.0 (2021-05-25)
+
+**Features**
+
+  - Model NetworkInterfaceReference has a new parameter delete_option
+  - Model DataDisk has a new parameter delete_option
+  - Model VirtualMachineScaleSetPublicIPAddressConfiguration has a new parameter sku
+  - Model VirtualMachineScaleSetPublicIPAddressConfiguration has a new parameter delete_option
+  - Model VirtualMachineScaleSetNetworkConfiguration has a new parameter delete_option
+  - Model OSDisk has a new parameter delete_option
+  - Model VirtualMachineScaleSetVM has a new parameter user_data
+  - Model VirtualMachineScaleSetUpdateNetworkProfile has a new parameter network_api_version
+  - Model VirtualMachineScaleSetUpdateVMProfile has a new parameter user_data
+  - Model VirtualMachineScaleSetVMProfile has a new parameter user_data
+  - Model LinuxPatchSettings has a new parameter assessment_mode
+  - Model VirtualMachineScaleSetUpdatePublicIPAddressConfiguration has a new parameter delete_option
+  - Model VirtualMachineUpdate has a new parameter user_data
+  - Model VirtualMachineUpdate has a new parameter scheduled_events_profile
+  - Model NetworkProfile has a new parameter network_api_version
+  - Model NetworkProfile has a new parameter network_interface_configurations
+  - Model VirtualMachine has a new parameter user_data
+  - Model VirtualMachine has a new parameter scheduled_events_profile
+  - Model PatchSettings has a new parameter assessment_mode
+  - Model VirtualMachineScaleSetUpdateNetworkConfiguration has a new parameter delete_option
+  - Model VirtualMachineScaleSetNetworkProfile has a new parameter network_api_version
+  - Added operation group RestorePointCollectionsOperations
+  - Added operation group RestorePointsOperations
+
+**Breaking changes**
+
+  - Operation VirtualMachineScaleSetsOperations.get has a new signature
+  - Model PurchasePlan no longer has parameter promotion_code
+
+## 20.0.0 (2021-04-06)
+
+**Features**
+
+  - Model PurchasePlan has a new parameter promotion_code
+  - Model DiskUpdate has a new parameter supports_hibernation
+  - Model DiskUpdate has a new parameter property_updates_in_progress
+  - Model SnapshotUpdate has a new parameter supports_hibernation
+  - Model DiskRestorePoint has a new parameter supports_hibernation
+  - Model DiskEncryptionSetUpdate has a new parameter identity
+  - Model DiskEncryptionSetUpdate has a new parameter rotation_to_latest_key_version_enabled
+  - Model CloudServiceProperties has a new parameter allow_model_override
+  - Model LoadBalancerConfiguration has a new parameter id
+  - Model CloudServiceInstanceView has a new parameter private_ids
+  - Model Snapshot has a new parameter supports_hibernation
+  - Model DiskEncryptionSet has a new parameter last_key_rotation_timestamp
+  - Model DiskEncryptionSet has a new parameter rotation_to_latest_key_version_enabled
+  - Model Disk has a new parameter security_profile
+  - Model Disk has a new parameter supports_hibernation
+  - Model Disk has a new parameter property_updates_in_progress
+  - Added operation group CloudServiceOperatingSystemsOperations
+
+**Breaking changes**
+
+  - Parameter name of model LoadBalancerConfiguration is now required
+  - Parameter properties of model LoadBalancerConfiguration is now required
+  - Parameter frontend_ip_configurations of model LoadBalancerConfigurationProperties is now required
+  - Parameter name of model LoadBalancerFrontendIPConfiguration is now required
+  - Parameter properties of model LoadBalancerFrontendIPConfiguration is now required
+
+
+## 19.0.0 (2021-02-20)
+
+**Features**
+
+  - Model VirtualMachineUpdate has a new parameter platform_fault_domain
+  - Model VirtualMachineImage has a new parameter extended_location
+  - Model VirtualMachineImage has a new parameter features
+  - Model VirtualMachineSoftwarePatchProperties has a new parameter kb_id
+  - Model LinuxConfiguration has a new parameter patch_settings
+  - Model PatchSettings has a new parameter enable_hotpatching
+  - Model VirtualMachineAssessPatchesResult has a new parameter available_patches
+  - Model VirtualMachineImageResource has a new parameter extended_location
+  - Model VirtualMachinePatchStatus has a new parameter configuration_statuses
+  - Model RollingUpgradePolicy has a new parameter enable_cross_zone_upgrade
+  - Model RollingUpgradePolicy has a new parameter prioritize_unhealthy_instances
+  - Model DataDisk has a new parameter detach_option
+  - Model Image has a new parameter extended_location
+  - Model VirtualMachine has a new parameter extended_location
+  - Model VirtualMachine has a new parameter platform_fault_domain
+  - Model SecurityProfile has a new parameter uefi_settings
+  - Model SecurityProfile has a new parameter security_type
+  - Model VirtualMachineScaleSet has a new parameter extended_location
+  - Model VirtualMachineScaleSet has a new parameter orchestration_mode
+  - Added operation VirtualMachinesOperations.begin_install_patches
+  - Added operation VirtualMachineScaleSetsOperations.list_by_location
+  - Added operation group VirtualMachineImagesEdgeZoneOperations
+
+**Breaking changes**
+
+  - Operation VirtualMachineScaleSetVMsOperations.begin_delete has a new signature
+  - Operation VirtualMachineScaleSetsOperations.begin_delete has a new signature
+  - Operation VirtualMachineScaleSetsOperations.begin_delete_instances has a new signature
+  - Model VirtualMachineSoftwarePatchProperties no longer has parameter kbid
+  - Model LastPatchInstallationSummary no longer has parameter started_by
+  - Model LastPatchInstallationSummary no longer has parameter reboot_status
+  - Model VirtualMachineAssessPatchesResult no longer has parameter patches
+  - Model PurchasePlan no longer has parameter promotion_code
+
+## 18.2.0 (2021-02-02)
+
+**Features**
+
+  - Added operation group CloudServicesUpdateDomainOperations
+  - Added operation group CloudServiceRolesOperations
+  - Added operation group CloudServiceRoleInstancesOperations
+  - Added operation group CloudServicesOperations
+
+## 18.1.0 (2021-01-19)
+
+**Features**
+  - Model Disk has a new parameter purchase_plan
+  - Model Disk has a new parameter extended_location
+  - Model Disk has a new parameter bursting_enabled
+  - Model ThrottledRequestsInput has a new parameter group_by_client_application_id
+  - Model ThrottledRequestsInput has a new parameter group_by_user_agent
+  - Model Snapshot has a new parameter purchase_plan
+  - Model Snapshot has a new parameter extended_location
+  - Model DiskUpdate has a new parameter purchase_plan
+  - Model DiskUpdate has a new parameter bursting_enabled
+  - Model LogAnalyticsInputBase has a new parameter group_by_client_application_id
+  - Model LogAnalyticsInputBase has a new parameter group_by_user_agent
+  - Model PurchasePlan has a new parameter promotion_code
+  - Model VirtualMachineScaleSetNetworkConfiguration has a new parameter enable_fpga
+  - Model RequestRateByIntervalInput has a new parameter group_by_client_application_id
+  - Model RequestRateByIntervalInput has a new parameter group_by_user_agent
+  - Model VirtualMachineScaleSetUpdateNetworkConfiguration has a new parameter enable_fpga
+  - Added operation DiskAccessesOperations.list_private_endpoint_connections
+  - Added operation DiskAccessesOperations.begin_delete_a_private_endpoint_connection
+  - Added operation DiskAccessesOperations.begin_update_a_private_endpoint_connection
+  - Added operation DiskAccessesOperations.get_a_private_endpoint_connection
+  - Added operation group DiskRestorePointOperations
+
+## 18.0.0 (2020-11-17)
+
+**Features**
+
+  - Model GalleryImageUpdate has a new parameter features
+  - Model GalleryApplicationVersionPublishingProfile has a new parameter manage_actions
+  - Model GalleryImage has a new parameter features
+  - Model Gallery has a new parameter sharing_profile
+  - Model GalleryArtifactVersionSource has a new parameter uri
+  - Model GalleryUpdate has a new parameter sharing_profile
+  - Model UserArtifactSource has a new parameter default_configuration_link
+  - Added operation VirtualMachineRunCommandsOperations.begin_update
+  - Added operation VirtualMachineRunCommandsOperations.begin_create_or_update
+  - Added operation VirtualMachineRunCommandsOperations.begin_delete
+  - Added operation VirtualMachineRunCommandsOperations.get_by_virtual_machine
+  - Added operation VirtualMachineRunCommandsOperations.list_by_virtual_machine
+  - Added operation group SharedGalleriesOperations
+  - Added operation group VirtualMachineScaleSetVMRunCommandsOperations
+  - Added operation group GallerySharingProfileOperations
+  - Added operation group SharedGalleryImageVersionsOperations
+  - Added operation group SharedGalleryImagesOperations
+
+**Breaking changes**
+
+  - Operation GalleriesOperations.get has a new signature
+  - Operation VirtualMachinesOperations.begin_delete has a new signature
+  - Model GalleryApplicationVersionPublishingProfile no longer has parameter content_type
+  - Model UserArtifactSource no longer has parameter file_name
+
+## 17.0.0 (2020-09-16)
+
+**Features**
+
+  - Model VirtualMachineExtensionUpdate has a new parameter enable_automatic_upgrade
+  - Model VirtualMachineScaleSetExtensionUpdate has a new parameter enable_automatic_upgrade
+  - Model DedicatedHostGroup has a new parameter instance_view
+  - Model DedicatedHostGroup has a new parameter support_automatic_placement
+  - Model VirtualMachineScaleSetExtension has a new parameter enable_automatic_upgrade
+  - Model VirtualMachineScaleSetVM has a new parameter security_profile
+  - Model VirtualMachineImage has a new parameter disallowed
+  - Model VirtualMachine has a new parameter security_profile
+  - Model VirtualMachine has a new parameter extensions_time_budget
+  - Model VirtualMachine has a new parameter host_group
+  - Model VirtualMachineInstanceView has a new parameter vm_health
+  - Model VirtualMachineInstanceView has a new parameter patch_status
+  - Model VirtualMachineInstanceView has a new parameter assigned_host
+  - Model DiskEncryptionSet has a new parameter encryption_type
+  - Model Snapshot has a new parameter disk_state
+  - Model Snapshot has a new parameter disk_access_id
+  - Model Snapshot has a new parameter network_access_policy
+  - Model CreationData has a new parameter logical_sector_size
+  - Model DiskEncryptionSetUpdate has a new parameter encryption_type
+  - Model VirtualMachineScaleSetVMInstanceView has a new parameter assigned_host
+  - Model WindowsConfiguration has a new parameter patch_settings
+  - Model DiskUpdate has a new parameter disk_access_id
+  - Model DiskUpdate has a new parameter network_access_policy
+  - Model DiskUpdate has a new parameter tier
+  - Model VirtualMachineScaleSetUpdateVMProfile has a new parameter security_profile
+  - Model VirtualMachineScaleSetVMProfile has a new parameter security_profile
+  - Model VirtualMachineUpdate has a new parameter security_profile
+  - Model VirtualMachineUpdate has a new parameter extensions_time_budget
+  - Model VirtualMachineUpdate has a new parameter host_group
+  - Model Disk has a new parameter disk_access_id
+  - Model Disk has a new parameter network_access_policy
+  - Model Disk has a new parameter tier
+  - Model VirtualMachineExtension has a new parameter enable_automatic_upgrade
+  - Model VirtualMachineScaleSet has a new parameter host_group
+  - Model DedicatedHostGroupUpdate has a new parameter instance_view
+  - Model DedicatedHostGroupUpdate has a new parameter support_automatic_placement
+  - Model SnapshotUpdate has a new parameter disk_access_id
+  - Model SnapshotUpdate has a new parameter network_access_policy
+  - Model VirtualMachineScaleSetExtensionProfile has a new parameter extensions_time_budget
+  - Added operation VirtualMachineScaleSetVMsOperations.retrieve_boot_diagnostics_data
+  - Added operation VirtualMachinesOperations.retrieve_boot_diagnostics_data
+  - Added operation VirtualMachinesOperations.begin_assess_patches
+  - Added operation DiskEncryptionSetsOperations.list_associated_resources
+  - Added operation group DiskAccessesOperations
+
+**Breaking changes**
+
+  - Operation DedicatedHostGroupsOperations.get has a new signature
+
 ## 17.0.0b1 (2020-06-17)
 
 This is beta preview version.

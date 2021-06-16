@@ -22,7 +22,8 @@ from ._models import(
     DeletedCertificate,
     IssuerProperties,
     LifetimeAction,
-    KeyVaultCertificate
+    KeyVaultCertificate,
+    KeyVaultCertificateIdentifier
 )
 from ._shared.client_base import ApiVersion
 
@@ -42,6 +43,7 @@ __all__ = [
     "KeyCurveName",
     "KeyType",
     "KeyVaultCertificate",
+    "KeyVaultCertificateIdentifier",
     "KeyUsageType",
     "LifetimeAction",
     "CertificateContentType",

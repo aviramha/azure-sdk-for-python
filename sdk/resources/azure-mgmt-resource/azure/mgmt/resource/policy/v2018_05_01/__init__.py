@@ -7,10 +7,13 @@
 # --------------------------------------------------------------------------
 
 from ._policy_client import PolicyClient
+from ._version import VERSION
+
+__version__ = VERSION
 __all__ = ['PolicyClient']
 
 try:
-    from ._patch import patch_sdk
+    from ._patch import patch_sdk  # type: ignore
     patch_sdk()
 except ImportError:
     pass

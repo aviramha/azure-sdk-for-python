@@ -8,13 +8,13 @@
 from typing import TYPE_CHECKING
 import warnings
 
-from azure.core.exceptions import HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
+from azure.core.exceptions import ClientAuthenticationError, HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
 from azure.core.paging import ItemPaged
 from azure.core.pipeline import PipelineResponse
 from azure.core.pipeline.transport import HttpRequest, HttpResponse
 from azure.mgmt.core.exceptions import ARMErrorFormat
 
-from .. import models
+from .. import models as _models
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,ungrouped-imports
@@ -37,7 +37,7 @@ class TagsOperations(object):
     :param deserializer: An object model deserializer.
     """
 
-    models = models
+    models = _models
 
     def __init__(self, client, config, serializer, deserializer):
         self._client = client
@@ -68,9 +68,12 @@ class TagsOperations(object):
         :raises: ~azure.core.exceptions.HttpResponseError
         """
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-10-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.delete_value.metadata['url']  # type: ignore
@@ -87,8 +90,8 @@ class TagsOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.delete(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -108,7 +111,7 @@ class TagsOperations(object):
         tag_value,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.TagValue"
+        # type: (...) -> "_models.TagValue"
         """Creates a predefined value for a predefined tag name.
 
         This operation allows adding a value to the list of predefined values for an existing
@@ -123,10 +126,13 @@ class TagsOperations(object):
         :rtype: ~azure.mgmt.resource.resources.v2019_10_01.models.TagValue
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.TagValue"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.TagValue"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-10-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.create_or_update_value.metadata['url']  # type: ignore
@@ -143,9 +149,8 @@ class TagsOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.put(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -154,7 +159,6 @@ class TagsOperations(object):
             map_error(status_code=response.status_code, response=response, error_map=error_map)
             raise HttpResponseError(response=response, error_format=ARMErrorFormat)
 
-        deserialized = None
         if response.status_code == 200:
             deserialized = self._deserialize('TagValue', pipeline_response)
 
@@ -172,7 +176,7 @@ class TagsOperations(object):
         tag_name,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.TagDetails"
+        # type: (...) -> "_models.TagDetails"
         """Creates a predefined tag name.
 
         This operation allows adding a name to the list of predefined tag names for the given
@@ -187,10 +191,13 @@ class TagsOperations(object):
         :rtype: ~azure.mgmt.resource.resources.v2019_10_01.models.TagDetails
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.TagDetails"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.TagDetails"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-10-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.create_or_update.metadata['url']  # type: ignore
@@ -206,9 +213,8 @@ class TagsOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.put(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -217,7 +223,6 @@ class TagsOperations(object):
             map_error(status_code=response.status_code, response=response, error_map=error_map)
             raise HttpResponseError(response=response, error_format=ARMErrorFormat)
 
-        deserialized = None
         if response.status_code == 200:
             deserialized = self._deserialize('TagDetails', pipeline_response)
 
@@ -250,9 +255,12 @@ class TagsOperations(object):
         :raises: ~azure.core.exceptions.HttpResponseError
         """
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-10-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.delete.metadata['url']  # type: ignore
@@ -268,8 +276,8 @@ class TagsOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.delete(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -287,25 +295,32 @@ class TagsOperations(object):
         self,
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.TagsListResult"]
+        # type: (...) -> Iterable["_models.TagsListResult"]
         """Gets a summary of tag usage under the subscription.
 
         This operation performs a union of predefined tags, resource tags, resource group tags and
-    subscription tags, and returns a summary of usage for each tag name and value under the given
-    subscription. In case of a large number of tags, this operation may return a previously cached
-    result.
+        subscription tags, and returns a summary of usage for each tag name and value under the given
+        subscription. In case of a large number of tags, this operation may return a previously cached
+        result.
 
         :keyword callable cls: A custom type or function that will be passed the direct response
         :return: An iterator like instance of either TagsListResult or the result of cls(response)
         :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.resource.resources.v2019_10_01.models.TagsListResult]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.TagsListResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.TagsListResult"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-10-01"
+        accept = "application/json"
 
         def prepare_request(next_link=None):
+            # Construct headers
+            header_parameters = {}  # type: Dict[str, Any]
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
+
             if not next_link:
                 # Construct URL
                 url = self.list.metadata['url']  # type: ignore
@@ -317,15 +332,11 @@ class TagsOperations(object):
                 query_parameters = {}  # type: Dict[str, Any]
                 query_parameters['api-version'] = self._serialize.query("api_version", api_version, 'str')
 
+                request = self._client.get(url, query_parameters, header_parameters)
             else:
                 url = next_link
                 query_parameters = {}  # type: Dict[str, Any]
-            # Construct headers
-            header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
-
-            # Construct and send request
-            request = self._client.get(url, query_parameters, header_parameters)
+                request = self._client.get(url, query_parameters, header_parameters)
             return request
 
         def extract_data(pipeline_response):
@@ -355,10 +366,10 @@ class TagsOperations(object):
     def create_or_update_at_scope(
         self,
         scope,  # type: str
-        parameters,  # type: "models.TagsResource"
+        parameters,  # type: "_models.TagsResource"
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.TagsResource"
+        # type: (...) -> "_models.TagsResource"
         """Creates or updates the entire set of tags on a resource or subscription.
 
         This operation allows adding or replacing the entire set of tags on the specified resource or
@@ -373,11 +384,14 @@ class TagsOperations(object):
         :rtype: ~azure.mgmt.resource.resources.v2019_10_01.models.TagsResource
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.TagsResource"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.TagsResource"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-10-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self.create_or_update_at_scope.metadata['url']  # type: ignore
@@ -393,14 +407,12 @@ class TagsOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(parameters, 'TagsResource')
         body_content_kwargs['content'] = body_content
         request = self._client.put(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
@@ -419,10 +431,10 @@ class TagsOperations(object):
     def update_at_scope(
         self,
         scope,  # type: str
-        parameters,  # type: "models.TagsPatchResource"
+        parameters,  # type: "_models.TagsPatchResource"
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.TagsResource"
+        # type: (...) -> "_models.TagsResource"
         """Selectively updates the set of tags on a resource or subscription.
 
         This operation allows replacing, merging or selectively deleting tags on the specified resource
@@ -441,11 +453,14 @@ class TagsOperations(object):
         :rtype: ~azure.mgmt.resource.resources.v2019_10_01.models.TagsResource
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.TagsResource"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.TagsResource"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-10-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self.update_at_scope.metadata['url']  # type: ignore
@@ -461,14 +476,12 @@ class TagsOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(parameters, 'TagsPatchResource')
         body_content_kwargs['content'] = body_content
         request = self._client.patch(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
@@ -489,7 +502,7 @@ class TagsOperations(object):
         scope,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.TagsResource"
+        # type: (...) -> "_models.TagsResource"
         """Gets the entire set of tags on a resource or subscription.
 
         Gets the entire set of tags on a resource or subscription.
@@ -501,10 +514,13 @@ class TagsOperations(object):
         :rtype: ~azure.mgmt.resource.resources.v2019_10_01.models.TagsResource
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.TagsResource"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.TagsResource"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-10-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.get_at_scope.metadata['url']  # type: ignore
@@ -519,9 +535,8 @@ class TagsOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -556,9 +571,12 @@ class TagsOperations(object):
         :raises: ~azure.core.exceptions.HttpResponseError
         """
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-10-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.delete_at_scope.metadata['url']  # type: ignore
@@ -573,8 +591,8 @@ class TagsOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.delete(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response

@@ -64,8 +64,8 @@ class AdditionalUnattendContent(msrest.serialization.Model):
     :ivar pass_name: The pass name. Currently, the only allowable value is OobeSystem. Default
      value: "OobeSystem".
     :vartype pass_name: str
-    :ivar component_name: The component name. Currently, the only allowable value is Microsoft-
-     Windows-Shell-Setup. Default value: "Microsoft-Windows-Shell-Setup".
+    :ivar component_name: The component name. Currently, the only allowable value is
+     Microsoft-Windows-Shell-Setup. Default value: "Microsoft-Windows-Shell-Setup".
     :vartype component_name: str
     :param setting_name: Specifies the name of the setting to which the content applies. Possible
      values are: FirstLogonCommands and AutoLogon. Possible values include: "AutoLogon",
@@ -190,8 +190,8 @@ class AutomaticOSUpgradePolicy(msrest.serialization.Model):
      applied to scale set instances in a rolling fashion when a newer version of the OS image
      becomes available. Default value is false. :code:`<br>`:code:`<br>` If this is set to true for
      Windows based scale sets, `enableAutomaticUpdates
-     <https://docs.microsoft.com/dotnet/api/microsoft.azure.management.compute.models.windowsconfiguration.enableautomaticupdates?view=azure-
-     dotnet>`_ is automatically set to false and cannot be set to true.
+     <https://docs.microsoft.com/dotnet/api/microsoft.azure.management.compute.models.windowsconfiguration.enableautomaticupdates?view=azure-dotnet>`_
+     is automatically set to false and cannot be set to true.
     :type enable_automatic_os_upgrade: bool
     :param disable_automatic_rollback: Whether OS image rollback feature should be disabled.
      Default value is false.
@@ -570,66 +570,6 @@ class BootDiagnosticsInstanceView(msrest.serialization.Model):
         self.console_screenshot_blob_uri = None
         self.serial_console_log_blob_uri = None
         self.status = None
-
-
-class Components1H8M3EpSchemasVirtualmachineidentityPropertiesUserassignedidentitiesAdditionalproperties(msrest.serialization.Model):
-    """Components1H8M3EpSchemasVirtualmachineidentityPropertiesUserassignedidentitiesAdditionalproperties.
-
-    Variables are only populated by the server, and will be ignored when sending a request.
-
-    :ivar principal_id: The principal id of user assigned identity.
-    :vartype principal_id: str
-    :ivar client_id: The client id of user assigned identity.
-    :vartype client_id: str
-    """
-
-    _validation = {
-        'principal_id': {'readonly': True},
-        'client_id': {'readonly': True},
-    }
-
-    _attribute_map = {
-        'principal_id': {'key': 'principalId', 'type': 'str'},
-        'client_id': {'key': 'clientId', 'type': 'str'},
-    }
-
-    def __init__(
-        self,
-        **kwargs
-    ):
-        super(Components1H8M3EpSchemasVirtualmachineidentityPropertiesUserassignedidentitiesAdditionalproperties, self).__init__(**kwargs)
-        self.principal_id = None
-        self.client_id = None
-
-
-class ComponentsNj115SSchemasVirtualmachinescalesetidentityPropertiesUserassignedidentitiesAdditionalproperties(msrest.serialization.Model):
-    """ComponentsNj115SSchemasVirtualmachinescalesetidentityPropertiesUserassignedidentitiesAdditionalproperties.
-
-    Variables are only populated by the server, and will be ignored when sending a request.
-
-    :ivar principal_id: The principal id of user assigned identity.
-    :vartype principal_id: str
-    :ivar client_id: The client id of user assigned identity.
-    :vartype client_id: str
-    """
-
-    _validation = {
-        'principal_id': {'readonly': True},
-        'client_id': {'readonly': True},
-    }
-
-    _attribute_map = {
-        'principal_id': {'key': 'principalId', 'type': 'str'},
-        'client_id': {'key': 'clientId', 'type': 'str'},
-    }
-
-    def __init__(
-        self,
-        **kwargs
-    ):
-        super(ComponentsNj115SSchemasVirtualmachinescalesetidentityPropertiesUserassignedidentitiesAdditionalproperties, self).__init__(**kwargs)
-        self.principal_id = None
-        self.client_id = None
 
 
 class ComputeOperationListResult(msrest.serialization.Model):
@@ -1290,28 +1230,21 @@ class DiagnosticsProfile(msrest.serialization.Model):
 class DiffDiskSettings(msrest.serialization.Model):
     """Describes the parameters of ephemeral disk settings that can be specified for operating system disk. :code:`<br>`:code:`<br>` NOTE: The ephemeral disk settings can only be specified for managed disk.
 
-    Variables are only populated by the server, and will be ignored when sending a request.
-
-    :ivar option: Specifies the ephemeral disk settings for operating system disk. Default value:
-     "Local".
-    :vartype option: str
+    :param option: Specifies the ephemeral disk settings for operating system disk. Possible values
+     include: "Local".
+    :type option: str or ~azure.mgmt.compute.v2019_03_01.models.DiffDiskOptions
     """
-
-    _validation = {
-        'option': {'constant': True},
-    }
 
     _attribute_map = {
         'option': {'key': 'option', 'type': 'str'},
     }
-
-    option = "Local"
 
     def __init__(
         self,
         **kwargs
     ):
         super(DiffDiskSettings, self).__init__(**kwargs)
+        self.option = kwargs.get('option', None)
 
 
 class Disallowed(msrest.serialization.Model):
@@ -1857,7 +1790,7 @@ class GalleryApplicationVersion(Resource):
     :type location: str
     :param tags: A set of tags. Resource tags.
     :type tags: dict[str, str]
-    :param publishing_profile: The publishing profile of a gallery Image Version.
+    :param publishing_profile: The publishing profile of a gallery image version.
     :type publishing_profile:
      ~azure.mgmt.compute.v2019_03_01.models.GalleryApplicationVersionPublishingProfile
     :ivar provisioning_state: The provisioning state, which only appears in the response. Possible
@@ -1980,7 +1913,7 @@ class GalleryArtifactPublishingProfileBase(msrest.serialization.Model):
 
 
 class GalleryApplicationVersionPublishingProfile(GalleryArtifactPublishingProfileBase):
-    """The publishing profile of a gallery Image Version.
+    """The publishing profile of a gallery image version.
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
@@ -2006,9 +1939,8 @@ class GalleryApplicationVersionPublishingProfile(GalleryArtifactPublishingProfil
     :type storage_account_type: str or ~azure.mgmt.compute.v2019_03_01.models.StorageAccountType
     :param source: Required. The source image from which the Image Version is going to be created.
     :type source: ~azure.mgmt.compute.v2019_03_01.models.UserArtifactSource
-    :param content_type: Optional. May be used to help process this file. The type of file
-     contained in the source, e.g. zip, json, etc.
-    :type content_type: str
+    :param manage_actions:
+    :type manage_actions: ~azure.mgmt.compute.v2019_03_01.models.UserArtifactManage
     :param enable_health_check: Optional. Whether or not this application reports health.
     :type enable_health_check: bool
     """
@@ -2026,7 +1958,7 @@ class GalleryApplicationVersionPublishingProfile(GalleryArtifactPublishingProfil
         'end_of_life_date': {'key': 'endOfLifeDate', 'type': 'iso-8601'},
         'storage_account_type': {'key': 'storageAccountType', 'type': 'str'},
         'source': {'key': 'source', 'type': 'UserArtifactSource'},
-        'content_type': {'key': 'contentType', 'type': 'str'},
+        'manage_actions': {'key': 'manageActions', 'type': 'UserArtifactManage'},
         'enable_health_check': {'key': 'enableHealthCheck', 'type': 'bool'},
     }
 
@@ -2036,7 +1968,7 @@ class GalleryApplicationVersionPublishingProfile(GalleryArtifactPublishingProfil
     ):
         super(GalleryApplicationVersionPublishingProfile, self).__init__(**kwargs)
         self.source = kwargs['source']
-        self.content_type = kwargs.get('content_type', None)
+        self.manage_actions = kwargs.get('manage_actions', None)
         self.enable_health_check = kwargs.get('enable_health_check', None)
 
 
@@ -2475,8 +2407,8 @@ class GalleryImageVersionStorageProfile(msrest.serialization.Model):
 
     Variables are only populated by the server, and will be ignored when sending a request.
 
-    :ivar os_disk_image: This is the disk image base class.
-    :vartype os_disk_image: ~azure.mgmt.compute.v2019_03_01.models.GalleryDiskImage
+    :ivar os_disk_image: This is the OS disk image.
+    :vartype os_disk_image: ~azure.mgmt.compute.v2019_03_01.models.GalleryOSDiskImage
     :ivar data_disk_images: A list of data disk images.
     :vartype data_disk_images: list[~azure.mgmt.compute.v2019_03_01.models.GalleryDataDiskImage]
     """
@@ -2487,7 +2419,7 @@ class GalleryImageVersionStorageProfile(msrest.serialization.Model):
     }
 
     _attribute_map = {
-        'os_disk_image': {'key': 'osDiskImage', 'type': 'GalleryDiskImage'},
+        'os_disk_image': {'key': 'osDiskImage', 'type': 'GalleryOSDiskImage'},
         'data_disk_images': {'key': 'dataDiskImages', 'type': '[GalleryDataDiskImage]'},
     }
 
@@ -2593,11 +2525,11 @@ class HardwareProfile(msrest.serialization.Model):
     """Specifies the hardware settings for the virtual machine.
 
     :param vm_size: Specifies the size of the virtual machine. For more information about virtual
-     machine sizes, see `Sizes for virtual machines <https://docs.microsoft.com/azure/virtual-
-     machines/virtual-machines-windows-sizes?toc=%2fazure%2fvirtual-
-     machines%2fwindows%2ftoc.json>`_. :code:`<br>`:code:`<br>` The available VM sizes depend on
-     region and availability set. For a list of available sizes use these APIs:
-     :code:`<br>`:code:`<br>` `List all available virtual machine sizes in an availability set
+     machine sizes, see `Sizes for virtual machines
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-sizes?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_.
+     :code:`<br>`:code:`<br>` The available VM sizes depend on region and availability set. For a
+     list of available sizes use these APIs:  :code:`<br>`:code:`<br>` `List all available virtual
+     machine sizes in an availability set
      <https://docs.microsoft.com/rest/api/compute/availabilitysets/listavailablesizes>`_
      :code:`<br>`:code:`<br>` `List all available virtual machine sizes in a region
      <https://docs.microsoft.com/rest/api/compute/virtualmachinesizes/list>`_
@@ -2987,13 +2919,13 @@ class ImageStorageProfile(msrest.serialization.Model):
 
     :param os_disk: Specifies information about the operating system disk used by the virtual
      machine. :code:`<br>`:code:`<br>` For more information about disks, see `About disks and VHDs
-     for Azure virtual machines <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-
-     windows-about-disks-vhds?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_.
+     for Azure virtual machines
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-about-disks-vhds?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_.
     :type os_disk: ~azure.mgmt.compute.v2019_03_01.models.ImageOSDisk
     :param data_disks: Specifies the parameters that are used to add a data disk to a virtual
      machine. :code:`<br>`:code:`<br>` For more information about disks, see `About disks and VHDs
-     for Azure virtual machines <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-
-     windows-about-disks-vhds?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_.
+     for Azure virtual machines
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-about-disks-vhds?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_.
     :type data_disks: list[~azure.mgmt.compute.v2019_03_01.models.ImageDataDisk]
     :param zone_resilient: Specifies whether an image is zone resilient or not. Default is false.
      Zone resilient images can be created only in regions that provide Zone Redundant Storage (ZRS).
@@ -3652,9 +3584,7 @@ class OSProfile(msrest.serialization.Model):
      :code:`<br>`:code:`<br>` **Max-length (Windows):** 15 characters :code:`<br>`:code:`<br>`
      **Max-length (Linux):** 64 characters. :code:`<br>`:code:`<br>` For naming conventions and
      restrictions see `Azure infrastructure services implementation guidelines
-     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-linux-infrastructure-
-     subscription-accounts-guidelines?toc=%2fazure%2fvirtual-machines%2flinux%2ftoc.json#1-naming-
-     conventions>`_.
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-linux-infrastructure-subscription-accounts-guidelines?toc=%2fazure%2fvirtual-machines%2flinux%2ftoc.json#1-naming-conventions>`_.
     :type computer_name: str
     :param admin_username: Specifies the name of the administrator account.
      :code:`<br>`:code:`<br>` **Windows-only restriction:** Cannot end in "."
@@ -3665,12 +3595,11 @@ class OSProfile(msrest.serialization.Model):
      :code:`<br>`:code:`<br>` **Minimum-length (Linux):** 1  character :code:`<br>`:code:`<br>`
      **Max-length (Linux):** 64 characters :code:`<br>`:code:`<br>` **Max-length (Windows):** 20
      characters  :code:`<br>`:code:`<br>`:code:`<li>` For root access to the Linux VM, see `Using
-     root privileges on Linux virtual machines in Azure <https://docs.microsoft.com/azure/virtual-
-     machines/virtual-machines-linux-use-root-privileges?toc=%2fazure%2fvirtual-
-     machines%2flinux%2ftoc.json>`_\ :code:`<br>`:code:`<li>` For a list of built-in system users on
-     Linux that should not be used in this field, see `Selecting User Names for Linux on Azure
-     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-linux-
-     usernames?toc=%2fazure%2fvirtual-machines%2flinux%2ftoc.json>`_.
+     root privileges on Linux virtual machines in Azure
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-linux-use-root-privileges?toc=%2fazure%2fvirtual-machines%2flinux%2ftoc.json>`_\
+     :code:`<br>`:code:`<li>` For a list of built-in system users on Linux that should not be used
+     in this field, see `Selecting User Names for Linux on Azure
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-linux-usernames?toc=%2fazure%2fvirtual-machines%2flinux%2ftoc.json>`_.
     :type admin_username: str
     :param admin_password: Specifies the password of the administrator account.
      :code:`<br>`:code:`<br>` **Minimum-length (Windows):** 8 characters :code:`<br>`:code:`<br>`
@@ -3682,30 +3611,28 @@ class OSProfile(msrest.serialization.Model):
      **Disallowed values:** "abc@123", "P@$$w0rd", "P@ssw0rd", "P@ssword123", "Pa$$word",
      "pass@word1", "Password!", "Password1", "Password22", "iloveyou!" :code:`<br>`:code:`<br>` For
      resetting the password, see `How to reset the Remote Desktop service or its login password in a
-     Windows VM <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-reset-
-     rdp?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_ :code:`<br>`:code:`<br>` For
-     resetting root password, see `Manage users, SSH, and check or repair disks on Azure Linux VMs
-     using the VMAccess Extension <https://docs.microsoft.com/azure/virtual-machines/virtual-
-     machines-linux-using-vmaccess-extension?toc=%2fazure%2fvirtual-
-     machines%2flinux%2ftoc.json#reset-root-password>`_.
+     Windows VM
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-reset-rdp?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_
+     :code:`<br>`:code:`<br>` For resetting root password, see `Manage users, SSH, and check or
+     repair disks on Azure Linux VMs using the VMAccess Extension
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-linux-using-vmaccess-extension?toc=%2fazure%2fvirtual-machines%2flinux%2ftoc.json#reset-root-password>`_.
     :type admin_password: str
     :param custom_data: Specifies a base-64 encoded string of custom data. The base-64 encoded
      string is decoded to a binary array that is saved as a file on the Virtual Machine. The maximum
      length of the binary array is 65535 bytes. :code:`<br>`:code:`<br>` For using cloud-init for
      your VM, see `Using cloud-init to customize a Linux VM during creation
-     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-linux-using-cloud-
-     init?toc=%2fazure%2fvirtual-machines%2flinux%2ftoc.json>`_.
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-linux-using-cloud-init?toc=%2fazure%2fvirtual-machines%2flinux%2ftoc.json>`_.
     :type custom_data: str
     :param windows_configuration: Specifies Windows operating system settings on the virtual
      machine.
     :type windows_configuration: ~azure.mgmt.compute.v2019_03_01.models.WindowsConfiguration
     :param linux_configuration: Specifies the Linux operating system settings on the virtual
      machine. :code:`<br>`:code:`<br>`For a list of supported Linux distributions, see `Linux on
-     Azure-Endorsed Distributions <https://docs.microsoft.com/azure/virtual-machines/virtual-
-     machines-linux-endorsed-distros?toc=%2fazure%2fvirtual-machines%2flinux%2ftoc.json>`_
-     :code:`<br>`:code:`<br>` For running non-endorsed distributions, see `Information for Non-
-     Endorsed Distributions <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-
-     linux-create-upload-generic?toc=%2fazure%2fvirtual-machines%2flinux%2ftoc.json>`_.
+     Azure-Endorsed Distributions
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-linux-endorsed-distros?toc=%2fazure%2fvirtual-machines%2flinux%2ftoc.json>`_
+     :code:`<br>`:code:`<br>` For running non-endorsed distributions, see `Information for
+     Non-Endorsed Distributions
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-linux-create-upload-generic?toc=%2fazure%2fvirtual-machines%2flinux%2ftoc.json>`_.
     :type linux_configuration: ~azure.mgmt.compute.v2019_03_01.models.LinuxConfiguration
     :param secrets: Specifies set of certificates that should be installed onto the virtual
      machine.
@@ -4938,8 +4865,7 @@ class SshPublicKey(msrest.serialization.Model):
     :param key_data: SSH public key certificate used to authenticate with the VM through ssh. The
      key needs to be at least 2048-bit and in ssh-rsa format. :code:`<br>`:code:`<br>` For creating
      ssh keys, see `Create SSH keys on Linux and Mac for Linux VMs in Azure
-     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-linux-mac-create-ssh-
-     keys?toc=%2fazure%2fvirtual-machines%2flinux%2ftoc.json>`_.
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-linux-mac-create-ssh-keys?toc=%2fazure%2fvirtual-machines%2flinux%2ftoc.json>`_.
     :type key_data: str
     """
 
@@ -4967,13 +4893,13 @@ class StorageProfile(msrest.serialization.Model):
     :type image_reference: ~azure.mgmt.compute.v2019_03_01.models.ImageReference
     :param os_disk: Specifies information about the operating system disk used by the virtual
      machine. :code:`<br>`:code:`<br>` For more information about disks, see `About disks and VHDs
-     for Azure virtual machines <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-
-     windows-about-disks-vhds?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_.
+     for Azure virtual machines
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-about-disks-vhds?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_.
     :type os_disk: ~azure.mgmt.compute.v2019_03_01.models.OSDisk
     :param data_disks: Specifies the parameters that are used to add a data disk to a virtual
      machine. :code:`<br>`:code:`<br>` For more information about disks, see `About disks and VHDs
-     for Azure virtual machines <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-
-     windows-about-disks-vhds?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_.
+     for Azure virtual machines
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-about-disks-vhds?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_.
     :type data_disks: list[~azure.mgmt.compute.v2019_03_01.models.DataDisk]
     """
 
@@ -5345,26 +5271,64 @@ class UsageName(msrest.serialization.Model):
         self.localized_value = kwargs.get('localized_value', None)
 
 
+class UserArtifactManage(msrest.serialization.Model):
+    """UserArtifactManage.
+
+    All required parameters must be populated in order to send to Azure.
+
+    :param install: Required. Required. The path and arguments to install the gallery application.
+     This is limited to 4096 characters.
+    :type install: str
+    :param remove: Required. Required. The path and arguments to remove the gallery application.
+     This is limited to 4096 characters.
+    :type remove: str
+    :param update: Optional. The path and arguments to update the gallery application. If not
+     present, then update operation will invoke remove command on the previous version and install
+     command on the current version of the gallery application. This is limited to 4096 characters.
+    :type update: str
+    """
+
+    _validation = {
+        'install': {'required': True},
+        'remove': {'required': True},
+    }
+
+    _attribute_map = {
+        'install': {'key': 'install', 'type': 'str'},
+        'remove': {'key': 'remove', 'type': 'str'},
+        'update': {'key': 'update', 'type': 'str'},
+    }
+
+    def __init__(
+        self,
+        **kwargs
+    ):
+        super(UserArtifactManage, self).__init__(**kwargs)
+        self.install = kwargs['install']
+        self.remove = kwargs['remove']
+        self.update = kwargs.get('update', None)
+
+
 class UserArtifactSource(msrest.serialization.Model):
     """The source image from which the Image Version is going to be created.
 
     All required parameters must be populated in order to send to Azure.
 
-    :param file_name: Required. Required. The fileName of the artifact.
-    :type file_name: str
     :param media_link: Required. Required. The mediaLink of the artifact, must be a readable
-     storage blob.
+     storage page blob.
     :type media_link: str
+    :param default_configuration_link: Optional. The defaultConfigurationLink of the artifact, must
+     be a readable storage page blob.
+    :type default_configuration_link: str
     """
 
     _validation = {
-        'file_name': {'required': True},
         'media_link': {'required': True},
     }
 
     _attribute_map = {
-        'file_name': {'key': 'fileName', 'type': 'str'},
         'media_link': {'key': 'mediaLink', 'type': 'str'},
+        'default_configuration_link': {'key': 'defaultConfigurationLink', 'type': 'str'},
     }
 
     def __init__(
@@ -5372,8 +5336,38 @@ class UserArtifactSource(msrest.serialization.Model):
         **kwargs
     ):
         super(UserArtifactSource, self).__init__(**kwargs)
-        self.file_name = kwargs['file_name']
         self.media_link = kwargs['media_link']
+        self.default_configuration_link = kwargs.get('default_configuration_link', None)
+
+
+class UserAssignedIdentitiesValue(msrest.serialization.Model):
+    """UserAssignedIdentitiesValue.
+
+    Variables are only populated by the server, and will be ignored when sending a request.
+
+    :ivar principal_id: The principal id of user assigned identity.
+    :vartype principal_id: str
+    :ivar client_id: The client id of user assigned identity.
+    :vartype client_id: str
+    """
+
+    _validation = {
+        'principal_id': {'readonly': True},
+        'client_id': {'readonly': True},
+    }
+
+    _attribute_map = {
+        'principal_id': {'key': 'principalId', 'type': 'str'},
+        'client_id': {'key': 'clientId', 'type': 'str'},
+    }
+
+    def __init__(
+        self,
+        **kwargs
+    ):
+        super(UserAssignedIdentitiesValue, self).__init__(**kwargs)
+        self.principal_id = None
+        self.client_id = None
 
 
 class VaultCertificate(msrest.serialization.Model):
@@ -5383,9 +5377,9 @@ class VaultCertificate(msrest.serialization.Model):
      a secret. For adding a secret to the Key Vault, see `Add a key or secret to the key vault
      <https://docs.microsoft.com/azure/key-vault/key-vault-get-started/#add>`_. In this case, your
      certificate needs to be It is the Base64 encoding of the following JSON Object which is encoded
-     in UTF-8: :code:`<br>`:code:`<br>` {:code:`<br>`  "data":":code:`<Base64-encoded-
-     certificate>`",:code:`<br>`  "dataType":"pfx",:code:`<br>`  "password":":code:`<pfx-file-
-     password>`":code:`<br>`}.
+     in UTF-8: :code:`<br>`:code:`<br>` {:code:`<br>`
+     "data":":code:`<Base64-encoded-certificate>`",:code:`<br>`  "dataType":"pfx",:code:`<br>`
+     "password":":code:`<pfx-file-password>`":code:`<br>`}.
     :type certificate_url: str
     :param certificate_store: For Windows VMs, specifies the certificate store on the Virtual
      Machine to which the certificate should be added. The specified certificate store is implicitly
@@ -5501,11 +5495,10 @@ class VirtualMachine(Resource):
      machine should be assigned to. Virtual machines specified in the same availability set are
      allocated to different nodes to maximize availability. For more information about availability
      sets, see `Manage the availability of virtual machines
-     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-manage-
-     availability?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_. :code:`<br>`:code:`<br>`
-     For more information on Azure planned maintenance, see `Planned maintenance for virtual
-     machines in Azure <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-
-     planned-maintenance?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-manage-availability?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_.
+     :code:`<br>`:code:`<br>` For more information on Azure planned maintenance, see `Planned
+     maintenance for virtual machines in Azure
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-planned-maintenance?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_
      :code:`<br>`:code:`<br>` Currently, a VM can only be added to availability set at creation
      time. An existing VM cannot be added to an availability set. :code:`<br>`:code:`<br>`This
      property cannot exist along with a non-null properties.virtualMachineScaleSet reference.
@@ -5541,15 +5534,14 @@ class VirtualMachine(Resource):
     :vartype provisioning_state: str
     :ivar instance_view: The virtual machine instance view.
     :vartype instance_view: ~azure.mgmt.compute.v2019_03_01.models.VirtualMachineInstanceView
-    :param license_type: Specifies that the image or disk that is being used was licensed on-
-     premises. This element is only used for images that contain the Windows Server operating
+    :param license_type: Specifies that the image or disk that is being used was licensed
+     on-premises. This element is only used for images that contain the Windows Server operating
      system. :code:`<br>`:code:`<br>` Possible values are: :code:`<br>`:code:`<br>` Windows_Client
      :code:`<br>`:code:`<br>` Windows_Server :code:`<br>`:code:`<br>` If this element is included in
      a request for an update, the value must match the initial value. This value cannot be updated.
      :code:`<br>`:code:`<br>` For more information, see `Azure Hybrid Use Benefit for Windows Server
-     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-hybrid-use-benefit-
-     licensing?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_ :code:`<br>`:code:`<br>`
-     Minimum api-version: 2015-06-15.
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-hybrid-use-benefit-licensing?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_
+     :code:`<br>`:code:`<br>` Minimum api-version: 2015-06-15.
     :type license_type: str
     :ivar vm_id: Specifies the VM unique ID which is a 128-bits identifier that is encoded and
      stored in all Azure IaaS VMs SMBIOS and can be read using platform BIOS commands.
@@ -5700,9 +5692,9 @@ class VirtualMachineCaptureResult(SubResource):
     :ivar content_version: the version of the content.
     :vartype content_version: str
     :ivar parameters: parameters of the captured virtual machine.
-    :vartype parameters: object
+    :vartype parameters: any
     :ivar resources: a list of resource items of the captured virtual machine.
-    :vartype resources: list[object]
+    :vartype resources: list[any]
     """
 
     _validation = {
@@ -5763,10 +5755,10 @@ class VirtualMachineExtension(Resource):
      upgrade minor versions unless redeployed, even with this property set to true.
     :type auto_upgrade_minor_version: bool
     :param settings: Json formatted public settings for the extension.
-    :type settings: object
+    :type settings: any
     :param protected_settings: The extension can contain either protectedSettings or
      protectedSettingsFromKeyVault or no protected settings at all.
-    :type protected_settings: object
+    :type protected_settings: any
     :ivar provisioning_state: The provisioning state, which only appears in the response.
     :vartype provisioning_state: str
     :param instance_view: The virtual machine extension instance view.
@@ -5978,10 +5970,10 @@ class VirtualMachineExtensionUpdate(UpdateResource):
      upgrade minor versions unless redeployed, even with this property set to true.
     :type auto_upgrade_minor_version: bool
     :param settings: Json formatted public settings for the extension.
-    :type settings: object
+    :type settings: any
     :param protected_settings: The extension can contain either protectedSettings or
      protectedSettingsFromKeyVault or no protected settings at all.
-    :type protected_settings: object
+    :type protected_settings: any
     """
 
     _attribute_map = {
@@ -6054,7 +6046,7 @@ class VirtualMachineIdentity(msrest.serialization.Model):
      Machine. The user identity dictionary key references will be ARM resource ids in the form:
      '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}'.
     :type user_assigned_identities: dict[str,
-     ~azure.mgmt.compute.v2019_03_01.models.Components1H8M3EpSchemasVirtualmachineidentityPropertiesUserassignedidentitiesAdditionalproperties]
+     ~azure.mgmt.compute.v2019_03_01.models.UserAssignedIdentitiesValue]
     """
 
     _validation = {
@@ -6066,7 +6058,7 @@ class VirtualMachineIdentity(msrest.serialization.Model):
         'principal_id': {'key': 'principalId', 'type': 'str'},
         'tenant_id': {'key': 'tenantId', 'type': 'str'},
         'type': {'key': 'type', 'type': 'str'},
-        'user_assigned_identities': {'key': 'userAssignedIdentities', 'type': '{Components1H8M3EpSchemasVirtualmachineidentityPropertiesUserassignedidentitiesAdditionalproperties}'},
+        'user_assigned_identities': {'key': 'userAssignedIdentities', 'type': '{UserAssignedIdentitiesValue}'},
     }
 
     def __init__(
@@ -6358,8 +6350,8 @@ class VirtualMachineScaleSet(Resource):
     :param platform_fault_domain_count: Fault Domain count for each placement group.
     :type platform_fault_domain_count: int
     :param proximity_placement_group: Specifies information about the proximity placement group
-     that the virtual machine scale set should be assigned to. :code:`<br>`:code:`<br>`Minimum api-
-     version: 2018-04-01.
+     that the virtual machine scale set should be assigned to. :code:`<br>`:code:`<br>`Minimum
+     api-version: 2018-04-01.
     :type proximity_placement_group: ~azure.mgmt.compute.v2019_03_01.models.SubResource
     :param additional_capabilities: Specifies additional capabilities enabled or disabled on the
      Virtual Machines in the Virtual Machine Scale Set. For instance: whether the Virtual Machines
@@ -6513,10 +6505,10 @@ class VirtualMachineScaleSetExtension(SubResourceReadOnly):
      upgrade minor versions unless redeployed, even with this property set to true.
     :type auto_upgrade_minor_version: bool
     :param settings: Json formatted public settings for the extension.
-    :type settings: object
+    :type settings: any
     :param protected_settings: The extension can contain either protectedSettings or
      protectedSettingsFromKeyVault or no protected settings at all.
-    :type protected_settings: object
+    :type protected_settings: any
     :ivar provisioning_state: The provisioning state, which only appears in the response.
     :vartype provisioning_state: str
     :param provision_after_extensions: Collection of extension names after which this extension
@@ -6631,7 +6623,7 @@ class VirtualMachineScaleSetIdentity(msrest.serialization.Model):
      form:
      '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}'.
     :type user_assigned_identities: dict[str,
-     ~azure.mgmt.compute.v2019_03_01.models.ComponentsNj115SSchemasVirtualmachinescalesetidentityPropertiesUserassignedidentitiesAdditionalproperties]
+     ~azure.mgmt.compute.v2019_03_01.models.VirtualMachineScaleSetIdentityUserAssignedIdentitiesValue]
     """
 
     _validation = {
@@ -6643,7 +6635,7 @@ class VirtualMachineScaleSetIdentity(msrest.serialization.Model):
         'principal_id': {'key': 'principalId', 'type': 'str'},
         'tenant_id': {'key': 'tenantId', 'type': 'str'},
         'type': {'key': 'type', 'type': 'str'},
-        'user_assigned_identities': {'key': 'userAssignedIdentities', 'type': '{ComponentsNj115SSchemasVirtualmachinescalesetidentityPropertiesUserassignedidentitiesAdditionalproperties}'},
+        'user_assigned_identities': {'key': 'userAssignedIdentities', 'type': '{VirtualMachineScaleSetIdentityUserAssignedIdentitiesValue}'},
     }
 
     def __init__(
@@ -6655,6 +6647,36 @@ class VirtualMachineScaleSetIdentity(msrest.serialization.Model):
         self.tenant_id = None
         self.type = kwargs.get('type', None)
         self.user_assigned_identities = kwargs.get('user_assigned_identities', None)
+
+
+class VirtualMachineScaleSetIdentityUserAssignedIdentitiesValue(msrest.serialization.Model):
+    """VirtualMachineScaleSetIdentityUserAssignedIdentitiesValue.
+
+    Variables are only populated by the server, and will be ignored when sending a request.
+
+    :ivar principal_id: The principal id of user assigned identity.
+    :vartype principal_id: str
+    :ivar client_id: The client id of user assigned identity.
+    :vartype client_id: str
+    """
+
+    _validation = {
+        'principal_id': {'readonly': True},
+        'client_id': {'readonly': True},
+    }
+
+    _attribute_map = {
+        'principal_id': {'key': 'principalId', 'type': 'str'},
+        'client_id': {'key': 'clientId', 'type': 'str'},
+    }
+
+    def __init__(
+        self,
+        **kwargs
+    ):
+        super(VirtualMachineScaleSetIdentityUserAssignedIdentitiesValue, self).__init__(**kwargs)
+        self.principal_id = None
+        self.client_id = None
 
 
 class VirtualMachineScaleSetInstanceView(msrest.serialization.Model):
@@ -6938,9 +6960,10 @@ class VirtualMachineScaleSetListWithLinkResult(msrest.serialization.Model):
 class VirtualMachineScaleSetManagedDiskParameters(msrest.serialization.Model):
     """Describes the parameters of a ScaleSet managed disk.
 
-    :param storage_account_type: Specifies the storage account type for the managed disk. NOTE:
-     UltraSSD_LRS can only be used with data disks, it cannot be used with OS Disk. Possible values
-     include: "Standard_LRS", "Premium_LRS", "StandardSSD_LRS", "UltraSSD_LRS".
+    :param storage_account_type: Specifies the storage account type for the managed disk. Managed
+     OS disk storage account type can only be set when you create the scale set. NOTE: UltraSSD_LRS
+     can only be used with data disks, it cannot be used with OS Disk. Possible values include:
+     "Standard_LRS", "Premium_LRS", "StandardSSD_LRS", "UltraSSD_LRS".
     :type storage_account_type: str or ~azure.mgmt.compute.v2019_03_01.models.StorageAccountTypes
     """
 
@@ -7151,12 +7174,11 @@ class VirtualMachineScaleSetOSProfile(msrest.serialization.Model):
      :code:`<br>`:code:`<br>` **Minimum-length (Linux):** 1  character :code:`<br>`:code:`<br>`
      **Max-length (Linux):** 64 characters :code:`<br>`:code:`<br>` **Max-length (Windows):** 20
      characters  :code:`<br>`:code:`<br>`:code:`<li>` For root access to the Linux VM, see `Using
-     root privileges on Linux virtual machines in Azure <https://docs.microsoft.com/azure/virtual-
-     machines/virtual-machines-linux-use-root-privileges?toc=%2fazure%2fvirtual-
-     machines%2flinux%2ftoc.json>`_\ :code:`<br>`:code:`<li>` For a list of built-in system users on
-     Linux that should not be used in this field, see `Selecting User Names for Linux on Azure
-     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-linux-
-     usernames?toc=%2fazure%2fvirtual-machines%2flinux%2ftoc.json>`_.
+     root privileges on Linux virtual machines in Azure
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-linux-use-root-privileges?toc=%2fazure%2fvirtual-machines%2flinux%2ftoc.json>`_\
+     :code:`<br>`:code:`<li>` For a list of built-in system users on Linux that should not be used
+     in this field, see `Selecting User Names for Linux on Azure
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-linux-usernames?toc=%2fazure%2fvirtual-machines%2flinux%2ftoc.json>`_.
     :type admin_username: str
     :param admin_password: Specifies the password of the administrator account.
      :code:`<br>`:code:`<br>` **Minimum-length (Windows):** 8 characters :code:`<br>`:code:`<br>`
@@ -7168,30 +7190,28 @@ class VirtualMachineScaleSetOSProfile(msrest.serialization.Model):
      **Disallowed values:** "abc@123", "P@$$w0rd", "P@ssw0rd", "P@ssword123", "Pa$$word",
      "pass@word1", "Password!", "Password1", "Password22", "iloveyou!" :code:`<br>`:code:`<br>` For
      resetting the password, see `How to reset the Remote Desktop service or its login password in a
-     Windows VM <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-reset-
-     rdp?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_ :code:`<br>`:code:`<br>` For
-     resetting root password, see `Manage users, SSH, and check or repair disks on Azure Linux VMs
-     using the VMAccess Extension <https://docs.microsoft.com/azure/virtual-machines/virtual-
-     machines-linux-using-vmaccess-extension?toc=%2fazure%2fvirtual-
-     machines%2flinux%2ftoc.json#reset-root-password>`_.
+     Windows VM
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-reset-rdp?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_
+     :code:`<br>`:code:`<br>` For resetting root password, see `Manage users, SSH, and check or
+     repair disks on Azure Linux VMs using the VMAccess Extension
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-linux-using-vmaccess-extension?toc=%2fazure%2fvirtual-machines%2flinux%2ftoc.json#reset-root-password>`_.
     :type admin_password: str
     :param custom_data: Specifies a base-64 encoded string of custom data. The base-64 encoded
      string is decoded to a binary array that is saved as a file on the Virtual Machine. The maximum
      length of the binary array is 65535 bytes. :code:`<br>`:code:`<br>` For using cloud-init for
      your VM, see `Using cloud-init to customize a Linux VM during creation
-     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-linux-using-cloud-
-     init?toc=%2fazure%2fvirtual-machines%2flinux%2ftoc.json>`_.
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-linux-using-cloud-init?toc=%2fazure%2fvirtual-machines%2flinux%2ftoc.json>`_.
     :type custom_data: str
     :param windows_configuration: Specifies Windows operating system settings on the virtual
      machine.
     :type windows_configuration: ~azure.mgmt.compute.v2019_03_01.models.WindowsConfiguration
     :param linux_configuration: Specifies the Linux operating system settings on the virtual
      machine. :code:`<br>`:code:`<br>`For a list of supported Linux distributions, see `Linux on
-     Azure-Endorsed Distributions <https://docs.microsoft.com/azure/virtual-machines/virtual-
-     machines-linux-endorsed-distros?toc=%2fazure%2fvirtual-machines%2flinux%2ftoc.json>`_
-     :code:`<br>`:code:`<br>` For running non-endorsed distributions, see `Information for Non-
-     Endorsed Distributions <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-
-     linux-create-upload-generic?toc=%2fazure%2fvirtual-machines%2flinux%2ftoc.json>`_.
+     Azure-Endorsed Distributions
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-linux-endorsed-distros?toc=%2fazure%2fvirtual-machines%2flinux%2ftoc.json>`_
+     :code:`<br>`:code:`<br>` For running non-endorsed distributions, see `Information for
+     Non-Endorsed Distributions
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-linux-create-upload-generic?toc=%2fazure%2fvirtual-machines%2flinux%2ftoc.json>`_.
     :type linux_configuration: ~azure.mgmt.compute.v2019_03_01.models.LinuxConfiguration
     :param secrets: Specifies set of certificates that should be installed onto the virtual
      machines in the scale set.
@@ -7291,7 +7311,26 @@ class VirtualMachineScaleSetPublicIPAddressConfigurationDnsSettings(msrest.seria
         self.domain_name_label = kwargs['domain_name_label']
 
 
-class VirtualMachineScaleSetReimageParameters(VirtualMachineReimageParameters):
+class VirtualMachineScaleSetVMReimageParameters(VirtualMachineReimageParameters):
+    """Describes a Virtual Machine Scale Set VM Reimage Parameters.
+
+    :param temp_disk: Specifies whether to reimage temp disk. Default value: false. Note: This temp
+     disk reimage parameter is only supported for VM/VMSS with Ephemeral OS disk.
+    :type temp_disk: bool
+    """
+
+    _attribute_map = {
+        'temp_disk': {'key': 'tempDisk', 'type': 'bool'},
+    }
+
+    def __init__(
+        self,
+        **kwargs
+    ):
+        super(VirtualMachineScaleSetVMReimageParameters, self).__init__(**kwargs)
+
+
+class VirtualMachineScaleSetReimageParameters(VirtualMachineScaleSetVMReimageParameters):
     """Describes a Virtual Machine Scale Set VM Reimage Parameters.
 
     :param temp_disk: Specifies whether to reimage temp disk. Default value: false. Note: This temp
@@ -7403,15 +7442,13 @@ class VirtualMachineScaleSetStorageProfile(msrest.serialization.Model):
     :type image_reference: ~azure.mgmt.compute.v2019_03_01.models.ImageReference
     :param os_disk: Specifies information about the operating system disk used by the virtual
      machines in the scale set. :code:`<br>`:code:`<br>` For more information about disks, see
-     `About disks and VHDs for Azure virtual machines <https://docs.microsoft.com/azure/virtual-
-     machines/virtual-machines-windows-about-disks-vhds?toc=%2fazure%2fvirtual-
-     machines%2fwindows%2ftoc.json>`_.
+     `About disks and VHDs for Azure virtual machines
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-about-disks-vhds?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_.
     :type os_disk: ~azure.mgmt.compute.v2019_03_01.models.VirtualMachineScaleSetOSDisk
     :param data_disks: Specifies the parameters that are used to add data disks to the virtual
      machines in the scale set. :code:`<br>`:code:`<br>` For more information about disks, see
-     `About disks and VHDs for Azure virtual machines <https://docs.microsoft.com/azure/virtual-
-     machines/virtual-machines-windows-about-disks-vhds?toc=%2fazure%2fvirtual-
-     machines%2fwindows%2ftoc.json>`_.
+     `About disks and VHDs for Azure virtual machines
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-about-disks-vhds?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_.
     :type data_disks: list[~azure.mgmt.compute.v2019_03_01.models.VirtualMachineScaleSetDataDisk]
     """
 
@@ -7470,8 +7507,8 @@ class VirtualMachineScaleSetUpdate(UpdateResource):
      chosen for removal when a Virtual Machine Scale Set is scaled-in.
     :type scale_in_policy: ~azure.mgmt.compute.v2019_03_01.models.ScaleInPolicy
     :param proximity_placement_group: Specifies information about the proximity placement group
-     that the virtual machine scale set should be assigned to. :code:`<br>`:code:`<br>`Minimum api-
-     version: 2018-04-01.
+     that the virtual machine scale set should be assigned to. :code:`<br>`:code:`<br>`Minimum
+     api-version: 2018-04-01.
     :type proximity_placement_group: ~azure.mgmt.compute.v2019_03_01.models.SubResource
     """
 
@@ -7891,25 +7928,23 @@ class VirtualMachineScaleSetVM(Resource):
      machine should be assigned to. Virtual machines specified in the same availability set are
      allocated to different nodes to maximize availability. For more information about availability
      sets, see `Manage the availability of virtual machines
-     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-manage-
-     availability?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_. :code:`<br>`:code:`<br>`
-     For more information on Azure planned maintenance, see `Planned maintenance for virtual
-     machines in Azure <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-
-     planned-maintenance?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-manage-availability?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_.
+     :code:`<br>`:code:`<br>` For more information on Azure planned maintenance, see `Planned
+     maintenance for virtual machines in Azure
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-planned-maintenance?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_
      :code:`<br>`:code:`<br>` Currently, a VM can only be added to availability set at creation
      time. An existing VM cannot be added to an availability set.
     :type availability_set: ~azure.mgmt.compute.v2019_03_01.models.SubResource
     :ivar provisioning_state: The provisioning state, which only appears in the response.
     :vartype provisioning_state: str
-    :param license_type: Specifies that the image or disk that is being used was licensed on-
-     premises. This element is only used for images that contain the Windows Server operating
+    :param license_type: Specifies that the image or disk that is being used was licensed
+     on-premises. This element is only used for images that contain the Windows Server operating
      system. :code:`<br>`:code:`<br>` Possible values are: :code:`<br>`:code:`<br>` Windows_Client
      :code:`<br>`:code:`<br>` Windows_Server :code:`<br>`:code:`<br>` If this element is included in
      a request for an update, the value must match the initial value. This value cannot be updated.
      :code:`<br>`:code:`<br>` For more information, see `Azure Hybrid Use Benefit for Windows Server
-     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-hybrid-use-benefit-
-     licensing?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_ :code:`<br>`:code:`<br>`
-     Minimum api-version: 2015-06-15.
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-hybrid-use-benefit-licensing?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_
+     :code:`<br>`:code:`<br>` Minimum api-version: 2015-06-15.
     :type license_type: str
     :ivar model_definition_applied: Specifies whether the model applied to the virtual machine is
      the model of the virtual machine scale set or the customized model for the virtual machine.
@@ -8208,15 +8243,14 @@ class VirtualMachineScaleSetVMProfile(msrest.serialization.Model):
      virtual machines in the scale set.
     :type extension_profile:
      ~azure.mgmt.compute.v2019_03_01.models.VirtualMachineScaleSetExtensionProfile
-    :param license_type: Specifies that the image or disk that is being used was licensed on-
-     premises. This element is only used for images that contain the Windows Server operating
+    :param license_type: Specifies that the image or disk that is being used was licensed
+     on-premises. This element is only used for images that contain the Windows Server operating
      system. :code:`<br>`:code:`<br>` Possible values are: :code:`<br>`:code:`<br>` Windows_Client
      :code:`<br>`:code:`<br>` Windows_Server :code:`<br>`:code:`<br>` If this element is included in
      a request for an update, the value must match the initial value. This value cannot be updated.
      :code:`<br>`:code:`<br>` For more information, see `Azure Hybrid Use Benefit for Windows Server
-     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-hybrid-use-benefit-
-     licensing?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_ :code:`<br>`:code:`<br>`
-     Minimum api-version: 2015-06-15.
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-hybrid-use-benefit-licensing?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_
+     :code:`<br>`:code:`<br>` Minimum api-version: 2015-06-15.
     :type license_type: str
     :param priority: Specifies the priority for the virtual machines in the scale set.
      :code:`<br>`:code:`<br>`Minimum api-version: 2017-10-30-preview. Possible values include:
@@ -8288,25 +8322,6 @@ class VirtualMachineScaleSetVMProtectionPolicy(msrest.serialization.Model):
         super(VirtualMachineScaleSetVMProtectionPolicy, self).__init__(**kwargs)
         self.protect_from_scale_in = kwargs.get('protect_from_scale_in', None)
         self.protect_from_scale_set_actions = kwargs.get('protect_from_scale_set_actions', None)
-
-
-class VirtualMachineScaleSetVMReimageParameters(VirtualMachineReimageParameters):
-    """Describes a Virtual Machine Scale Set VM Reimage Parameters.
-
-    :param temp_disk: Specifies whether to reimage temp disk. Default value: false. Note: This temp
-     disk reimage parameter is only supported for VM/VMSS with Ephemeral OS disk.
-    :type temp_disk: bool
-    """
-
-    _attribute_map = {
-        'temp_disk': {'key': 'tempDisk', 'type': 'bool'},
-    }
-
-    def __init__(
-        self,
-        **kwargs
-    ):
-        super(VirtualMachineScaleSetVMReimageParameters, self).__init__(**kwargs)
 
 
 class VirtualMachineSize(msrest.serialization.Model):
@@ -8434,11 +8449,10 @@ class VirtualMachineUpdate(UpdateResource):
      machine should be assigned to. Virtual machines specified in the same availability set are
      allocated to different nodes to maximize availability. For more information about availability
      sets, see `Manage the availability of virtual machines
-     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-manage-
-     availability?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_. :code:`<br>`:code:`<br>`
-     For more information on Azure planned maintenance, see `Planned maintenance for virtual
-     machines in Azure <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-
-     planned-maintenance?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-manage-availability?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_.
+     :code:`<br>`:code:`<br>` For more information on Azure planned maintenance, see `Planned
+     maintenance for virtual machines in Azure
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-planned-maintenance?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_
      :code:`<br>`:code:`<br>` Currently, a VM can only be added to availability set at creation
      time. An existing VM cannot be added to an availability set. :code:`<br>`:code:`<br>`This
      property cannot exist along with a non-null properties.virtualMachineScaleSet reference.
@@ -8474,15 +8488,14 @@ class VirtualMachineUpdate(UpdateResource):
     :vartype provisioning_state: str
     :ivar instance_view: The virtual machine instance view.
     :vartype instance_view: ~azure.mgmt.compute.v2019_03_01.models.VirtualMachineInstanceView
-    :param license_type: Specifies that the image or disk that is being used was licensed on-
-     premises. This element is only used for images that contain the Windows Server operating
+    :param license_type: Specifies that the image or disk that is being used was licensed
+     on-premises. This element is only used for images that contain the Windows Server operating
      system. :code:`<br>`:code:`<br>` Possible values are: :code:`<br>`:code:`<br>` Windows_Client
      :code:`<br>`:code:`<br>` Windows_Server :code:`<br>`:code:`<br>` If this element is included in
      a request for an update, the value must match the initial value. This value cannot be updated.
      :code:`<br>`:code:`<br>` For more information, see `Azure Hybrid Use Benefit for Windows Server
-     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-hybrid-use-benefit-
-     licensing?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_ :code:`<br>`:code:`<br>`
-     Minimum api-version: 2015-06-15.
+     <https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-hybrid-use-benefit-licensing?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json>`_
+     :code:`<br>`:code:`<br>` Minimum api-version: 2015-06-15.
     :type license_type: str
     :ivar vm_id: Specifies the VM unique ID which is a 128-bits identifier that is encoded and
      stored in all Azure IaaS VMs SMBIOS and can be read using platform BIOS commands.
@@ -8641,9 +8654,9 @@ class WinRMListener(msrest.serialization.Model):
      a secret. For adding a secret to the Key Vault, see `Add a key or secret to the key vault
      <https://docs.microsoft.com/azure/key-vault/key-vault-get-started/#add>`_. In this case, your
      certificate needs to be It is the Base64 encoding of the following JSON Object which is encoded
-     in UTF-8: :code:`<br>`:code:`<br>` {:code:`<br>`  "data":":code:`<Base64-encoded-
-     certificate>`",:code:`<br>`  "dataType":"pfx",:code:`<br>`  "password":":code:`<pfx-file-
-     password>`":code:`<br>`}.
+     in UTF-8: :code:`<br>`:code:`<br>` {:code:`<br>`
+     "data":":code:`<Base64-encoded-certificate>`",:code:`<br>`  "dataType":"pfx",:code:`<br>`
+     "password":":code:`<pfx-file-password>`":code:`<br>`}.
     :type certificate_url: str
     """
 

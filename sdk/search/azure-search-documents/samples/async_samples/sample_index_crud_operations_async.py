@@ -7,11 +7,11 @@
 # --------------------------------------------------------------------------
 
 """
-FILE: sample_index_crud_operations.py
+FILE: sample_index_crud_operations_async.py
 DESCRIPTION:
     This sample demonstrates how to get, create, update, or delete an index.
 USAGE:
-    python sample_index_crud_operations.py
+    python sample_index_crud_operations_async.py
 
     Set the environment variables with your own values before running the sample:
     1) AZURE_SEARCH_SERVICE_ENDPOINT - the endpoint of your Azure Cognitive Search service
@@ -45,11 +45,11 @@ async def create_index():
     fields = [
         SimpleField(name="hotelId", type=SearchFieldDataType.String, key=True),
         SimpleField(name="baseRate", type=SearchFieldDataType.Double),
-        SearchableField(name="description", type=SearchFieldDataType.String),
+        SearchableField(name="description", type=SearchFieldDataType.String, collection=True),
         ComplexField(name="address", fields=[
             SimpleField(name="streetAddress", type=SearchFieldDataType.String),
             SimpleField(name="city", type=SearchFieldDataType.String),
-        ])
+        ], collection=True)
     ]
 
     cors_options = CorsOptions(allowed_origins=["*"], max_age_in_seconds=60)
@@ -72,16 +72,16 @@ async def get_index():
 async def update_index():
     # [START update_index_async]
     name = "hotels"
-    fields = fields = [
+    fields = [
         SimpleField(name="hotelId", type=SearchFieldDataType.String, key=True),
         SimpleField(name="baseRate", type=SearchFieldDataType.Double),
-        SearchableField(name="description", type=SearchFieldDataType.String),
+        SearchableField(name="description", type=SearchFieldDataType.String, collection=True),
         SearchableField(name="hotelName", type=SearchFieldDataType.String),
         ComplexField(name="address", fields=[
             SimpleField(name="streetAddress", type=SearchFieldDataType.String),
             SimpleField(name="city", type=SearchFieldDataType.String),
             SimpleField(name="state", type=SearchFieldDataType.String),
-        ])
+        ], collection=True)
     ]
 
     cors_options = CorsOptions(allowed_origins=["*"], max_age_in_seconds=60)

@@ -5,298 +5,77 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # --------------------------------------------------------------------------
-
-import unittest
-
 import pytest
 
-import uuid
-from base64 import b64encode
 from datetime import datetime, timedelta
-
-from azure.data.tables import generate_table_sas
-from azure.data.tables._generated.models import QueryOptions
-from azure.data.tables.aio import TableServiceClient
 from dateutil.tz import tzutc, tzoffset
 from math import isnan
 
+from devtools_testutils import AzureTestCase
+
 from azure.core import MatchConditions
+from azure.core.credentials import AzureSasCredential
 from azure.core.exceptions import (
     HttpResponseError,
     ResourceNotFoundError,
-    ResourceExistsError)
+    ResourceExistsError,
+    ResourceModifiedError
+)
 
-from azure.data.tables._entity import TableEntity, EntityProperty, EdmType
-from azure.data.tables import TableSasPermissions, AccessPolicy, UpdateMode
+from azure.data.tables import (
+    TableSasPermissions,
+    TableAccessPolicy,
+    UpdateMode,
+    generate_table_sas,
+    TableEntity,
+    EntityProperty,
+    EdmType
+)
+from azure.data.tables.aio import TableServiceClient
 
-from _shared.testcase import GlobalStorageAccountPreparer, TableTestCase, LogCaptured
+from _shared.asynctestcase import AsyncTableTestCase
+from async_preparers import tables_decorator_async
 
+class StorageTableEntityTest(AzureTestCase, AsyncTableTestCase):
+    @tables_decorator_async
+    async def test_url_encoding_at_symbol(self, tables_storage_account_name, tables_primary_storage_account_key):
 
-# ------------------------------------------------------------------------------
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
+        try:
+            entity = {
+                u"PartitionKey": u"PK",
+                u"RowKey": u"table@storage.com",
+                u"Value": 100
+            }
 
-# ------------------------------------------------------------------------------
+            await self.table.create_entity(entity)
 
-class StorageTableEntityTest(TableTestCase):
+            f = u"RowKey eq '{}'".format(entity["RowKey"])
+            entities = self.table.query_entities(f)
 
-    async def _set_up(self, storage_account, storage_account_key):
-        self.ts = TableServiceClient(self.account_url(storage_account, "table"), storage_account_key)
-        self.table_name = self.get_resource_name('uttable')
-        self.table = self.ts.get_table_client(self.table_name)
-        if self.is_live:
-            try:
-                await self.ts.create_table(table_name=self.table_name)
-            except ResourceExistsError:
-                pass
+            count = 0
+            async for e in entities:
+                assert e['PartitionKey'] == entity[u"PartitionKey"]
+                assert e['RowKey'] == entity[u"RowKey"]
+                assert e['Value'] == entity[u"Value"]
+                await self.table.delete_entity(e['PartitionKey'], e['RowKey'])
+                count += 1
 
-        self.query_tables = []
+            assert count == 1
 
-    async def _tear_down(self):
-        if self.is_live:
-            try:
-                await self.ts.delete_table(self.table_name)
-            except:
-                pass
+            entities = self.table.query_entities(f)
+            count = 0
+            async for e in entities:
+                count += 1
+            assert count == 0
 
-            for table_name in self.query_tables:
-                try:
-                    await self.ts.delete_table(table_name)
-                except:
-                    pass
+        finally:
+            await self._tear_down()
 
-    # --Helpers-----------------------------------------------------------------
-
-    async def _create_query_table(self, entity_count):
-        """
-        Creates a table with the specified name and adds entities with the
-        default set of values. PartitionKey is set to 'MyPartition' and RowKey
-        is set to a unique counter value starting at 1 (as a string).
-        """
-        table_name = self.get_resource_name('querytable')
-        table = await self.ts.create_table(table_name)
-        self.query_tables.append(table_name)
-        client = self.ts.get_table_client(table_name)
-        entity = self._create_random_entity_dict()
-        for i in range(1, entity_count + 1):
-            entity['RowKey'] = entity['RowKey'] + str(i)
-            await client.create_entity(entity=entity)
-        # with self.ts.batch(table_name) as batch:
-        #    for i in range(1, entity_count + 1):
-        #        entity['RowKey'] = entity['RowKey'] + str(i)
-        #        batch.create_entity(entity)
-        return client
-
-    def _create_random_base_entity_dict(self):
-        """
-        Creates a dict-based entity with only pk and rk.
-        """
-        partition = self.get_resource_name('pk')
-        row = self.get_resource_name('rk')
-        return {
-            'PartitionKey': partition,
-            'RowKey': row,
-        }
-
-    def _create_random_entity_dict(self, pk=None, rk=None):
-        """
-        Creates a dictionary-based entity with fixed values, using all
-        of the supported data types.
-        """
-        partition = pk if pk is not None else self.get_resource_name('pk')
-        row = rk if rk is not None else self.get_resource_name('rk')
-        properties = {
-            'PartitionKey': partition,
-            'RowKey': row,
-            'age': 39,
-            'sex': 'male',
-            'married': True,
-            'deceased': False,
-            'optional': None,
-            'ratio': 3.1,
-            'evenratio': 3.0,
-            'large': 933311100,
-            'Birthday': datetime(1973, 10, 4, tzinfo=tzutc()),
-            'birthday': datetime(1970, 10, 4, tzinfo=tzutc()),
-            'binary': b'binary',
-            'other': EntityProperty(value=20, type=EdmType.INT32),
-            'clsid': uuid.UUID('c9da6455-213d-42c9-9a79-3e9149a57833')
-        }
-        return TableEntity(**properties)
-
-    async def _insert_random_entity(self, pk=None, rk=None):
-        entity = self._create_random_entity_dict(pk, rk)
-        # , response_hook=lambda e, h: h['etag']
-        metadata = await self.table.create_entity(entity=entity)
-        return entity, metadata['etag']
-
-    def _create_updated_entity_dict(self, partition, row):
-        """
-        Creates a dictionary-based entity with fixed values, with a
-        different set of values than the default entity. It
-        adds fields, changes field values, changes field types,
-        and removes fields when compared to the default entity.
-        """
-        return {
-            'PartitionKey': partition,
-            'RowKey': row,
-            'age': 'abc',
-            'sex': 'female',
-            'sign': 'aquarius',
-            'birthday': datetime(1991, 10, 4, tzinfo=tzutc())
-        }
-
-    def _assert_default_entity(self, entity, headers=None):
-        '''
-        Asserts that the entity passed in matches the default entity.
-        '''
-        self.assertEqual(entity['age'], 39)
-        self.assertEqual(entity['sex'], 'male')
-        self.assertEqual(entity['married'], True)
-        self.assertEqual(entity['deceased'], False)
-        self.assertFalse("optional" in entity)
-        self.assertFalse("aquarius" in entity)
-        self.assertEqual(entity['ratio'], 3.1)
-        self.assertEqual(entity['evenratio'], 3.0)
-        self.assertEqual(entity['large'], 933311100)
-        self.assertEqual(entity['Birthday'], datetime(1973, 10, 4, tzinfo=tzutc()))
-        self.assertEqual(entity['birthday'], datetime(1970, 10, 4, tzinfo=tzutc()))
-        self.assertEqual(entity['binary'].value, b'binary') # TODO: added the ".value" portion, verify this is correct
-        self.assertIsInstance(entity['other'], EntityProperty)
-        self.assertEqual(entity['other'].type, EdmType.INT32)
-        self.assertEqual(entity['other'].value, 20)
-        self.assertEqual(entity['clsid'], uuid.UUID('c9da6455-213d-42c9-9a79-3e9149a57833'))
-        # self.assertTrue('metadata' in entity.odata)
-
-        # TODO: these are commented out / nonexistent in sync code, should we have them?
-        # self.assertIsNotNone(entity.Timestamp)
-        # self.assertIsInstance(entity.Timestamp, datetime)
-        if headers:
-            self.assertTrue("etag" in headers)
-            self.assertIsNotNone(headers['etag'])
-
-    def _assert_default_entity_json_full_metadata(self, entity, headers=None):
-        '''
-        Asserts that the entity passed in matches the default entity.
-        '''
-        self.assertEqual(entity['age'], 39)
-        self.assertEqual(entity['sex'], 'male')
-        self.assertEqual(entity['married'], True)
-        self.assertEqual(entity['deceased'], False)
-        self.assertFalse("optional" in entity)
-        self.assertFalse("aquarius" in entity)
-        self.assertEqual(entity['ratio'], 3.1)
-        self.assertEqual(entity['evenratio'], 3.0)
-        self.assertEqual(entity['large'], 933311100)
-        self.assertEqual(entity['Birthday'], datetime(1973, 10, 4, tzinfo=tzutc()))
-        self.assertEqual(entity['birthday'], datetime(1970, 10, 4, tzinfo=tzutc()))
-        self.assertEqual(entity['binary'].value, b'binary')
-        self.assertIsInstance(entity['other'], EntityProperty)
-        self.assertEqual(entity['other'].type, EdmType.INT32)
-        self.assertEqual(entity['other'].value, 20)
-        self.assertEqual(entity['clsid'], uuid.UUID('c9da6455-213d-42c9-9a79-3e9149a57833'))
-        # self.assertTrue('metadata' in entity.odata)
-        # self.assertTrue('id' in entity.odata)
-        # self.assertTrue('type' in entity.odata)
-        # self.assertTrue('etag' in entity.odata)
-        # self.assertTrue('editLink' in entity.odata)
-
-        # TODO: commented out in sync, should we have these?
-        # self.assertIsNotNone(entity.Timestamp)
-        # self.assertIsInstance(entity.Timestamp, datetime)
-        # if headers:
-        #     self.assertTrue("etag" in headers)
-        #     self.assertIsNotNone(headers['etag'])
-
-    def _assert_default_entity_json_no_metadata(self, entity, headers=None):
-        '''
-        Asserts that the entity passed in matches the default entity.
-        '''
-        self.assertEqual(entity['age'], '39')
-        self.assertEqual(entity['sex'], 'male')
-        self.assertEqual(entity['married'], True)
-        self.assertEqual(entity['deceased'], False)
-        self.assertFalse("optional" in entity)
-        self.assertFalse("aquarius" in entity)
-        self.assertEqual(entity['ratio'], 3.1)
-        self.assertEqual(entity['evenratio'], 3.0)
-        self.assertEqual(entity['large'], '933311100')
-        self.assertTrue(entity['Birthday'].startswith('1973-10-04T00:00:00'))
-        self.assertTrue(entity['birthday'].startswith('1970-10-04T00:00:00'))
-        self.assertTrue(entity['Birthday'].endswith('00Z'))
-        self.assertTrue(entity['birthday'].endswith('00Z'))
-        self.assertEqual(entity['binary'], b64encode(b'binary').decode('utf-8'))
-        self.assertIsInstance(entity['other'], EntityProperty)
-        self.assertEqual(entity['other'].type, EdmType.INT32)
-        self.assertEqual(entity['other'].value, 20)
-        self.assertEqual(entity['clsid'], 'c9da6455-213d-42c9-9a79-3e9149a57833')
-        # self.assertIsNone(entity.odata)
-        # self.assertIsNotNone(entity.Timestamp)
-        # self.assertIsInstance(entity.Timestamp, datetime)
-        if headers:
-            self.assertTrue("etag" in headers)
-            self.assertIsNotNone(headers['etag'])
-
-    def _assert_updated_entity(self, entity):
-        '''
-        Asserts that the entity passed in matches the updated entity.
-        '''
-        self.assertEqual(entity.age, 'abc')
-        self.assertEqual(entity.sex, 'female')
-        self.assertFalse(hasattr(entity, "married"))
-        self.assertFalse(hasattr(entity, "deceased"))
-        self.assertEqual(entity.sign, 'aquarius')
-        self.assertFalse(hasattr(entity, "optional"))
-        self.assertFalse(hasattr(entity, "ratio"))
-        self.assertFalse(hasattr(entity, "evenratio"))
-        self.assertFalse(hasattr(entity, "large"))
-        self.assertFalse(hasattr(entity, "Birthday"))
-        # self.assertEqual(entity.birthday, "1991-10-04 00:00:00+00:00")
-        self.assertEqual(entity.birthday, datetime(1991, 10, 4, tzinfo=tzutc()))
-        self.assertFalse(hasattr(entity, "other"))
-        self.assertFalse(hasattr(entity, "clsid"))
-        # TODO: should these all be commented out?
-        #        self.assertIsNotNone(entity.odata.etag)
-        # self.assertIsNotNone(entity.Timestamp)
-        # self.assertIsInstance(entity.timestamp, datetime)
-
-    def _assert_merged_entity(self, entity):
-        '''
-        Asserts that the entity passed in matches the default entity
-        merged with the updated entity.
-        '''
-        self.assertEqual(entity.age, 'abc')
-        self.assertEqual(entity.sex, 'female')
-        self.assertEqual(entity.sign, 'aquarius')
-        self.assertEqual(entity.married, True)
-        self.assertEqual(entity.deceased, False)
-        self.assertEqual(entity.sign, 'aquarius')
-        self.assertEqual(entity.ratio, 3.1)
-        self.assertEqual(entity.evenratio, 3.0)
-        self.assertEqual(entity.large, 933311100)
-        self.assertEqual(entity.Birthday, datetime(1973, 10, 4, tzinfo=tzutc()))
-        self.assertEqual(entity.birthday, datetime(1991, 10, 4, tzinfo=tzutc()))
-        self.assertIsInstance(entity.other, EntityProperty)
-        self.assertEqual(entity.other.type, EdmType.INT32)
-        self.assertEqual(entity.other.value, 20)
-        self.assertIsInstance(entity.clsid, uuid.UUID)
-        self.assertEqual(str(entity.clsid), 'c9da6455-213d-42c9-9a79-3e9149a57833')
-        # TODO: should these all be commented out?
-        # self.assertIsNotNone(entity.etag)
-        # self.assertIsNotNone(entity.odata['etag'])
-        # self.assertIsNotNone(entity.Timestamp)
-        # self.assertIsInstance(entity.Timestamp, datetime)
-
-    def _assert_valid_metadata(self, metadata):
-        keys = metadata.keys()
-        self.assertIn("version", keys)
-        self.assertIn("date", keys)
-        self.assertIn("etag", keys)
-        self.assertEqual(len(keys), 3)
-
-    # --Test cases for entities ------------------------------------------
-    @GlobalStorageAccountPreparer()
-    async def test_insert_entity_dictionary(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_insert_entity_dictionary(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity = self._create_random_entity_dict()
 
@@ -304,14 +83,14 @@ class StorageTableEntityTest(TableTestCase):
             resp = await self.table.create_entity(entity=entity)
 
             # Assert
-            self._assert_valid_metadata(resp)
+            assert resp is not None
         finally:
             await self._tear_down()
 
-    @GlobalStorageAccountPreparer()
-    async def test_insert_entity_with_hook(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_insert_entity_with_hook(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity = self._create_random_entity_dict()
 
@@ -327,10 +106,10 @@ class StorageTableEntityTest(TableTestCase):
         finally:
             await self._tear_down()
 
-    @GlobalStorageAccountPreparer()
-    async def test_insert_entity_with_no_metadata(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_insert_entity_with_no_metadata(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity = self._create_random_entity_dict()
             headers = {'Accept': 'application/json;odata=nometadata'}
@@ -352,11 +131,11 @@ class StorageTableEntityTest(TableTestCase):
         finally:
             await self._tear_down()
 
-    @GlobalStorageAccountPreparer()
-    async def test_insert_entity_with_full_metadata(self, resource_group, location, storage_account,
-                                                    storage_account_key):
+    @tables_decorator_async
+    async def test_insert_entity_with_full_metadata(self, tables_storage_account_name,
+                                                    tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity = self._create_random_entity_dict()
             headers = {'Accept': 'application/json;odata=fullmetadata'}
@@ -379,177 +158,181 @@ class StorageTableEntityTest(TableTestCase):
         finally:
             await self._tear_down()
 
-    @GlobalStorageAccountPreparer()
-    async def test_insert_entity_conflict(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_insert_entity_conflict(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity, _ = await self._insert_random_entity()
 
             # Act
-            with self.assertRaises(ResourceExistsError):
-                # self.table.create_item(entity)
+            with pytest.raises(ResourceExistsError):
+                # self.table.create_entity(entity)
                 await self.table.create_entity(entity=entity)
 
             # Assert
         finally:
             await self._tear_down()
 
-    @GlobalStorageAccountPreparer()
-    async def test_insert_entity_with_large_int32_value_throws(self, resource_group, location, storage_account,
-                                                               storage_account_key):
+    @tables_decorator_async
+    async def test_insert_entity_with_large_int32_value_throws(self, tables_storage_account_name,
+                                                               tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             # Act
             dict32 = self._create_random_base_entity_dict()
             dict32['large'] = EntityProperty(2 ** 31, EdmType.INT32) # TODO: this is outside the range of int32
 
             # Assert
-            with self.assertRaises(TypeError):
+            with pytest.raises(TypeError):
                 await self.table.create_entity(entity=dict32)
 
             dict32['large'] = EntityProperty(-(2 ** 31 + 1), EdmType.INT32)  # TODO: this is outside the range of int32
-            with self.assertRaises(TypeError):
+            with pytest.raises(TypeError):
                 await self.table.create_entity(entity=dict32)
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_insert_entity_with_large_int64_value_throws(self, resource_group, location, storage_account,
-                                                               storage_account_key):
+    @tables_decorator_async
+    async def test_insert_entity_with_large_int64_value_throws(self, tables_storage_account_name,
+                                                               tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             # Act
             dict64 = self._create_random_base_entity_dict()
             dict64['large'] = EntityProperty(2 ** 63, EdmType.INT64)
 
             # Assert
-            with self.assertRaises(TypeError):
+            with pytest.raises(TypeError):
                 await self.table.create_entity(entity=dict64)
 
             dict64['large'] = EntityProperty(-(2 ** 63 + 1), EdmType.INT64)
-            with self.assertRaises(TypeError):
+            with pytest.raises(TypeError):
                 await self.table.create_entity(entity=dict64)
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_insert_entity_missing_pk(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_insert_entity_with_large_int_success(self, tables_storage_account_name,
+                                                         tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
+        try:
+            # Act
+            dict64 = self._create_random_base_entity_dict()
+            dict64['large'] = EntityProperty(2 ** 50, EdmType.INT64)
+
+            # Assert
+            await self.table.create_entity(entity=dict64)
+
+            received_entity = await self.table.get_entity(dict64['PartitionKey'], dict64['RowKey'])
+            assert received_entity['large'].value == dict64['large'].value
+
+            dict64['RowKey'] = 'negative'
+            dict64['large'] = EntityProperty(-(2 ** 50 + 1), EdmType.INT64)
+            await self.table.create_entity(entity=dict64)
+
+            received_entity = await self.table.get_entity(dict64['PartitionKey'], dict64['RowKey'])
+            assert received_entity['large'].value == dict64['large'].value
+
+        finally:
+            await self._tear_down()
+
+    @tables_decorator_async
+    async def test_insert_entity_missing_pk(self, tables_storage_account_name, tables_primary_storage_account_key):
+        # Arrange
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity = {'RowKey': 'rk'}
 
             # Act
-            with self.assertRaises(ValueError):
+            with pytest.raises(ValueError) as error:
                 resp = await self.table.create_entity(entity=entity)
+                assert str(error).contains("PartitionKey must be present in an entity")
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_insert_entity_empty_string_pk(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_insert_entity_empty_string_pk(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity = {'RowKey': 'rk', 'PartitionKey': ''}
 
             # Act
-            if 'cosmos' in self.table.url:
-                with self.assertRaises(HttpResponseError):
-                    await self.table.create_entity(entity=entity)
-            else:
-                resp = await self.table.create_entity(entity=entity)
-                self._assert_valid_metadata(resp)
+            resp = await self.table.create_entity(entity=entity)
+            self._assert_valid_metadata(resp)
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_insert_entity_missing_rk(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_insert_entity_missing_rk(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity = {'PartitionKey': 'pk'}
 
             # Act
-            with self.assertRaises(ValueError):
+            with pytest.raises(ValueError) as error:
                 resp = await self.table.create_entity(entity=entity)
-
-            # Assert
+                assert str(error).contains("PartitionKey must be present in an entity")
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_insert_entity_empty_string_rk(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_insert_entity_empty_string_rk(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity = {'PartitionKey': 'pk', 'RowKey': ''}
 
             # Act
-            if 'cosmos' in self.table.url:
-                with self.assertRaises(HttpResponseError):
-                    await self.table.create_entity(entity=entity)
-            else:
-                resp = await self.table.create_entity(entity=entity)
-                self._assert_valid_metadata(resp)
+            resp = await self.table.create_entity(entity=entity)
+            self._assert_valid_metadata(resp)
 
-                # Assert
-            #  self.assertIsNone(resp)
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_insert_entity_too_many_properties(self, resource_group, location, storage_account,
-                                                     storage_account_key):
+    @tables_decorator_async
+    async def test_insert_entity_too_many_properties(self, tables_storage_account_name,
+                                                     tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
-        if 'cosmos' in self.table.url:
-            pytest.skip("Cosmos supports large number of properties.")
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity = self._create_random_base_entity_dict()
             for i in range(255):
                 entity['key{0}'.format(i)] = 'value{0}'.format(i)
 
             # Act
-            with self.assertRaises(HttpResponseError):
+            with pytest.raises(HttpResponseError):
                 resp = await self.table.create_entity(entity=entity)
             # Assert
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_insert_entity_property_name_too_long(self, resource_group, location, storage_account,
-                                                        storage_account_key):
+    @tables_decorator_async
+    async def test_insert_entity_property_name_too_long(self, tables_storage_account_name,
+                                                        tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
-        if 'cosmos' in self.table.url:
-            pytest.skip("Cosmos supports large property names.")
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity = self._create_random_base_entity_dict()
             entity['a' * 256] = 'badval'
 
             # Act
-            with self.assertRaises(HttpResponseError):
+            with pytest.raises(HttpResponseError):
                 resp = await self.table.create_entity(entity=entity)
 
             # Assert
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_get_entity(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_get_entity(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity, _ = await self._insert_random_entity()
 
@@ -558,17 +341,37 @@ class StorageTableEntityTest(TableTestCase):
                                                row_key=entity['RowKey'])
 
             # Assert
-            self.assertEqual(resp['PartitionKey'], entity['PartitionKey'])
-            self.assertEqual(resp['RowKey'], entity['RowKey'])
+            assert resp['PartitionKey'] ==  entity['PartitionKey']
+            assert resp['RowKey'] ==  entity['RowKey']
             self._assert_default_entity(resp)
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_get_entity_with_hook(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_get_entity_with_select(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
+        try:
+            entity, _ = await self._insert_random_entity()
+
+            resp = await self.table.get_entity(partition_key=entity['PartitionKey'],
+                                               row_key=entity['RowKey'],
+                                               select=['age', 'ratio'])
+            resp.pop('_metadata', None)
+            assert resp == {'age': 39, 'ratio': 3.1}
+            resp = await self.table.get_entity(partition_key=entity['PartitionKey'],
+                                               row_key=entity['RowKey'],
+                                               select='age,ratio')
+            resp.pop('_metadata', None)
+            assert resp == {'age': 39, 'ratio': 3.1}
+
+        finally:
+            await self._tear_down()
+
+    @tables_decorator_async
+    async def test_get_entity_with_hook(self, tables_storage_account_name, tables_primary_storage_account_key):
+        # Arrange
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity, _ = await self._insert_random_entity()
 
@@ -581,102 +384,146 @@ class StorageTableEntityTest(TableTestCase):
             )
 
             # Assert
-            self.assertEqual(resp['PartitionKey'], entity['PartitionKey'])
-            self.assertEqual(resp['RowKey'], entity['RowKey'])
+            assert resp['PartitionKey'] ==  entity['PartitionKey']
+            assert resp['RowKey'] ==  entity['RowKey']
             self._assert_default_entity(resp)
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_get_entity_if_match(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_get_entity_if_match(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity, etag = await self._insert_random_entity()
 
-            # Act
-            # Do a get and confirm the etag is parsed correctly by using it
-            # as a condition to delete.
-            resp = await self.table.get_entity(partition_key=entity['PartitionKey'],
-                                               row_key=entity['RowKey'])
+            entity = await self.table.get_entity(
+                partition_key=entity['PartitionKey'],
+                row_key=entity['RowKey']
+            )
 
             await self.table.delete_entity(
-                partition_key=resp['PartitionKey'],
-                row_key=resp['RowKey'],
+                entity,
                 etag=etag,
                 match_condition=MatchConditions.IfNotModified
             )
 
-            # Assert
+            with pytest.raises(ResourceNotFoundError):
+                await self.table.get_entity(
+                    partition_key=entity['PartitionKey'],
+                    row_key=entity['RowKey']
+                )
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_get_entity_full_metadata(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_get_entity_if_match_entity_bad_etag(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
+        try:
+            entity, old_etag = await self._insert_random_entity()
+
+            entity["value"] = 10
+            await self.table.update_entity(entity)
+
+            # Get Entity and set old etag
+            e = await self.table.get_entity(entity["PartitionKey"], entity["RowKey"])
+            new_etag = e.metadata["etag"]
+            e.metadata["etag"] = old_etag
+
+            with pytest.raises(ResourceModifiedError):
+                await self.table.delete_entity(e, match_condition=MatchConditions.IfNotModified)
+
+            # Try delete with correct etag
+            await self.table.delete_entity(e, etag=new_etag, match_condition=MatchConditions.IfNotModified)
+
+        finally:
+            await self._tear_down()
+    @tables_decorator_async
+    async def test_delete_entity_if_match_table_entity(self, tables_storage_account_name, tables_primary_storage_account_key):
+        # Arrange
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
+        try:
+            entity, etag = await self._insert_random_entity()
+            table_entity = TableEntity(**entity)
+
+            entity = await self.table.get_entity(
+                partition_key=entity['PartitionKey'],
+                row_key=entity['RowKey']
+            )
+
+            with pytest.raises(ValueError):
+                await self.table.delete_entity(table_entity, match_condition=MatchConditions.IfNotModified)
+
+            await self.table.delete_entity(table_entity, etag=etag, match_condition=MatchConditions.IfNotModified)
+
+            with pytest.raises(ResourceNotFoundError):
+                await self.table.get_entity(entity["PartitionKey"], entity["RowKey"])
+
+        finally:
+            await self._tear_down()
+
+    @tables_decorator_async
+    async def test_get_entity_full_metadata(self, tables_storage_account_name, tables_primary_storage_account_key):
+        # Arrange
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity, _ = await self._insert_random_entity()
 
             # Act
             resp = await self.table.get_entity(
-                entity.PartitionKey,
-                entity.RowKey,
+                entity['PartitionKey'],
+                entity['RowKey'],
                 headers={'accept': 'application/json;odata=fullmetadata'})
 
             # Assert
-            self.assertEqual(resp.PartitionKey, entity.PartitionKey)
-            self.assertEqual(resp.RowKey, entity.RowKey)
+            assert resp['PartitionKey'] ==  entity['PartitionKey']
+            assert resp['RowKey'] ==  entity['RowKey']
             self._assert_default_entity_json_full_metadata(resp)
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_get_entity_no_metadata(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_get_entity_no_metadata(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity, _ = await self._insert_random_entity()
 
             # Act
             resp = await self.table.get_entity(
-                partition_key=entity.PartitionKey,
-                row_key=entity.RowKey,
+                partition_key=entity['PartitionKey'],
+                row_key=entity['RowKey'],
                 headers={'accept': 'application/json;odata=nometadata'})
 
             # Assert
-            self.assertEqual(resp.PartitionKey, entity.PartitionKey)
-            self.assertEqual(resp.RowKey, entity.RowKey)
+            assert resp['PartitionKey'] ==  entity['PartitionKey']
+            assert resp['RowKey'] ==  entity['RowKey']
             self._assert_default_entity_json_no_metadata(resp)
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_get_entity_not_existing(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_get_entity_not_existing(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity = self._create_random_entity_dict()
 
             # Act
-            with self.assertRaises(ResourceNotFoundError):
-                await self.table.get_entity(partition_key=entity.PartitionKey,
-                                            row_key=entity.RowKey)
+            with pytest.raises(ResourceNotFoundError):
+                await self.table.get_entity(partition_key=entity['PartitionKey'],
+                                            row_key=entity['RowKey'])
 
             # Assert
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_get_entity_with_special_doubles(self, resource_group, location, storage_account,
-                                                   storage_account_key):
+    @tables_decorator_async
+    async def test_get_entity_with_special_doubles(self, tables_storage_account_name,
+                                                   tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity = self._create_random_base_entity_dict()
             entity.update({
@@ -691,89 +538,83 @@ class StorageTableEntityTest(TableTestCase):
                                                row_key=entity['RowKey'])
 
             # Assert
-            self.assertEqual(resp.inf, float('inf'))
-            self.assertEqual(resp.negativeinf, float('-inf'))
-            self.assertTrue(isnan(resp.nan))
+            assert resp['inf'] ==  float('inf')
+            assert resp['negativeinf'] ==  float('-inf')
+            assert isnan(resp['nan'])
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_update_entity(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_update_entity(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity, _ = await self._insert_random_entity()
 
             # Act
-            sent_entity = self._create_updated_entity_dict(entity.PartitionKey, entity.RowKey)
+            sent_entity = self._create_updated_entity_dict(entity['PartitionKey'], entity['RowKey'])
 
-            # resp = self.table.update_item(sent_entity, response_hook=lambda e, h: h)
             resp = await self.table.update_entity(mode=UpdateMode.REPLACE, entity=sent_entity)
 
             # Assert
-            #  self.assertTrue(resp)
             received_entity = await self.table.get_entity(
-                partition_key=entity.PartitionKey,
-                row_key=entity.RowKey)
+                partition_key=entity['PartitionKey'],
+                row_key=entity['RowKey'])
 
             self._assert_valid_metadata(resp)
             self._assert_updated_entity(received_entity)
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_update_entity_not_existing(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_update_entity_not_existing(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity = self._create_random_base_entity_dict()
 
             # Act
             sent_entity = self._create_updated_entity_dict(entity['PartitionKey'], entity['RowKey'])
-            with self.assertRaises(ResourceNotFoundError):
+            with pytest.raises(ResourceNotFoundError):
                 await self.table.update_entity(mode=UpdateMode.REPLACE, entity=sent_entity)
 
             # Assert
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_update_entity_with_if_matches(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_update_entity_with_if_matches(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity, etag = await self._insert_random_entity()
 
             # Act
-            sent_entity = self._create_updated_entity_dict(entity.PartitionKey, entity.RowKey)
+            sent_entity = self._create_updated_entity_dict(entity['PartitionKey'], entity['RowKey'])
             resp = await self.table.update_entity(
                 mode=UpdateMode.REPLACE,
                 entity=sent_entity, etag=etag,
                 match_condition=MatchConditions.IfNotModified)
 
             # Assert
-            received_entity = await self.table.get_entity(entity.PartitionKey,
-                                                          entity.RowKey)
+            received_entity = await self.table.get_entity(entity['PartitionKey'],
+                                                          entity['RowKey'])
             self._assert_valid_metadata(resp)
             self._assert_updated_entity(received_entity)
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_update_entity_with_if_doesnt_match(self, resource_group, location, storage_account,
-                                                      storage_account_key):
+    @tables_decorator_async
+    async def test_update_entity_with_if_doesnt_match(self, tables_storage_account_name,
+                                                      tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity, _ = await self._insert_random_entity()
 
             # Act
-            sent_entity = self._create_updated_entity_dict(entity.PartitionKey, entity.RowKey)
-            with self.assertRaises(HttpResponseError):
+            sent_entity = self._create_updated_entity_dict(entity['PartitionKey'], entity['RowKey'])
+            with pytest.raises(ResourceModifiedError):
                 await self.table.update_entity(
                     mode=UpdateMode.REPLACE,
                     entity=sent_entity,
@@ -784,33 +625,31 @@ class StorageTableEntityTest(TableTestCase):
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_insert_or_merge_entity_with_existing_entity(self, resource_group, location, storage_account,
-                                                               storage_account_key):
+    @tables_decorator_async
+    async def test_insert_or_merge_entity_with_existing_entity(self, tables_storage_account_name,
+                                                               tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity, _ = await self._insert_random_entity()
 
             # Act
-            sent_entity = self._create_updated_entity_dict(entity.PartitionKey, entity.RowKey)
+            sent_entity = self._create_updated_entity_dict(entity['PartitionKey'], entity['RowKey'])
             resp = await self.table.upsert_entity(mode=UpdateMode.MERGE, entity=sent_entity)
 
             # Assert
-            received_entity = await self.table.get_entity(entity.PartitionKey,
-                                                          entity.RowKey)
+            received_entity = await self.table.get_entity(entity['PartitionKey'],
+                                                          entity['RowKey'])
             self._assert_valid_metadata(resp)
             self._assert_merged_entity(received_entity)
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_insert_or_merge_entity_with_non_existing_entity(self, resource_group, location, storage_account,
-                                                                   storage_account_key):
+    @tables_decorator_async
+    async def test_insert_or_merge_entity_with_non_existing_entity(self, tables_storage_account_name,
+                                                                   tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity = self._create_random_base_entity_dict()
 
@@ -826,33 +665,31 @@ class StorageTableEntityTest(TableTestCase):
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_insert_or_replace_entity_with_existing_entity(self, resource_group, location, storage_account,
-                                                                 storage_account_key):
+    @tables_decorator_async
+    async def test_insert_or_replace_entity_with_existing_entity(self, tables_storage_account_name,
+                                                                 tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity, _ = await self._insert_random_entity()
 
             # Act
-            sent_entity = self._create_updated_entity_dict(entity.PartitionKey, entity.RowKey)
+            sent_entity = self._create_updated_entity_dict(entity['PartitionKey'], entity['RowKey'])
             resp = await self.table.upsert_entity(mode=UpdateMode.REPLACE, entity=sent_entity)
 
             # Assert
-            received_entity = await self.table.get_entity(entity.PartitionKey,
-                                                          entity.RowKey)
+            received_entity = await self.table.get_entity(entity['PartitionKey'],
+                                                          entity['RowKey'])
             self._assert_valid_metadata(resp)
             self._assert_updated_entity(received_entity)
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_insert_or_replace_entity_with_non_existing_entity(self, resource_group, location, storage_account,
-                                                                     storage_account_key):
+    @tables_decorator_async
+    async def test_insert_or_replace_entity_with_non_existing_entity(self, tables_storage_account_name,
+                                                                     tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity = self._create_random_base_entity_dict()
 
@@ -863,82 +700,78 @@ class StorageTableEntityTest(TableTestCase):
             # Assert
             received_entity = await self.table.get_entity(entity['PartitionKey'],
                                                           entity['RowKey'])
-            self.assertIsNotNone(resp)
+            assert resp is not None
             self._assert_updated_entity(received_entity)
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_merge_entity(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_merge_entity(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity, _ = await self._insert_random_entity()
 
             # Act
-            sent_entity = self._create_updated_entity_dict(entity.PartitionKey, entity.RowKey)
+            sent_entity = self._create_updated_entity_dict(entity['PartitionKey'], entity['RowKey'])
             resp = await self.table.update_entity(mode=UpdateMode.MERGE, entity=sent_entity)
 
             # Assert
-            received_entity = await self.table.get_entity(entity.PartitionKey,
-                                                          entity.RowKey)
+            received_entity = await self.table.get_entity(entity['PartitionKey'],
+                                                          entity['RowKey'])
             self._assert_valid_metadata(resp)
             self._assert_merged_entity(received_entity)
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_merge_entity_not_existing(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_merge_entity_not_existing(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity = self._create_random_base_entity_dict()
 
             # Act
             sent_entity = self._create_updated_entity_dict(entity['PartitionKey'], entity['RowKey'])
-            with self.assertRaises(ResourceNotFoundError):
+            with pytest.raises(ResourceNotFoundError):
                 await self.table.update_entity(mode=UpdateMode.MERGE, entity=sent_entity)
 
             # Assert
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_merge_entity_with_if_matches(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_merge_entity_with_if_matches(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity, etag = await self._insert_random_entity()
 
             # Act
-            sent_entity = self._create_updated_entity_dict(entity.PartitionKey, entity.RowKey)
+            sent_entity = self._create_updated_entity_dict(entity['PartitionKey'], entity['RowKey'])
             resp = await self.table.update_entity(mode=UpdateMode.MERGE,
                                                   entity=sent_entity, etag=etag,
                                                   match_condition=MatchConditions.IfNotModified)
 
             # Assert
-            received_entity = await self.table.get_entity(entity.PartitionKey,
-                                                          entity.RowKey)
+            received_entity = await self.table.get_entity(entity['PartitionKey'],
+                                                          entity['RowKey'])
             self._assert_valid_metadata(resp)
             self._assert_merged_entity(received_entity)
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_merge_entity_with_if_doesnt_match(self, resource_group, location, storage_account,
-                                                     storage_account_key):
+    @tables_decorator_async
+    async def test_merge_entity_with_if_doesnt_match(self, tables_storage_account_name,
+                                                     tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity, _ = await self._insert_random_entity()
 
             # Act
-            sent_entity = self._create_updated_entity_dict(entity.PartitionKey, entity.RowKey)
-            with self.assertRaises(HttpResponseError):
+            sent_entity = self._create_updated_entity_dict(entity['PartitionKey'], entity['RowKey'])
+            with pytest.raises(ResourceModifiedError):
                 await self.table.update_entity(mode=UpdateMode.MERGE,
                                                entity=sent_entity,
                                                etag='W/"datetime\'2012-06-15T22%3A51%3A44.9662825Z\'"',
@@ -948,85 +781,137 @@ class StorageTableEntityTest(TableTestCase):
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_delete_entity(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_delete_entity(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity, _ = await self._insert_random_entity()
 
             # Act
-            resp = await self.table.delete_entity(partition_key=entity.PartitionKey, row_key=entity.RowKey)
+            resp = await self.table.delete_entity(partition_key=entity['PartitionKey'], row_key=entity['RowKey'])
 
             # Assert
-            self.assertIsNone(resp)
-            with self.assertRaises(ResourceNotFoundError):
-                await self.table.get_entity(entity.PartitionKey, entity.RowKey)
+            assert resp is None
+            with pytest.raises(ResourceNotFoundError):
+                await self.table.get_entity(entity['PartitionKey'], entity['RowKey'])
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_delete_entity_not_existing(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_delete_entity_not_existing(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity = self._create_random_base_entity_dict()
-
-            # Act
-            with self.assertRaises(ResourceNotFoundError):
-                await self.table.delete_entity(entity['PartitionKey'], entity['RowKey'])
-
-            # Assert
+            await self.table.delete_entity(entity['PartitionKey'], entity['RowKey'])
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_delete_entity_with_if_matches(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_delete_entity_with_if_matches(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity, etag = await self._insert_random_entity()
 
             # Act
-            resp = await self.table.delete_entity(entity.PartitionKey, entity.RowKey, etag=etag,
-                                                  match_condition=MatchConditions.IfNotModified)
+            resp = await self.table.delete_entity(
+                entity['PartitionKey'],
+                entity['RowKey'],
+                etag=etag,
+                match_condition=MatchConditions.IfNotModified
+            )
 
             # Assert
-            self.assertIsNone(resp)
-            with self.assertRaises(ResourceNotFoundError):
-                await self.table.get_entity(entity.PartitionKey, entity.RowKey)
+            assert resp is None
+            with pytest.raises(ResourceNotFoundError):
+                await self.table.get_entity(entity['PartitionKey'], entity['RowKey'])
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_delete_entity_with_if_doesnt_match(self, resource_group, location, storage_account,
-                                                      storage_account_key):
+    @tables_decorator_async
+    async def test_delete_entity_with_if_doesnt_match(self, tables_storage_account_name,
+                                                      tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity, _ = await self._insert_random_entity()
 
             # Act
-            with self.assertRaises(HttpResponseError):
+            with pytest.raises(ResourceModifiedError):
                 await self.table.delete_entity(
-                    entity.PartitionKey, entity.RowKey,
+                    entity['PartitionKey'],
+                    entity['RowKey'],
                     etag=u'W/"datetime\'2012-06-15T22%3A51%3A44.9662825Z\'"',
-                    match_condition=MatchConditions.IfNotModified)
+                    match_condition=MatchConditions.IfNotModified
+                )
 
             # Assert
         finally:
             await self._tear_down()
 
+    @tables_decorator_async
+    async def test_delete_entity_overloads(self, tables_storage_account_name, tables_primary_storage_account_key):
+        # Arrange
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
+        try:
+            entity, _ = await self._insert_random_entity()
 
-    @GlobalStorageAccountPreparer()
-    async def test_unicode_property_value(self, resource_group, location, storage_account, storage_account_key):
+            # Act
+            await self.table.delete_entity(entity)
+
+            pk, rk = self._create_pk_rk("pk", "rk")
+            pk, rk = pk + u"2", rk + u"2"
+            entity2 = {
+                u"PartitionKey": pk,
+                u"RowKey": rk,
+                u"Value": 100
+            }
+            await self.table.create_entity(entity2)
+
+            await self.table.delete_entity(pk, rk)
+
+            count = 0
+            async for entity in self.table.list_entities():
+                count += 1
+            assert count == 0
+        finally:
+            await self._tear_down()
+
+    @tables_decorator_async
+    async def test_delete_entity_overloads_kwargs(self, tables_storage_account_name, tables_primary_storage_account_key):
+        # Arrange
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
+        try:
+            entity, _ = await self._insert_random_entity()
+
+            # Act
+            await self.table.delete_entity(entity=entity)
+
+            pk, rk = self._create_pk_rk("pk", "rk")
+            pk, rk = pk + u"2", rk + u"2"
+            entity2 = {
+                u"PartitionKey": pk,
+                u"RowKey": rk,
+                u"Value": 100
+            }
+            await self.table.create_entity(entity2)
+
+            await self.table.delete_entity(partition_key=pk, row_key=rk)
+
+            count = 0
+            async for entity in self.table.list_entities():
+                count += 1
+            assert count == 0
+        finally:
+            await self._tear_down()
+
+    @tables_decorator_async
+    async def test_unicode_property_value(self, tables_storage_account_name, tables_primary_storage_account_key):
         ''' regression test for github issue #57'''
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity = self._create_random_base_entity_dict()
             entity1 = entity.copy()
@@ -1039,21 +924,20 @@ class StorageTableEntityTest(TableTestCase):
             await self.table.create_entity(entity=entity2)
             entities = []
             async for e in self.table.query_entities(
-                    filter="PartitionKey eq '{}'".format(entity['PartitionKey'])):
+                    "PartitionKey eq '{}'".format(entity['PartitionKey'])):
                 entities.append(e)
 
             # Assert
-            self.assertEqual(len(entities), 2)
-            self.assertEqual(entities[0].Description, u'ꀕ')
-            self.assertEqual(entities[1].Description, u'ꀕ')
+            assert len(entities) ==  2
+            assert entities[0]['Description'] ==  u'ꀕ'
+            assert entities[1]['Description'] ==  u'ꀕ'
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_unicode_property_name(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_unicode_property_name(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity = self._create_random_base_entity_dict()
             entity1 = entity.copy()
@@ -1066,77 +950,59 @@ class StorageTableEntityTest(TableTestCase):
             await self.table.create_entity(entity=entity2)
             entities = []
             async for e in self.table.query_entities(
-                    filter="PartitionKey eq '{}'".format(entity['PartitionKey'])):
+                    "PartitionKey eq '{}'".format(entity['PartitionKey'])):
                 entities.append(e)
 
             # Assert
-            self.assertEqual(len(entities), 2)
-            self.assertEqual(entities[0][u'啊齄丂狛狜'], u'ꀕ')
-            self.assertEqual(entities[1][u'啊齄丂狛狜'], u'hello')
+            assert len(entities) ==  2
+            assert entities[0][u'啊齄丂狛狜'] ==  u'ꀕ'
+            assert entities[1][u'啊齄丂狛狜'] ==  u'hello'
         finally:
             await self._tear_down()
 
-    @pytest.mark.skip("pending")
-    @GlobalStorageAccountPreparer()
-    async def test_operations_on_entity_with_partition_key_having_single_quote(self, resource_group, location,
-                                                                               storage_account, storage_account_key):
-
-        # Arrange
-        partition_key_with_single_quote = "a''''b"
-        row_key_with_single_quote = "a''''b"
-        await self._set_up(storage_account, storage_account_key)
+    @tables_decorator_async
+    async def test_operations_on_entity_with_partition_key_having_single_quote(self, tables_storage_account_name, tables_primary_storage_account_key):
+        partition_key_with_single_quote = u"a''''b"
+        row_key_with_single_quote = u"a''''b"
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity, _ = await self._insert_random_entity(pk=partition_key_with_single_quote,
                                                          rk=row_key_with_single_quote)
 
-            # Act
-            sent_entity = self._create_updated_entity_dict(entity.PartitionKey, entity.RowKey)
-            resp = await self.table.upsert_entity(mode=UpdateMode.REPLACE, entity=sent_entity)
+            sent_entity = self._create_updated_entity_dict(entity['PartitionKey'], entity['RowKey'])
+            resp = await self.table.upsert_entity(mode=UpdateMode.MERGE, entity=sent_entity)
 
-            # Assert
             self._assert_valid_metadata(resp)
-            # row key here only has 2 quotes
-            received_entity = await self.table.get_entity(
-                entity.PartitionKey, entity.RowKey)
+            received_entity = await self.table.get_entity(entity['PartitionKey'], entity['RowKey'])
             self._assert_updated_entity(received_entity)
 
-            # Act
-            sent_entity['newField'] = 'newFieldValue'
-            resp = await self.table.update_entity(mode=UpdateMode.REPLACE, entity=sent_entity)
-            received_entity = await self.table.get_entity(
-                entity.PartitionKey, entity.RowKey)
+            sent_entity['newField'] = u'newFieldValue'
+            resp = await self.table.update_entity(mode=UpdateMode.MERGE, entity=sent_entity)
 
-            # Assert
             self._assert_valid_metadata(resp)
+            received_entity = await self.table.get_entity(entity['PartitionKey'], entity['RowKey'])
             self._assert_updated_entity(received_entity)
-            self.assertEqual(received_entity['newField'], 'newFieldValue')
-
-            # Act
-            resp = await self.table.delete_entity(entity.PartitionKey, entity.RowKey)
-
-            # Assert
-            self.assertIsNone(resp)
+            assert received_entity['newField'] ==  'newFieldValue'
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_empty_and_spaces_property_value(self, resource_group, location, storage_account,
-                                                   storage_account_key):
+    @tables_decorator_async
+    async def test_empty_and_spaces_property_value(self, tables_storage_account_name,
+                                                   tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity = self._create_random_base_entity_dict()
             entity.update({
-                'EmptyByte': '',
+                'EmptyByte': b'',
                 'EmptyUnicode': u'',
-                'SpacesOnlyByte': '   ',
+                'SpacesOnlyByte': b'   ',
                 'SpacesOnlyUnicode': u'   ',
-                'SpacesBeforeByte': '   Text',
+                'SpacesBeforeByte': b'   Text',
                 'SpacesBeforeUnicode': u'   Text',
-                'SpacesAfterByte': 'Text   ',
+                'SpacesAfterByte': b'Text   ',
                 'SpacesAfterUnicode': u'Text   ',
-                'SpacesBeforeAndAfterByte': '   Text   ',
+                'SpacesBeforeAndAfterByte': b'   Text   ',
                 'SpacesBeforeAndAfterUnicode': u'   Text   ',
             })
 
@@ -1145,25 +1011,24 @@ class StorageTableEntityTest(TableTestCase):
             resp = await self.table.get_entity(entity['PartitionKey'], entity['RowKey'])
 
             # Assert
-            self.assertIsNotNone(resp)
-            self.assertEqual(resp.EmptyByte, '')
-            self.assertEqual(resp.EmptyUnicode, u'')
-            self.assertEqual(resp.SpacesOnlyByte, '   ')
-            self.assertEqual(resp.SpacesOnlyUnicode, u'   ')
-            self.assertEqual(resp.SpacesBeforeByte, '   Text')
-            self.assertEqual(resp.SpacesBeforeUnicode, u'   Text')
-            self.assertEqual(resp.SpacesAfterByte, 'Text   ')
-            self.assertEqual(resp.SpacesAfterUnicode, u'Text   ')
-            self.assertEqual(resp.SpacesBeforeAndAfterByte, '   Text   ')
-            self.assertEqual(resp.SpacesBeforeAndAfterUnicode, u'   Text   ')
+            assert resp is not None
+            assert resp['EmptyByte'] ==  b''
+            assert resp['EmptyUnicode'] ==  u''
+            assert resp['SpacesOnlyByte'] ==  b'   '
+            assert resp['SpacesOnlyUnicode'] ==  u'   '
+            assert resp['SpacesBeforeByte'] ==  b'   Text'
+            assert resp['SpacesBeforeUnicode'] ==  u'   Text'
+            assert resp['SpacesAfterByte'] ==  b'Text   '
+            assert resp['SpacesAfterUnicode'] ==  u'Text   '
+            assert resp['SpacesBeforeAndAfterByte'] ==  b'   Text   '
+            assert resp['SpacesBeforeAndAfterUnicode'] ==  u'   Text   '
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_none_property_value(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_none_property_value(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity = self._create_random_base_entity_dict()
             entity.update({'NoneValue': None})
@@ -1173,16 +1038,15 @@ class StorageTableEntityTest(TableTestCase):
             resp = await self.table.get_entity(entity['PartitionKey'], entity['RowKey'])
 
             # Assert
-            self.assertIsNotNone(resp)
-            self.assertFalse(hasattr(resp, 'NoneValue'))
+            assert resp is not None
+            assert not hasattr(resp, 'NoneValue')
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_binary_property_value(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_binary_property_value(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             binary_data = b'\x01\x02\x03\x04\x05\x06\x07\x08\t\n'
             entity = self._create_random_base_entity_dict()
@@ -1193,16 +1057,15 @@ class StorageTableEntityTest(TableTestCase):
             resp = await self.table.get_entity(entity['PartitionKey'], entity['RowKey'])
 
             # Assert
-            self.assertIsNotNone(resp)
-            self.assertEqual(resp.binary.value, binary_data)
+            assert resp is not None
+            assert resp['binary'] ==  binary_data
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_timezone(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_timezone(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             local_tz = tzoffset('BRST', -10800)
             local_date = datetime(2003, 9, 27, 9, 52, 43, tzinfo=local_tz)
@@ -1214,18 +1077,17 @@ class StorageTableEntityTest(TableTestCase):
             resp = await self.table.get_entity(entity['PartitionKey'], entity['RowKey'])
 
             # Assert
-            self.assertIsNotNone(resp)
+            assert resp is not None
             # times are not equal because request is made after
-        #  self.assertEqual(resp.date.astimezone(tzutc()), local_date.astimezone(tzutc()))
-        # self.assertEqual(resp.date.astimezone(local_tz), local_date)
+            assert resp['date'].astimezone(tzutc()) ==  local_date.astimezone(tzutc())
+            assert resp['date'].astimezone(local_tz) ==  local_date
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_query_entities(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_query_entities(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             table = await self._create_query_table(2)
 
@@ -1235,17 +1097,340 @@ class StorageTableEntityTest(TableTestCase):
                 entities.append(t)
 
             # Assert
-            self.assertEqual(len(entities), 2)
+            assert len(entities) ==  2
             for entity in entities:
                 self._assert_default_entity(entity)
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_query_zero_entities(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_query_entities_each_page(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
+        try:
+            base_entity = {
+                "PartitionKey": u"pk",
+                "RowKey": u"1",
+            }
+
+            for i in range(10):
+                if i > 5:
+                    base_entity['PartitionKey'] += str(i)
+                base_entity['RowKey'] += str(i)
+                base_entity['value'] = i
+                try:
+                    await self.table.create_entity(base_entity)
+                except ResourceExistsError:
+                    pass
+
+            query_filter = u"PartitionKey eq 'pk'"
+
+            entity_count = 0
+            page_count = 0
+            async for entity_page in self.table.query_entities(query_filter, results_per_page=2).by_page():
+
+                temp_count = 0
+                async for ent in entity_page:
+                    temp_count += 1
+
+                assert temp_count <= 2
+                page_count += 1
+                entity_count += temp_count
+
+            assert entity_count == 6
+            assert page_count == 3
+
+        finally:
+            await self._tear_down()
+
+    @tables_decorator_async
+    async def test_query_injection_async(self, tables_storage_account_name, tables_primary_storage_account_key):
+        # Arrange
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
+        try:
+            table_name = self.get_resource_name('queryasynctable')
+            table = await self.ts.create_table_if_not_exists(table_name)
+            entity_a = {'PartitionKey': 'foo', 'RowKey': 'bar1', 'IsAdmin': 'admin'}
+            entity_b = {'PartitionKey': 'foo', 'RowKey': 'bar2', 'IsAdmin': ''}
+            await table.create_entity(entity_a)
+            await table.create_entity(entity_b)
+
+            is_user_admin = "PartitionKey eq @first and IsAdmin eq 'admin'"
+            entity_query = table.query_entities(is_user_admin, parameters={'first': 'foo'})
+            entities = []
+            async for e in entity_query:
+                entities.append(e)
+            assert len(entities) ==  1
+
+            injection = "foo' or RowKey eq 'bar2"
+            injected_query = "PartitionKey eq '{}' and IsAdmin eq 'admin'".format(injection)
+            entity_query = table.query_entities(injected_query)
+            entities = []
+            async for e in entity_query:
+                entities.append(e)
+            assert len(entities) ==  2
+
+            entity_query = table.query_entities(is_user_admin, parameters={'first': injection})
+            entities = []
+            async for e in entity_query:
+                entities.append(e)
+            assert len(entities) ==  0
+        finally:
+            await self.ts.delete_table(table_name)
+            await self._tear_down()
+
+    @tables_decorator_async
+    async def test_query_special_chars(self, tables_storage_account_name, tables_primary_storage_account_key):
+        # Arrange
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
+        try:
+            table_name = self.get_resource_name('querytable')
+            table = await self.ts.create_table_if_not_exists(table_name)
+            entity_a = {'PartitionKey': u':@', 'RowKey': u'+,$', 'Chars': u"?'/!_^#"}
+            entity_b = {'PartitionKey': u':@', 'RowKey': u'=& ', 'Chars': u'?"\\{}<>%'}
+            await table.create_entity(entity_a)
+            await table.create_entity(entity_b)
+
+            entities = []
+            all_entities = table.query_entities("PartitionKey eq ':@'")
+            async for e in all_entities:
+                entities.append(e)
+            assert len(entities) == 2
+
+            entities = []
+            parameters = {'key': ':@'}
+            all_entities = table.query_entities("PartitionKey eq @key", parameters=parameters)
+            async for e in all_entities:
+                entities.append(e)
+            assert len(entities) == 2
+
+            entities = []
+            query = "PartitionKey eq ':@' and RowKey eq '+,$' and Chars eq '?''/!_^#'"
+            query_entities = table.query_entities(query)
+            async for e in query_entities:
+                entities.append(e)
+            assert len(entities) == 1
+
+            entities = []
+            query = "PartitionKey eq @key and RowKey eq @row and Chars eq @quote"
+            parameters = {'key': ':@', 'row': '+,$', 'quote': "?'/!_^#"}
+            query_entities = table.query_entities(query, parameters=parameters)
+            async for e in query_entities:
+                entities.append(e)
+            assert len(entities) == 1
+
+            entities = []
+            query = "PartitionKey eq ':@' and RowKey eq '=& ' and Chars eq '?\"\\{}<>%'"
+            query_entities = table.query_entities(query)
+            async for e in query_entities:
+                entities.append(e)
+            assert len(entities) == 1
+
+            entities = []
+            query = "PartitionKey eq @key and RowKey eq @row and Chars eq @quote"
+            parameters = {'key': ':@', 'row': '=& ', 'quote': r'?"\{}<>%'}
+            query_entities = table.query_entities(query, parameters=parameters)
+            async for e in query_entities:
+                entities.append(e)
+            assert len(entities) == 1
+
+        finally:
+            await self.ts.delete_table(table_name)
+            await self._tear_down()
+
+    @tables_decorator_async
+    async def test_query_user_filter(self, tables_storage_account_name, tables_primary_storage_account_key):
+        # Arrange
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
+        try:
+            entity = await self._insert_two_opposite_entities()
+
+            # Act
+            entities = self.table.query_entities("married eq @my_param", parameters={'my_param': True})
+
+            assert entities is not None
+            length = 0
+            async for e in entities:
+                self._assert_default_entity(e)
+                length += 1
+
+            assert length == 1
+        finally:
+            await self._tear_down()
+
+    @tables_decorator_async
+    async def test_query_user_filter_multiple_params(self, tables_storage_account_name, tables_primary_storage_account_key):
+        # Arrange
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
+        try:
+            entity, _ = await self._insert_two_opposite_entities()
+
+            # Act
+            parameters = {
+                'my_param': True,
+                'rk': entity['RowKey']
+            }
+            entities = self.table.query_entities("married eq @my_param and RowKey eq @rk", parameters=parameters)
+
+            length = 0
+            assert entities is not None
+            async for entity in entities:
+                self._assert_default_entity(entity)
+                length += 1
+            assert length == 1
+
+        finally:
+            await self._tear_down()
+
+    @tables_decorator_async
+    async def test_query_user_filter_integers(self, tables_storage_account_name, tables_primary_storage_account_key):
+        # Arrange
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
+        try:
+            entity, _ = await self._insert_two_opposite_entities()
+
+            # Act
+            parameters = {
+                'my_param': 40,
+            }
+            entities = self.table.query_entities("age lt @my_param", parameters=parameters)
+
+            length = 0
+            assert entities is not None
+            async for entity in entities:
+                self._assert_default_entity(entity)
+                length += 1
+
+            assert length == 1
+        finally:
+            await self._tear_down()
+
+    @tables_decorator_async
+    async def test_query_user_filter_floats(self, tables_storage_account_name, tables_primary_storage_account_key):
+        # Arrange
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
+        try:
+            entity, _ = await self._insert_two_opposite_entities()
+
+            # Act
+            parameters = {
+                'my_param': entity['ratio'] + 1,
+            }
+            entities = self.table.query_entities("ratio lt @my_param", parameters=parameters)
+
+            length = 0
+            assert entities is not None
+            async for entity in entities:
+                self._assert_default_entity(entity)
+                length += 1
+
+            assert length == 1
+        finally:
+            await self._tear_down()
+
+    @tables_decorator_async
+    async def test_query_user_filter_datetimes(self, tables_storage_account_name, tables_primary_storage_account_key):
+        # Arrange
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
+        try:
+            entity, _ = await self._insert_two_opposite_entities()
+
+            # Act
+            parameters = {
+                'my_param': entity['birthday'],
+            }
+            entities = self.table.query_entities("birthday eq @my_param", parameters=parameters)
+
+            length = 0
+            assert entities is not None
+            async for entity in entities:
+                self._assert_default_entity(entity)
+                length += 1
+
+            assert length == 1
+        finally:
+            await self._tear_down()
+
+    @tables_decorator_async
+    async def test_query_user_filter_guids(self, tables_storage_account_name, tables_primary_storage_account_key):
+        # Arrange
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
+        try:
+            entity, _ = await self._insert_two_opposite_entities()
+
+            # Act
+            parameters = {
+                'my_param': entity['clsid']
+            }
+            entities = self.table.query_entities("clsid eq @my_param", parameters=parameters)
+
+            length = 0
+            assert entities is not None
+            async for entity in entities:
+                self._assert_default_entity(entity)
+                length += 1
+
+            assert length == 1
+        finally:
+            await self._tear_down()
+
+    @tables_decorator_async
+    async def test_query_user_filter_binary(self, tables_storage_account_name, tables_primary_storage_account_key):
+        # Arrange
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
+        try:
+            entity, _ = await self._insert_two_opposite_entities()
+
+            # Act
+            parameters = {
+                'my_param': entity['binary']
+            }
+            entities = self.table.query_entities("binary eq @my_param", parameters=parameters)
+
+            length = 0
+            assert entities is not None
+            async for entity in entities:
+                self._assert_default_entity(entity)
+                length += 1
+
+            assert length == 1
+        finally:
+            await self._tear_down()
+
+    @tables_decorator_async
+    async def test_query_user_filter_int64(self, tables_storage_account_name, tables_primary_storage_account_key):
+        # Arrange
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
+        try:
+            entity, _ = await self._insert_two_opposite_entities()
+            large_entity = {
+                u"PartitionKey": u"pk001",
+                u"RowKey": u"rk001",
+                u"large_int": EntityProperty(2 ** 40, EdmType.INT64),
+            }
+            await self.table.create_entity(large_entity)
+
+            # Act
+            parameters = {
+                'my_param': large_entity['large_int'].value
+            }
+            entities = self.table.query_entities("large_int eq @my_param", parameters=parameters)
+
+            length = 0
+            assert entities is not None
+            async for entity in entities:
+                # self._assert_default_entity(entity)
+                assert large_entity['large_int'] == entity['large_int']
+                length += 1
+
+            assert length == 1
+        finally:
+            await self._tear_down()
+
+    @tables_decorator_async
+    async def test_query_zero_entities(self, tables_storage_account_name, tables_primary_storage_account_key):
+        # Arrange
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             table = await self._create_query_table(0)
 
@@ -1255,15 +1440,14 @@ class StorageTableEntityTest(TableTestCase):
                 entities.append(t)
 
             # Assert
-            self.assertEqual(len(entities), 0)
+            assert len(entities) ==  0
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_query_entities_full_metadata(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_query_entities_full_metadata(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             table = await self._create_query_table(2)
 
@@ -1273,17 +1457,16 @@ class StorageTableEntityTest(TableTestCase):
                 entities.append(t)
 
             # Assert
-            self.assertEqual(len(entities), 2)
+            assert len(entities) ==  2
             for entity in entities:
                 self._assert_default_entity_json_full_metadata(entity)
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_query_entities_no_metadata(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_query_entities_no_metadata(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             table = await self._create_query_table(2)
 
@@ -1293,71 +1476,60 @@ class StorageTableEntityTest(TableTestCase):
                 entities.append(t)
 
             # Assert
-            self.assertEqual(len(entities), 2)
+            assert len(entities) ==  2
             for entity in entities:
                 self._assert_default_entity_json_no_metadata(entity)
         finally:
             await self._tear_down()
 
-    @pytest.mark.skip("Batch not implemented")
-    @GlobalStorageAccountPreparer()
-    def test_query_entities_large(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_query_entities_with_filter(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        table_name = self._create_query_table(0)
-        total_entities_count = 1000
-        entities_per_batch = 50
-
-        for j in range(total_entities_count // entities_per_batch):
-            batch = TableBatch()
-            for i in range(entities_per_batch):
-                entity = TableEntity()
-                entity.PartitionKey = 'large'
-                entity.RowKey = 'batch{0}-item{1}'.format(j, i)
-                entity.test = EntityProperty(True)
-                entity.test2 = 'hello world;' * 100
-                entity.test3 = 3
-                entity.test4 = EntityProperty(1234567890)
-                entity.test5 = datetime(2016, 12, 31, 11, 59, 59, 0)
-                batch.create_entity(entity)
-            self.ts.commit_batch(table_name, batch)
-
-        # Act
-        start_time = datetime.now()
-        entities = list(self.ts.query_entities(table_name))
-        elapsed_time = datetime.now() - start_time
-
-        # Assert
-        print('query_entities took {0} secs.'.format(elapsed_time.total_seconds()))
-        # azure allocates 5 seconds to execute a query
-        # if it runs slowly, it will return fewer results and make the test fail
-        self.assertEqual(len(entities), total_entities_count)
-
-
-    @GlobalStorageAccountPreparer()
-    async def test_query_entities_with_filter(self, resource_group, location, storage_account, storage_account_key):
-        # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             entity, _ = await self._insert_random_entity()
+            entity2, _ = await self._insert_random_entity(pk="foo" + entity['PartitionKey'])
+            entity3, _ = await self._insert_random_entity(pk="bar" + entity['PartitionKey'])
 
             # Act
             entities = []
             async for t in self.table.query_entities(
-                    filter="PartitionKey eq '{}'".format(entity.PartitionKey)):
+                    "PartitionKey eq '{}'".format(entity['PartitionKey'])):
                 entities.append(t)
 
             # Assert
-            self.assertEqual(len(entities), 1)
-            self.assertEqual(entity.PartitionKey, entities[0].PartitionKey)
+            assert len(entities) ==  1
+            assert entity['PartitionKey'] ==  entities[0]['PartitionKey']
             self._assert_default_entity(entities[0])
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_query_entities_with_select(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_query_invalid_filter(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
+        try:
+            base_entity = {
+                u"PartitionKey": u"pk",
+                u"RowKey": u"rk",
+                u"value": 1
+            }
+
+            for i in range(5):
+                base_entity[u"RowKey"] += str(i)
+                base_entity[u"value"] += i
+                await self.table.create_entity(base_entity)
+            # Act
+            with pytest.raises(HttpResponseError):
+                async for t in self.table.query_entities("aaa bbb ccc"):
+                    _ = t
+        finally:
+            await self._tear_down()
+
+    @tables_decorator_async
+    async def test_query_entities_with_select(self, tables_storage_account_name, tables_primary_storage_account_key):
+        # Arrange
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             table = await self._create_query_table(2)
 
@@ -1367,20 +1539,19 @@ class StorageTableEntityTest(TableTestCase):
                 entities.append(t)
 
             # Assert
-            self.assertEqual(len(entities), 2)
-            self.assertEqual(entities[0].age, 39)
-            self.assertEqual(entities[0].sex, 'male')
-            self.assertFalse(hasattr(entities[0], "birthday"))
-            self.assertFalse(hasattr(entities[0], "married"))
-            self.assertFalse(hasattr(entities[0], "deceased"))
+            assert len(entities) ==  2
+            assert entities[0]['age'] ==  39
+            assert entities[0]['sex'] ==  'male'
+            assert not "birthday" in entities[0]
+            assert not "married" in entities[0]
+            assert not "deceased" in entities[0]
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_query_entities_with_top(self, resource_group, location, storage_account, storage_account_key):
+    @tables_decorator_async
+    async def test_query_entities_with_top(self, tables_storage_account_name, tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             table = await self._create_query_table(3)
             # circular dependencies made this return a list not an item paged - problem when calling by page
@@ -1390,16 +1561,15 @@ class StorageTableEntityTest(TableTestCase):
                 entities.append(t)
 
             # Assert
-            self.assertEqual(len(entities), 2)
+            assert len(entities) ==  2
         finally:
             await self._tear_down()
 
-
-    @GlobalStorageAccountPreparer()
-    async def test_query_entities_with_top_and_next(self, resource_group, location, storage_account,
-                                                    storage_account_key):
+    @tables_decorator_async
+    async def test_query_entities_with_top_and_next(self, tables_storage_account_name,
+                                                    tables_primary_storage_account_key):
         # Arrange
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             table = await self._create_query_table(5)
 
@@ -1420,9 +1590,9 @@ class StorageTableEntityTest(TableTestCase):
                 entities3.append(el)
 
             # Assert
-            self.assertEqual(len(entities1), 2)
-            self.assertEqual(len(entities2), 2)
-            self.assertEqual(len(entities3), 1)
+            assert len(entities1) ==  2
+            assert len(entities2) ==  2
+            assert len(entities3) ==  1
             self._assert_default_entity(entities1[0])
             self._assert_default_entity(entities1[1])
             self._assert_default_entity(entities2[0])
@@ -1431,22 +1601,17 @@ class StorageTableEntityTest(TableTestCase):
         finally:
             await self._tear_down()
 
+    @tables_decorator_async
+    async def test_sas_query(self, tables_storage_account_name, tables_primary_storage_account_key):
+        url = self.account_url(tables_storage_account_name, "table")
 
-    @pytest.mark.live_test_only
-    @GlobalStorageAccountPreparer()
-    async def test_sas_query(self, resource_group, location, storage_account, storage_account_key):
-        # SAS URL is calculated from storage key, so this test runs live only
-        url = self.account_url(storage_account, "table")
-        if 'cosmos' in url:
-            pytest.skip("Cosmos Tables does not yet support sas")
-
-        await self._set_up(storage_account, storage_account_key)
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             # Arrange
             entity, _ = await self._insert_random_entity()
-            token = generate_table_sas(
-                storage_account.name,
-                storage_account_key,
+            token = self.generate_sas(
+                generate_table_sas,
+                tables_primary_storage_account_key,
                 self.table_name,
                 permission=TableSasPermissions(read=True),
                 expiry=datetime.utcnow() + timedelta(hours=1),
@@ -1455,35 +1620,30 @@ class StorageTableEntityTest(TableTestCase):
 
             # Act
             service = TableServiceClient(
-                self.account_url(storage_account, "table"),
-                credential=token,
+                self.account_url(tables_storage_account_name, "table"),
+                credential=AzureSasCredential(token),
             )
             table = service.get_table_client(self.table_name)
             entities = []
             async for t in table.query_entities(
-                    filter="PartitionKey eq '{}'".format(entity['PartitionKey'])):
+                    "PartitionKey eq '{}'".format(entity['PartitionKey'])):
                 entities.append(t)
 
             # Assert
-            self.assertEqual(len(entities), 1)
+            assert len(entities) ==  1
             self._assert_default_entity(entities[0])
         finally:
             await self._tear_down()
 
-
-    @pytest.mark.live_test_only
-    @GlobalStorageAccountPreparer()
-    async def test_sas_add(self, resource_group, location, storage_account, storage_account_key):
-        # SAS URL is calculated from storage key, so this test runs live only
-        url = self.account_url(storage_account, "table")
-        if 'cosmos' in url:
-            pytest.skip("Cosmos Tables does not yet support sas")
-        await self._set_up(storage_account, storage_account_key)
+    @tables_decorator_async
+    async def test_sas_add(self, tables_storage_account_name, tables_primary_storage_account_key):
+        url = self.account_url(tables_storage_account_name, "table")
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             # Arrange
-            token = generate_table_sas(
-                storage_account.name,
-                storage_account_key,
+            token = self.generate_sas(
+                generate_table_sas,
+                tables_primary_storage_account_key,
                 self.table_name,
                 permission=TableSasPermissions(add=True),
                 expiry=datetime.utcnow() + timedelta(hours=1),
@@ -1492,8 +1652,8 @@ class StorageTableEntityTest(TableTestCase):
 
             # Act
             service = TableServiceClient(
-                self.account_url(storage_account, "table"),
-                credential=token,
+                self.account_url(tables_storage_account_name, "table"),
+                credential=AzureSasCredential(token),
             )
             table = service.get_table_client(self.table_name)
 
@@ -1507,20 +1667,15 @@ class StorageTableEntityTest(TableTestCase):
         finally:
             await self._tear_down()
 
-
-    @pytest.mark.live_test_only
-    @GlobalStorageAccountPreparer()
-    async def test_sas_add_inside_range(self, resource_group, location, storage_account, storage_account_key):
-        # SAS URL is calculated from storage key, so this test runs live only
-        url = self.account_url(storage_account, "table")
-        if 'cosmos' in url:
-            pytest.skip("Cosmos Tables does not yet support sas")
-        await self._set_up(storage_account, storage_account_key)
+    @tables_decorator_async
+    async def test_sas_add_inside_range(self, tables_storage_account_name, tables_primary_storage_account_key):
+        url = self.account_url(tables_storage_account_name, "table")
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             # Arrange
-            token = generate_table_sas(
-                storage_account.name,
-                storage_account_key,
+            token = self.generate_sas(
+                generate_table_sas,
+                tables_primary_storage_account_key,
                 self.table_name,
                 permission=TableSasPermissions(add=True),
                 expiry=datetime.utcnow() + timedelta(hours=1),
@@ -1530,8 +1685,8 @@ class StorageTableEntityTest(TableTestCase):
 
             # Act
             service = TableServiceClient(
-                self.account_url(storage_account, "table"),
-                credential=token,
+                self.account_url(tables_storage_account_name, "table"),
+                credential=AzureSasCredential(token),
             )
             table = service.get_table_client(self.table_name)
             entity = self._create_random_entity_dict('test', 'test1')
@@ -1543,20 +1698,15 @@ class StorageTableEntityTest(TableTestCase):
         finally:
             await self._tear_down()
 
-
-    @pytest.mark.live_test_only
-    @GlobalStorageAccountPreparer()
-    async def test_sas_add_outside_range(self, resource_group, location, storage_account, storage_account_key):
-        # SAS URL is calculated from storage key, so this test runs live only
-        url = self.account_url(storage_account, "table")
-        if 'cosmos' in url:
-            pytest.skip("Cosmos Tables does not yet support sas")
-        await self._set_up(storage_account, storage_account_key)
+    @tables_decorator_async
+    async def test_sas_add_outside_range(self, tables_storage_account_name, tables_primary_storage_account_key):
+        url = self.account_url(tables_storage_account_name, "table")
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             # Arrange
-            token = generate_table_sas(
-                storage_account.name,
-                storage_account_key,
+            token = self.generate_sas(
+                generate_table_sas,
+                tables_primary_storage_account_key,
                 self.table_name,
                 permission=TableSasPermissions(add=True),
                 expiry=datetime.utcnow() + timedelta(hours=1),
@@ -1566,11 +1716,11 @@ class StorageTableEntityTest(TableTestCase):
 
             # Act
             service = TableServiceClient(
-                self.account_url(storage_account, "table"),
-                credential=token,
+                self.account_url(tables_storage_account_name, "table"),
+                credential=AzureSasCredential(token),
             )
             table = service.get_table_client(self.table_name)
-            with self.assertRaises(HttpResponseError):
+            with pytest.raises(HttpResponseError):
                 entity = self._create_random_entity_dict()
                 await table.create_entity(entity=entity)
 
@@ -1578,21 +1728,16 @@ class StorageTableEntityTest(TableTestCase):
         finally:
             await self._tear_down()
 
-
-    @pytest.mark.live_test_only
-    @GlobalStorageAccountPreparer()
-    async def test_sas_update(self, resource_group, location, storage_account, storage_account_key):
-        # SAS URL is calculated from storage key, so this test runs live only
-        url = self.account_url(storage_account, "table")
-        if 'cosmos' in url:
-            pytest.skip("Cosmos Tables does not yet support sas")
-        await self._set_up(storage_account, storage_account_key)
+    @tables_decorator_async
+    async def test_sas_update(self, tables_storage_account_name, tables_primary_storage_account_key):
+        url = self.account_url(tables_storage_account_name, "table")
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             # Arrange
             entity, _ = await self._insert_random_entity()
-            token = generate_table_sas(
-                storage_account.name,
-                storage_account_key,
+            token = self.generate_sas(
+                generate_table_sas,
+                tables_primary_storage_account_key,
                 self.table_name,
                 permission=TableSasPermissions(update=True),
                 expiry=datetime.utcnow() + timedelta(hours=1),
@@ -1600,37 +1745,32 @@ class StorageTableEntityTest(TableTestCase):
 
             # Act
             service = TableServiceClient(
-                self.account_url(storage_account, "table"),
-                credential=token,
+                self.account_url(tables_storage_account_name, "table"),
+                credential=AzureSasCredential(token),
             )
             table = service.get_table_client(self.table_name)
-            updated_entity = self._create_updated_entity_dict(entity.PartitionKey, entity.RowKey)
+            updated_entity = self._create_updated_entity_dict(entity['PartitionKey'], entity['RowKey'])
             resp = await table.update_entity(mode=UpdateMode.REPLACE, entity=updated_entity)
-            received_entity = await self.table.get_entity(entity.PartitionKey,
-                                                          entity.RowKey)
+            received_entity = await self.table.get_entity(entity['PartitionKey'],
+                                                          entity['RowKey'])
 
             # Assert
             self._assert_updated_entity(received_entity)
-            self.assertIsNotNone(resp)
+            assert resp is not None
 
         finally:
             await self._tear_down()
 
-
-    @pytest.mark.live_test_only
-    @GlobalStorageAccountPreparer()
-    async def test_sas_delete(self, resource_group, location, storage_account, storage_account_key):
-        # SAS URL is calculated from storage key, so this test runs live only
-        url = self.account_url(storage_account, "table")
-        if 'cosmos' in url:
-            pytest.skip("Cosmos Tables does not yet support sas")
-        await self._set_up(storage_account, storage_account_key)
+    @tables_decorator_async
+    async def test_sas_delete(self, tables_storage_account_name, tables_primary_storage_account_key):
+        url = self.account_url(tables_storage_account_name, "table")
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             # Arrange
             entity, _ = await self._insert_random_entity()
-            token = generate_table_sas(
-                storage_account.name,
-                storage_account_key,
+            token = self.generate_sas(
+                generate_table_sas,
+                tables_primary_storage_account_key,
                 self.table_name,
                 permission=TableSasPermissions(delete=True),
                 expiry=datetime.utcnow() + timedelta(hours=1),
@@ -1638,35 +1778,30 @@ class StorageTableEntityTest(TableTestCase):
 
             # Act
             service = TableServiceClient(
-                self.account_url(storage_account, "table"),
-                credential=token,
+                self.account_url(tables_storage_account_name, "table"),
+                credential=AzureSasCredential(token),
             )
             table = service.get_table_client(self.table_name)
-            await table.delete_entity(entity.PartitionKey, entity.RowKey)
+            await table.delete_entity(entity['PartitionKey'], entity['RowKey'])
 
             # Assert
-            with self.assertRaises(ResourceNotFoundError):
-                await self.table.get_entity(entity.PartitionKey, entity.RowKey)
+            with pytest.raises(ResourceNotFoundError):
+                await self.table.get_entity(entity['PartitionKey'], entity['RowKey'])
         finally:
             await self._tear_down()
 
-
-    @pytest.mark.live_test_only
-    @GlobalStorageAccountPreparer()
-    async def test_sas_upper_case_table_name(self, resource_group, location, storage_account, storage_account_key):
-        # SAS URL is calculated from storage key, so this test runs live only
-        url = self.account_url(storage_account, "table")
-        if 'cosmos' in url:
-            pytest.skip("Cosmos Tables does not yet support sas")
-        await self._set_up(storage_account, storage_account_key)
+    @tables_decorator_async
+    async def test_sas_upper_case_table_name(self, tables_storage_account_name, tables_primary_storage_account_key):
+        url = self.account_url(tables_storage_account_name, "table")
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             # Arrange
             entity, _ = await self._insert_random_entity()
 
             # Table names are case insensitive, so simply upper case our existing table name to test
-            token = generate_table_sas(
-                storage_account.name,
-                storage_account_key,
+            token = self.generate_sas(
+                generate_table_sas,
+                tables_primary_storage_account_key,
                 self.table_name.upper(),
                 permission=TableSasPermissions(read=True),
                 expiry=datetime.utcnow() + timedelta(hours=1),
@@ -1675,67 +1810,211 @@ class StorageTableEntityTest(TableTestCase):
 
             # Act
             service = TableServiceClient(
-                self.account_url(storage_account, "table"),
-                credential=token,
+                self.account_url(tables_storage_account_name, "table"),
+                credential=AzureSasCredential(token),
             )
             table = service.get_table_client(self.table_name)
             entities = []
             async for t in table.query_entities(
-                    filter="PartitionKey eq '{}'".format(entity['PartitionKey'])):
+                    "PartitionKey eq '{}'".format(entity['PartitionKey'])):
                 entities.append(t)
 
             # Assert
-            self.assertEqual(len(entities), 1)
+            assert len(entities) ==  1
             self._assert_default_entity(entities[0])
         finally:
             await self._tear_down()
 
-
-    @pytest.mark.live_test_only
-    @GlobalStorageAccountPreparer()
-    async def test_sas_signed_identifier(self, resource_group, location, storage_account, storage_account_key):
-        # SAS URL is calculated from storage key, so this test runs live only
-        url = self.account_url(storage_account, "table")
-        if 'cosmos' in url:
-            pytest.skip("Cosmos Tables does not yet support sas")
-        await self._set_up(storage_account, storage_account_key)
+    @tables_decorator_async
+    async def test_sas_signed_identifier(self, tables_storage_account_name, tables_primary_storage_account_key):
+        url = self.account_url(tables_storage_account_name, "table")
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
         try:
             # Arrange
             entity, _ = await self._insert_random_entity()
 
-            access_policy = AccessPolicy()
+            access_policy = TableAccessPolicy()
             access_policy.start = datetime(2011, 10, 11)
-            access_policy.expiry = datetime(2020, 10, 12)
+            access_policy.expiry = datetime(2025, 10, 12)
             access_policy.permission = TableSasPermissions(read=True)
             identifiers = {'testid': access_policy}
 
             await self.table.set_table_access_policy(identifiers)
 
-            token = generate_table_sas(
-                storage_account.name,
-                storage_account_key,
+            token = self.generate_sas(
+                generate_table_sas,
+                tables_primary_storage_account_key,
                 self.table_name,
                 policy_id='testid',
             )
 
             # Act
             service = TableServiceClient(
-                self.account_url(storage_account, "table"),
-                credential=token,
+                self.account_url(tables_storage_account_name, "table"),
+                credential=AzureSasCredential(token),
             )
-            table = service.get_table_client(table=self.table_name)
+            table = service.get_table_client(table_name=self.table_name)
             entities = []
             async for t in table.query_entities(
-                    filter="PartitionKey eq '{}'".format(entity.PartitionKey)):
+                    "PartitionKey eq '{}'".format(entity['PartitionKey'])):
                 entities.append(t)
 
             # Assert
-            self.assertEqual(len(entities), 1)
+            assert len(entities) ==  1
             self._assert_default_entity(entities[0])
         finally:
             await self._tear_down()
 
+    @tables_decorator_async
+    async def test_datetime_milliseconds(self, tables_storage_account_name, tables_primary_storage_account_key):
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
+        try:
+            entity = self._create_random_entity_dict()
 
-# ------------------------------------------------------------------------------
-if __name__ == '__main__':
-    unittest.main()
+            entity['milliseconds'] = datetime(2011, 11, 4, 0, 5, 23, 283000, tzinfo=tzutc())
+
+            await self.table.create_entity(entity)
+
+            received_entity = await self.table.get_entity(
+                partition_key=entity['PartitionKey'],
+                row_key=entity['RowKey']
+            )
+
+            assert entity['milliseconds'] == received_entity['milliseconds']
+
+        finally:
+            await self._tear_down()
+
+    @tables_decorator_async
+    async def test_datetime_str_passthrough(self, tables_storage_account_name, tables_primary_storage_account_key):
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
+        partition, row = self._create_pk_rk(None, None)
+
+        dotnet_timestamp = "2013-08-22T01:12:06.2608595Z"
+        entity = {
+            'PartitionKey': partition,
+            'RowKey': row,
+            'datetime1': EntityProperty(dotnet_timestamp, EdmType.DATETIME)
+        }
+        try:
+            await self.table.create_entity(entity)
+            received = await self.table.get_entity(partition, row)
+            assert isinstance(received['datetime1'], datetime)
+            assert received['datetime1'].tables_service_value == dotnet_timestamp
+
+            received['datetime2'] = received['datetime1'].replace(year=2020)
+            assert received['datetime2'].tables_service_value == ""
+
+            await self.table.update_entity(received)
+            updated = await self.table.get_entity(partition, row)
+            assert isinstance(updated['datetime1'], datetime)
+            assert isinstance(updated['datetime2'], datetime)
+            assert updated['datetime1'].tables_service_value == dotnet_timestamp
+        finally:
+            await self._tear_down()
+
+    @tables_decorator_async
+    async def test_datetime_duplicate_field(self, tables_storage_account_name, tables_primary_storage_account_key):
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
+        partition, row = self._create_pk_rk(None, None)
+
+        entity = {
+            'PartitionKey': partition,
+            'RowKey': row,
+            'Timestamp': datetime(year=1999, month=9, day=9, hour=9, minute=9)
+        }
+        try:
+            await self.table.create_entity(entity)
+            received = await self.table.get_entity(partition, row)
+
+            assert 'Timestamp' not in received
+            assert 'timestamp' in received.metadata
+            assert isinstance(received.metadata['timestamp'], datetime)
+            assert received.metadata['timestamp'].year > 2020
+
+            received['timestamp'] = datetime(year=1999, month=9, day=9, hour=9, minute=9)
+            await self.table.update_entity(received, mode=UpdateMode.REPLACE)
+            received = await self.table.get_entity(partition, row)
+
+            assert 'timestamp' in received
+            assert isinstance(received['timestamp'], datetime)
+            assert received['timestamp'].year == 1999
+            assert isinstance(received.metadata['timestamp'], datetime)
+            assert received.metadata['timestamp'].year > 2020
+        finally:
+            await self._tear_down()
+
+    @tables_decorator_async
+    async def test_etag_duplicate_field(self, tables_storage_account_name, tables_primary_storage_account_key):
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
+        partition, row = self._create_pk_rk(None, None)
+
+        entity = {
+            'PartitionKey': partition,
+            'RowKey': row,
+            'ETag': u'foo',
+            'etag': u'bar',
+            'Etag': u'baz',
+        }
+        try:
+            await self.table.create_entity(entity)
+            created = await self.table.get_entity(partition, row)
+
+            assert created['ETag'] == u'foo'
+            assert created['etag'] == u'bar'
+            assert created['Etag'] == u'baz'
+            assert created.metadata['etag'].startswith(u'W/"datetime\'')
+
+            entity['ETag'] = u'one'
+            entity['etag'] = u'two'
+            entity['Etag'] = u'three'
+            with pytest.raises(ValueError):
+                await self.table.update_entity(entity, match_condition=MatchConditions.IfNotModified)
+
+            created['ETag'] = u'one'
+            created['etag'] = u'two'
+            created['Etag'] = u'three'
+            await self.table.update_entity(created, match_condition=MatchConditions.IfNotModified)
+
+            updated = await self.table.get_entity(partition, row)
+            assert updated['ETag'] == u'one'
+            assert updated['etag'] == u'two'
+            assert updated['Etag'] == u'three'
+            assert updated.metadata['etag'].startswith(u'W/"datetime\'')
+            assert updated.metadata['etag'] != created.metadata['etag']
+        finally:
+            await self._tear_down()
+
+    @tables_decorator_async
+    async def test_entity_create_response_echo(self, tables_storage_account_name, tables_primary_storage_account_key):
+        await self._set_up(tables_storage_account_name, tables_primary_storage_account_key)
+        partition, row = self._create_pk_rk(None, None)
+
+        entity = {
+            'PartitionKey': partition,
+            'RowKey': row,
+            'Value': 'foobar',
+            'Answer': 42
+        }
+        try:
+            result = await self.table.create_entity(entity)
+            assert 'preference_applied' not in result
+            assert 'content' not in result
+            await self.table.delete_entity(entity)
+
+            result = await self.table.create_entity(entity, headers={'Prefer': 'return-no-content'})
+            assert 'preference_applied' in result
+            assert result['preference_applied'] == 'return-no-content'
+            assert 'content' in result
+            assert result['content'] is None
+            await self.table.delete_entity(entity)
+
+            result = await self.table.create_entity(entity, headers={'Prefer': 'return-content'})
+            assert 'preference_applied' in result
+            assert result['preference_applied'] == 'return-content'
+            assert 'content' in result
+            assert result['content']['PartitionKey'] == partition
+            assert result['content']['Value'] == 'foobar'
+            assert result['content']['Answer'] == 42
+        finally:
+            await self._tear_down()

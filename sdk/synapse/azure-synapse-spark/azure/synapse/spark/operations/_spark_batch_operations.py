@@ -8,11 +8,11 @@
 from typing import TYPE_CHECKING
 import warnings
 
-from azure.core.exceptions import HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
+from azure.core.exceptions import ClientAuthenticationError, HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
 from azure.core.pipeline import PipelineResponse
 from azure.core.pipeline.transport import HttpRequest, HttpResponse
 
-from .. import models
+from .. import models as _models
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,ungrouped-imports
@@ -35,7 +35,7 @@ class SparkBatchOperations(object):
     :param deserializer: An object model deserializer.
     """
 
-    models = models
+    models = _models
 
     def __init__(self, client, config, serializer, deserializer):
         self._client = client
@@ -50,7 +50,7 @@ class SparkBatchOperations(object):
         detailed=None,  # type: Optional[bool]
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.SparkBatchJobCollection"
+        # type: (...) -> "_models.SparkBatchJobCollection"
         """List all spark batch jobs which are running under a particular spark pool.
 
         :param from_parameter: Optional param specifying which index the list should begin from.
@@ -66,9 +66,12 @@ class SparkBatchOperations(object):
         :rtype: ~azure.synapse.spark.models.SparkBatchJobCollection
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.SparkBatchJobCollection"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.SparkBatchJobCollection"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
+        accept = "application/json"
 
         # Construct URL
         url = self.get_spark_batch_jobs.metadata['url']  # type: ignore
@@ -90,7 +93,7 @@ class SparkBatchOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
@@ -110,11 +113,11 @@ class SparkBatchOperations(object):
 
     def create_spark_batch_job(
         self,
-        spark_batch_job_options,  # type: "models.SparkBatchJobOptions"
+        spark_batch_job_options,  # type: "_models.SparkBatchJobOptions"
         detailed=None,  # type: Optional[bool]
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.SparkBatchJob"
+        # type: (...) -> "_models.SparkBatchJob"
         """Create new spark batch job.
 
         :param spark_batch_job_options: Livy compatible batch job request payload.
@@ -127,10 +130,13 @@ class SparkBatchOperations(object):
         :rtype: ~azure.synapse.spark.models.SparkBatchJob
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.SparkBatchJob"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.SparkBatchJob"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self.create_spark_batch_job.metadata['url']  # type: ignore
@@ -149,13 +155,12 @@ class SparkBatchOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(spark_batch_job_options, 'SparkBatchJobOptions')
         body_content_kwargs['content'] = body_content
         request = self._client.post(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
@@ -177,7 +182,7 @@ class SparkBatchOperations(object):
         detailed=None,  # type: Optional[bool]
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.SparkBatchJob"
+        # type: (...) -> "_models.SparkBatchJob"
         """Gets a single spark batch job.
 
         :param batch_id: Identifier for the batch job.
@@ -190,9 +195,12 @@ class SparkBatchOperations(object):
         :rtype: ~azure.synapse.spark.models.SparkBatchJob
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.SparkBatchJob"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.SparkBatchJob"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
+        accept = "application/json"
 
         # Construct URL
         url = self.get_spark_batch_job.metadata['url']  # type: ignore
@@ -211,7 +219,7 @@ class SparkBatchOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
@@ -245,7 +253,9 @@ class SparkBatchOperations(object):
         :raises: ~azure.core.exceptions.HttpResponseError
         """
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
 
         # Construct URL

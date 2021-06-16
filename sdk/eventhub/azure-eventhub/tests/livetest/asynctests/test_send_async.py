@@ -30,6 +30,8 @@ async def test_send_with_partition_key_async(connstr_receivers):
                 data_val += 1
                 await client.send_batch(batch)
 
+        await client.send_batch(await client.create_batch())
+
     found_partition_keys = {}
     for index, partition in enumerate(receivers):
         received = partition.receive_message_batch(timeout=5000)
@@ -202,8 +204,7 @@ async def test_send_list_partition_async(connstr_receivers):
 
 
 @pytest.mark.parametrize("to_send, exception_type",
-                         [([], EventDataSendError),
-                          ([EventData("A"*1024)]*1100, ValueError),
+                         [([EventData("A"*1024)]*1100, ValueError),
                           ("any str", AttributeError)
                           ])
 @pytest.mark.liveTest
@@ -216,6 +217,8 @@ async def test_send_list_wrong_data_async(connection_str, to_send, exception_typ
 
 
 @pytest.mark.parametrize("partition_id, partition_key", [("0", None), (None, "pk")])
+@pytest.mark.liveTest
+@pytest.mark.asyncio
 async def test_send_batch_pid_pk_async(invalid_hostname, partition_id, partition_key):
     # Use invalid_hostname because this is not a live test.
     client = EventHubProducerClient.from_connection_string(invalid_hostname)

@@ -12,6 +12,10 @@ FILE: sample_get_bounding_boxes.py
 DESCRIPTION:
     This sample demonstrates how to get detailed information to visualize the outlines of
     form content and fields, which can be used for manual validation and drawing UI as part of an application.
+
+    The model used in this sample can be created in the sample_train_model_without_labels.py using the
+    training files in https://aka.ms/azsdk/formrecognizer/sampletrainingfiles
+
 USAGE:
     python sample_get_bounding_boxes.py
 
@@ -19,6 +23,9 @@ USAGE:
     1) AZURE_FORM_RECOGNIZER_ENDPOINT - the endpoint to your Cognitive Services resource.
     2) AZURE_FORM_RECOGNIZER_KEY - your Form Recognizer API key
     3) CUSTOM_TRAINED_MODEL_ID - the ID of your custom trained model
+        -OR-
+       CONTAINER_SAS_URL - The shared access signature (SAS) Url of your Azure Blob Storage container with your forms.
+       A model will be trained and used to run the sample.
 """
 
 import os
@@ -34,13 +41,13 @@ def format_bounding_box(bounding_box):
 
 class GetBoundingBoxesSample(object):
 
-    def get_bounding_boxes(self):
+    def get_bounding_boxes(self, custom_model_id):
         from azure.core.credentials import AzureKeyCredential
         from azure.ai.formrecognizer import FormRecognizerClient
 
         endpoint = os.environ["AZURE_FORM_RECOGNIZER_ENDPOINT"]
         key = os.environ["AZURE_FORM_RECOGNIZER_KEY"]
-        model_id = os.environ["CUSTOM_TRAINED_MODEL_ID"]
+        model_id = os.getenv("CUSTOM_TRAINED_MODEL_ID", custom_model_id)
 
         form_recognizer_client = FormRecognizerClient(
             endpoint=endpoint, credential=AzureKeyCredential(key)
@@ -60,7 +67,6 @@ class GetBoundingBoxesSample(object):
             print("Form has type: {}".format(form.form_type))
             for name, field in form.fields.items():
                 # each field is of type FormField
-                # The value of the field can also be a Dict[str, FormField], or a List[FormField] - in our sample, it is not.
                 print("...Field '{}' has label '{}' with value '{}' within bounding box '{}', with a confidence score of {}".format(
                     name,
                     field.label_data.text if field.label_data else name,
@@ -79,9 +85,8 @@ class GetBoundingBoxesSample(object):
                         print("...Cell[{}][{}] has text '{}' with confidence {} based on the following words: ".format(
                             cell.row_index, cell.column_index, cell.text, cell.confidence
                         ))
-                        # field_elements is only populated if you set include_field_elements to True in your call
-                        # to begin_recognize_custom_forms
-                        # It is a heterogeneous list of FormWord and FormLine.
+                        # field_elements is only populated if you set include_field_elements=True
+                        # It is a heterogeneous list of FormWord, FormLine, and FormSelectionMark
                         for element in cell.field_elements:
                             if element.kind == "word":
                                 print("......Word '{}' within bounding box '{}' has a confidence of {}".format(
@@ -100,11 +105,35 @@ class GetBoundingBoxesSample(object):
                                         format_bounding_box(word.bounding_box),
                                         word.confidence
                                     ))
-
+                            elif element.kind == "selectionMark":
+                                print("......Selection mark is '{}' within bounding box '{}' "
+                                      "and has a confidence of {}".format(
+                                        element.state,
+                                        format_bounding_box(element.bounding_box),
+                                        element.confidence
+                                        ))
                 print("---------------------------------------------------")
             print("-----------------------------------")
 
 
 if __name__ == '__main__':
     sample = GetBoundingBoxesSample()
-    sample.get_bounding_boxes()
+    model_id = None
+    if os.getenv("CONTAINER_SAS_URL"):
+
+        from azure.core.credentials import AzureKeyCredential
+        from azure.ai.formrecognizer import FormTrainingClient
+
+        endpoint = os.getenv("AZURE_FORM_RECOGNIZER_ENDPOINT")
+        key = os.getenv("AZURE_FORM_RECOGNIZER_KEY")
+
+        if not endpoint or not key:
+            raise ValueError("Please provide endpoint and API key to run the samples.")
+
+        form_training_client = FormTrainingClient(
+            endpoint=endpoint, credential=AzureKeyCredential(key)
+        )
+        model = form_training_client.begin_training(os.getenv("CONTAINER_SAS_URL"), use_training_labels=False).result()
+        model_id = model.model_id
+
+    sample.get_bounding_boxes(model_id)

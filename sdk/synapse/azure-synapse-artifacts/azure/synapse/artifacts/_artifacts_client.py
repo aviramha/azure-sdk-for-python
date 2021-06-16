@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from typing import Any
 
     from azure.core.credentials import TokenCredential
+    from azure.core.pipeline.transport import HttpRequest, HttpResponse
 
 from ._configuration import ArtifactsClientConfiguration
 from .operations import LinkedServiceOperations
@@ -29,6 +30,12 @@ from .operations import DataFlowDebugSessionOperations
 from .operations import SqlScriptOperations
 from .operations import SparkJobDefinitionOperations
 from .operations import NotebookOperations
+from .operations import WorkspaceOperations
+from .operations import SqlPoolsOperations
+from .operations import BigDataPoolsOperations
+from .operations import IntegrationRuntimesOperations
+from .operations import LibraryOperations
+from .operations import WorkspaceGitRepoManagementOperations
 from . import models
 
 
@@ -57,6 +64,18 @@ class ArtifactsClient(object):
     :vartype spark_job_definition: azure.synapse.artifacts.operations.SparkJobDefinitionOperations
     :ivar notebook: NotebookOperations operations
     :vartype notebook: azure.synapse.artifacts.operations.NotebookOperations
+    :ivar workspace: WorkspaceOperations operations
+    :vartype workspace: azure.synapse.artifacts.operations.WorkspaceOperations
+    :ivar sql_pools: SqlPoolsOperations operations
+    :vartype sql_pools: azure.synapse.artifacts.operations.SqlPoolsOperations
+    :ivar big_data_pools: BigDataPoolsOperations operations
+    :vartype big_data_pools: azure.synapse.artifacts.operations.BigDataPoolsOperations
+    :ivar integration_runtimes: IntegrationRuntimesOperations operations
+    :vartype integration_runtimes: azure.synapse.artifacts.operations.IntegrationRuntimesOperations
+    :ivar library: LibraryOperations operations
+    :vartype library: azure.synapse.artifacts.operations.LibraryOperations
+    :ivar workspace_git_repo_management: WorkspaceGitRepoManagementOperations operations
+    :vartype workspace_git_repo_management: azure.synapse.artifacts.operations.WorkspaceGitRepoManagementOperations
     :param credential: Credential needed for the client to connect to Azure.
     :type credential: ~azure.core.credentials.TokenCredential
     :param endpoint: The workspace development endpoint, for example https://myworkspace.dev.azuresynapse.net.
@@ -77,6 +96,7 @@ class ArtifactsClient(object):
 
         client_models = {k: v for k, v in models.__dict__.items() if isinstance(v, type)}
         self._serialize = Serializer(client_models)
+        self._serialize.client_side_validation = False
         self._deserialize = Deserializer(client_models)
 
         self.linked_service = LinkedServiceOperations(
@@ -101,6 +121,36 @@ class ArtifactsClient(object):
             self._client, self._config, self._serialize, self._deserialize)
         self.notebook = NotebookOperations(
             self._client, self._config, self._serialize, self._deserialize)
+        self.workspace = WorkspaceOperations(
+            self._client, self._config, self._serialize, self._deserialize)
+        self.sql_pools = SqlPoolsOperations(
+            self._client, self._config, self._serialize, self._deserialize)
+        self.big_data_pools = BigDataPoolsOperations(
+            self._client, self._config, self._serialize, self._deserialize)
+        self.integration_runtimes = IntegrationRuntimesOperations(
+            self._client, self._config, self._serialize, self._deserialize)
+        self.library = LibraryOperations(
+            self._client, self._config, self._serialize, self._deserialize)
+        self.workspace_git_repo_management = WorkspaceGitRepoManagementOperations(
+            self._client, self._config, self._serialize, self._deserialize)
+
+    def _send_request(self, http_request, **kwargs):
+        # type: (HttpRequest, Any) -> HttpResponse
+        """Runs the network request through the client's chained policies.
+
+        :param http_request: The network request you want to make. Required.
+        :type http_request: ~azure.core.pipeline.transport.HttpRequest
+        :keyword bool stream: Whether the response payload will be streamed. Defaults to True.
+        :return: The response of your network call. Does not do error handling on your response.
+        :rtype: ~azure.core.pipeline.transport.HttpResponse
+        """
+        path_format_arguments = {
+            'endpoint': self._serialize.url("self._config.endpoint", self._config.endpoint, 'str', skip_quote=True),
+        }
+        http_request.url = self._client.format_url(http_request.url, **path_format_arguments)
+        stream = kwargs.pop("stream", True)
+        pipeline_response = self._client._pipeline.run(http_request, stream=stream, **kwargs)
+        return pipeline_response.http_response
 
     def close(self):
         # type: () -> None

@@ -8,7 +8,7 @@
 from typing import TYPE_CHECKING
 import warnings
 
-from azure.core.exceptions import HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
+from azure.core.exceptions import ClientAuthenticationError, HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
 from azure.core.paging import ItemPaged
 from azure.core.pipeline import PipelineResponse
 from azure.core.pipeline.transport import HttpRequest, HttpResponse
@@ -16,7 +16,7 @@ from azure.core.polling import LROPoller, NoPolling, PollingMethod
 from azure.mgmt.core.exceptions import ARMErrorFormat
 from azure.mgmt.core.polling.arm_polling import ARMPolling
 
-from .. import models
+from .. import models as _models
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,ungrouped-imports
@@ -39,7 +39,7 @@ class PublicIPAddressesOperations(object):
     :param deserializer: An object model deserializer.
     """
 
-    models = models
+    models = _models
 
     def __init__(self, client, config, serializer, deserializer):
         self._client = client
@@ -55,7 +55,9 @@ class PublicIPAddressesOperations(object):
     ):
         # type: (...) -> None
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2018-11-01"
 
@@ -75,7 +77,6 @@ class PublicIPAddressesOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
 
-        # Construct and send request
         request = self._client.delete(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -95,7 +96,7 @@ class PublicIPAddressesOperations(object):
         public_ip_address_name,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> LROPoller
+        # type: (...) -> LROPoller[None]
         """Deletes the specified public IP address.
 
         :param resource_group_name: The name of the resource group.
@@ -104,8 +105,8 @@ class PublicIPAddressesOperations(object):
         :type public_ip_address_name: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :keyword str continuation_token: A continuation token to restart a poller from a saved state.
-        :keyword polling: True for ARMPolling, False for no polling, or a
-         polling object for personal polling strategy
+        :keyword polling: Pass in True if you'd like the ARMPolling polling method,
+         False for no polling, or your own initialized polling object for a personal polling strategy.
         :paramtype polling: bool or ~azure.core.polling.PollingMethod
         :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
         :return: An instance of LROPoller that returns either None or the result of cls(response)
@@ -134,7 +135,13 @@ class PublicIPAddressesOperations(object):
             if cls:
                 return cls(pipeline_response, None, {})
 
-        if polling is True: polling_method = ARMPolling(lro_delay,  **kwargs)
+        path_format_arguments = {
+            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str'),
+            'publicIpAddressName': self._serialize.url("public_ip_address_name", public_ip_address_name, 'str'),
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+        }
+
+        if polling is True: polling_method = ARMPolling(lro_delay, path_format_arguments=path_format_arguments,  **kwargs)
         elif polling is False: polling_method = NoPolling()
         else: polling_method = polling
         if cont_token:
@@ -155,7 +162,7 @@ class PublicIPAddressesOperations(object):
         expand=None,  # type: Optional[str]
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.PublicIPAddress"
+        # type: (...) -> "_models.PublicIPAddress"
         """Gets the specified public IP address in a specified resource group.
 
         :param resource_group_name: The name of the resource group.
@@ -169,10 +176,13 @@ class PublicIPAddressesOperations(object):
         :rtype: ~azure.mgmt.network.v2018_11_01.models.PublicIPAddress
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.PublicIPAddress"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.PublicIPAddress"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2018-11-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.get.metadata['url']  # type: ignore
@@ -191,9 +201,8 @@ class PublicIPAddressesOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -214,15 +223,18 @@ class PublicIPAddressesOperations(object):
         self,
         resource_group_name,  # type: str
         public_ip_address_name,  # type: str
-        parameters,  # type: "models.PublicIPAddress"
+        parameters,  # type: "_models.PublicIPAddress"
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.PublicIPAddress"
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.PublicIPAddress"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        # type: (...) -> "_models.PublicIPAddress"
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.PublicIPAddress"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2018-11-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self._create_or_update_initial.metadata['url']  # type: ignore
@@ -240,14 +252,12 @@ class PublicIPAddressesOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(parameters, 'PublicIPAddress')
         body_content_kwargs['content'] = body_content
         request = self._client.put(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
@@ -255,7 +265,6 @@ class PublicIPAddressesOperations(object):
             map_error(status_code=response.status_code, response=response, error_map=error_map)
             raise HttpResponseError(response=response, error_format=ARMErrorFormat)
 
-        deserialized = None
         if response.status_code == 200:
             deserialized = self._deserialize('PublicIPAddress', pipeline_response)
 
@@ -272,10 +281,10 @@ class PublicIPAddressesOperations(object):
         self,
         resource_group_name,  # type: str
         public_ip_address_name,  # type: str
-        parameters,  # type: "models.PublicIPAddress"
+        parameters,  # type: "_models.PublicIPAddress"
         **kwargs  # type: Any
     ):
-        # type: (...) -> LROPoller
+        # type: (...) -> LROPoller["_models.PublicIPAddress"]
         """Creates or updates a static or dynamic public IP address.
 
         :param resource_group_name: The name of the resource group.
@@ -286,8 +295,8 @@ class PublicIPAddressesOperations(object):
         :type parameters: ~azure.mgmt.network.v2018_11_01.models.PublicIPAddress
         :keyword callable cls: A custom type or function that will be passed the direct response
         :keyword str continuation_token: A continuation token to restart a poller from a saved state.
-        :keyword polling: True for ARMPolling, False for no polling, or a
-         polling object for personal polling strategy
+        :keyword polling: Pass in True if you'd like the ARMPolling polling method,
+         False for no polling, or your own initialized polling object for a personal polling strategy.
         :paramtype polling: bool or ~azure.core.polling.PollingMethod
         :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
         :return: An instance of LROPoller that returns either PublicIPAddress or the result of cls(response)
@@ -295,7 +304,7 @@ class PublicIPAddressesOperations(object):
         :raises ~azure.core.exceptions.HttpResponseError:
         """
         polling = kwargs.pop('polling', True)  # type: Union[bool, PollingMethod]
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.PublicIPAddress"]
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.PublicIPAddress"]
         lro_delay = kwargs.pop(
             'polling_interval',
             self._config.polling_interval
@@ -320,7 +329,13 @@ class PublicIPAddressesOperations(object):
                 return cls(pipeline_response, deserialized, {})
             return deserialized
 
-        if polling is True: polling_method = ARMPolling(lro_delay,  **kwargs)
+        path_format_arguments = {
+            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str'),
+            'publicIpAddressName': self._serialize.url("public_ip_address_name", public_ip_address_name, 'str'),
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+        }
+
+        if polling is True: polling_method = ARMPolling(lro_delay, path_format_arguments=path_format_arguments,  **kwargs)
         elif polling is False: polling_method = NoPolling()
         else: polling_method = polling
         if cont_token:
@@ -338,15 +353,18 @@ class PublicIPAddressesOperations(object):
         self,
         resource_group_name,  # type: str
         public_ip_address_name,  # type: str
-        parameters,  # type: "models.TagsObject"
+        parameters,  # type: "_models.TagsObject"
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.PublicIPAddress"
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.PublicIPAddress"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        # type: (...) -> "_models.PublicIPAddress"
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.PublicIPAddress"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2018-11-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self._update_tags_initial.metadata['url']  # type: ignore
@@ -364,14 +382,12 @@ class PublicIPAddressesOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(parameters, 'TagsObject')
         body_content_kwargs['content'] = body_content
         request = self._client.patch(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
@@ -391,10 +407,10 @@ class PublicIPAddressesOperations(object):
         self,
         resource_group_name,  # type: str
         public_ip_address_name,  # type: str
-        parameters,  # type: "models.TagsObject"
+        parameters,  # type: "_models.TagsObject"
         **kwargs  # type: Any
     ):
-        # type: (...) -> LROPoller
+        # type: (...) -> LROPoller["_models.PublicIPAddress"]
         """Updates public IP address tags.
 
         :param resource_group_name: The name of the resource group.
@@ -405,8 +421,8 @@ class PublicIPAddressesOperations(object):
         :type parameters: ~azure.mgmt.network.v2018_11_01.models.TagsObject
         :keyword callable cls: A custom type or function that will be passed the direct response
         :keyword str continuation_token: A continuation token to restart a poller from a saved state.
-        :keyword polling: True for ARMPolling, False for no polling, or a
-         polling object for personal polling strategy
+        :keyword polling: Pass in True if you'd like the ARMPolling polling method,
+         False for no polling, or your own initialized polling object for a personal polling strategy.
         :paramtype polling: bool or ~azure.core.polling.PollingMethod
         :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
         :return: An instance of LROPoller that returns either PublicIPAddress or the result of cls(response)
@@ -414,7 +430,7 @@ class PublicIPAddressesOperations(object):
         :raises ~azure.core.exceptions.HttpResponseError:
         """
         polling = kwargs.pop('polling', True)  # type: Union[bool, PollingMethod]
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.PublicIPAddress"]
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.PublicIPAddress"]
         lro_delay = kwargs.pop(
             'polling_interval',
             self._config.polling_interval
@@ -439,7 +455,13 @@ class PublicIPAddressesOperations(object):
                 return cls(pipeline_response, deserialized, {})
             return deserialized
 
-        if polling is True: polling_method = ARMPolling(lro_delay,  **kwargs)
+        path_format_arguments = {
+            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str'),
+            'publicIpAddressName': self._serialize.url("public_ip_address_name", public_ip_address_name, 'str'),
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+        }
+
+        if polling is True: polling_method = ARMPolling(lro_delay, path_format_arguments=path_format_arguments,  **kwargs)
         elif polling is False: polling_method = NoPolling()
         else: polling_method = polling
         if cont_token:
@@ -457,7 +479,7 @@ class PublicIPAddressesOperations(object):
         self,
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.PublicIPAddressListResult"]
+        # type: (...) -> Iterable["_models.PublicIPAddressListResult"]
         """Gets all the public IP addresses in a subscription.
 
         :keyword callable cls: A custom type or function that will be passed the direct response
@@ -465,12 +487,19 @@ class PublicIPAddressesOperations(object):
         :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.network.v2018_11_01.models.PublicIPAddressListResult]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.PublicIPAddressListResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.PublicIPAddressListResult"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2018-11-01"
+        accept = "application/json"
 
         def prepare_request(next_link=None):
+            # Construct headers
+            header_parameters = {}  # type: Dict[str, Any]
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
+
             if not next_link:
                 # Construct URL
                 url = self.list_all.metadata['url']  # type: ignore
@@ -482,15 +511,11 @@ class PublicIPAddressesOperations(object):
                 query_parameters = {}  # type: Dict[str, Any]
                 query_parameters['api-version'] = self._serialize.query("api_version", api_version, 'str')
 
+                request = self._client.get(url, query_parameters, header_parameters)
             else:
                 url = next_link
                 query_parameters = {}  # type: Dict[str, Any]
-            # Construct headers
-            header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
-
-            # Construct and send request
-            request = self._client.get(url, query_parameters, header_parameters)
+                request = self._client.get(url, query_parameters, header_parameters)
             return request
 
         def extract_data(pipeline_response):
@@ -522,7 +547,7 @@ class PublicIPAddressesOperations(object):
         resource_group_name,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.PublicIPAddressListResult"]
+        # type: (...) -> Iterable["_models.PublicIPAddressListResult"]
         """Gets all public IP addresses in a resource group.
 
         :param resource_group_name: The name of the resource group.
@@ -532,12 +557,19 @@ class PublicIPAddressesOperations(object):
         :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.network.v2018_11_01.models.PublicIPAddressListResult]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.PublicIPAddressListResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.PublicIPAddressListResult"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2018-11-01"
+        accept = "application/json"
 
         def prepare_request(next_link=None):
+            # Construct headers
+            header_parameters = {}  # type: Dict[str, Any]
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
+
             if not next_link:
                 # Construct URL
                 url = self.list.metadata['url']  # type: ignore
@@ -550,15 +582,11 @@ class PublicIPAddressesOperations(object):
                 query_parameters = {}  # type: Dict[str, Any]
                 query_parameters['api-version'] = self._serialize.query("api_version", api_version, 'str')
 
+                request = self._client.get(url, query_parameters, header_parameters)
             else:
                 url = next_link
                 query_parameters = {}  # type: Dict[str, Any]
-            # Construct headers
-            header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
-
-            # Construct and send request
-            request = self._client.get(url, query_parameters, header_parameters)
+                request = self._client.get(url, query_parameters, header_parameters)
             return request
 
         def extract_data(pipeline_response):
@@ -591,7 +619,7 @@ class PublicIPAddressesOperations(object):
         virtual_machine_scale_set_name,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.PublicIPAddressListResult"]
+        # type: (...) -> Iterable["_models.PublicIPAddressListResult"]
         """Gets information about all public IP addresses on a virtual machine scale set level.
 
         :param resource_group_name: The name of the resource group.
@@ -603,12 +631,19 @@ class PublicIPAddressesOperations(object):
         :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.network.v2018_11_01.models.PublicIPAddressListResult]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.PublicIPAddressListResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.PublicIPAddressListResult"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2017-03-30"
+        accept = "application/json"
 
         def prepare_request(next_link=None):
+            # Construct headers
+            header_parameters = {}  # type: Dict[str, Any]
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
+
             if not next_link:
                 # Construct URL
                 url = self.list_virtual_machine_scale_set_public_ip_addresses.metadata['url']  # type: ignore
@@ -622,15 +657,11 @@ class PublicIPAddressesOperations(object):
                 query_parameters = {}  # type: Dict[str, Any]
                 query_parameters['api-version'] = self._serialize.query("api_version", api_version, 'str')
 
+                request = self._client.get(url, query_parameters, header_parameters)
             else:
                 url = next_link
                 query_parameters = {}  # type: Dict[str, Any]
-            # Construct headers
-            header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
-
-            # Construct and send request
-            request = self._client.get(url, query_parameters, header_parameters)
+                request = self._client.get(url, query_parameters, header_parameters)
             return request
 
         def extract_data(pipeline_response):
@@ -666,9 +697,9 @@ class PublicIPAddressesOperations(object):
         ip_configuration_name,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.PublicIPAddressListResult"]
+        # type: (...) -> Iterable["_models.PublicIPAddressListResult"]
         """Gets information about all public IP addresses in a virtual machine IP configuration in a
-    virtual machine scale set.
+        virtual machine scale set.
 
         :param resource_group_name: The name of the resource group.
         :type resource_group_name: str
@@ -685,12 +716,19 @@ class PublicIPAddressesOperations(object):
         :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.network.v2018_11_01.models.PublicIPAddressListResult]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.PublicIPAddressListResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.PublicIPAddressListResult"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2017-03-30"
+        accept = "application/json"
 
         def prepare_request(next_link=None):
+            # Construct headers
+            header_parameters = {}  # type: Dict[str, Any]
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
+
             if not next_link:
                 # Construct URL
                 url = self.list_virtual_machine_scale_set_vm_public_ip_addresses.metadata['url']  # type: ignore
@@ -707,15 +745,11 @@ class PublicIPAddressesOperations(object):
                 query_parameters = {}  # type: Dict[str, Any]
                 query_parameters['api-version'] = self._serialize.query("api_version", api_version, 'str')
 
+                request = self._client.get(url, query_parameters, header_parameters)
             else:
                 url = next_link
                 query_parameters = {}  # type: Dict[str, Any]
-            # Construct headers
-            header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
-
-            # Construct and send request
-            request = self._client.get(url, query_parameters, header_parameters)
+                request = self._client.get(url, query_parameters, header_parameters)
             return request
 
         def extract_data(pipeline_response):
@@ -753,7 +787,7 @@ class PublicIPAddressesOperations(object):
         expand=None,  # type: Optional[str]
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.PublicIPAddress"
+        # type: (...) -> "_models.PublicIPAddress"
         """Get the specified public IP address in a virtual machine scale set.
 
         :param resource_group_name: The name of the resource group.
@@ -775,10 +809,13 @@ class PublicIPAddressesOperations(object):
         :rtype: ~azure.mgmt.network.v2018_11_01.models.PublicIPAddress
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.PublicIPAddress"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.PublicIPAddress"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2017-03-30"
+        accept = "application/json"
 
         # Construct URL
         url = self.get_virtual_machine_scale_set_public_ip_address.metadata['url']  # type: ignore
@@ -801,9 +838,8 @@ class PublicIPAddressesOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response

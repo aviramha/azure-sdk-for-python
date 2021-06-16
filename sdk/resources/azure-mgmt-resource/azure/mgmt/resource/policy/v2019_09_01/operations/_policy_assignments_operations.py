@@ -8,13 +8,13 @@
 from typing import TYPE_CHECKING
 import warnings
 
-from azure.core.exceptions import HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
+from azure.core.exceptions import ClientAuthenticationError, HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
 from azure.core.paging import ItemPaged
 from azure.core.pipeline import PipelineResponse
 from azure.core.pipeline.transport import HttpRequest, HttpResponse
 from azure.mgmt.core.exceptions import ARMErrorFormat
 
-from .. import models
+from .. import models as _models
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,ungrouped-imports
@@ -37,7 +37,7 @@ class PolicyAssignmentsOperations(object):
     :param deserializer: An object model deserializer.
     """
 
-    models = models
+    models = _models
 
     def __init__(self, client, config, serializer, deserializer):
         self._client = client
@@ -51,7 +51,7 @@ class PolicyAssignmentsOperations(object):
         policy_assignment_name,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.PolicyAssignment"
+        # type: (...) -> Optional["_models.PolicyAssignment"]
         """Deletes a policy assignment.
 
         This operation deletes a policy assignment, given its name and the scope it was created in. The
@@ -71,10 +71,13 @@ class PolicyAssignmentsOperations(object):
         :rtype: ~azure.mgmt.resource.policy.v2019_09_01.models.PolicyAssignment or None
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.PolicyAssignment"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType[Optional["_models.PolicyAssignment"]]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-09-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.delete.metadata['url']  # type: ignore
@@ -90,9 +93,8 @@ class PolicyAssignmentsOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.delete(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -115,10 +117,10 @@ class PolicyAssignmentsOperations(object):
         self,
         scope,  # type: str
         policy_assignment_name,  # type: str
-        parameters,  # type: "models.PolicyAssignment"
+        parameters,  # type: "_models.PolicyAssignment"
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.PolicyAssignment"
+        # type: (...) -> "_models.PolicyAssignment"
         """Creates or updates a policy assignment.
 
         This operation creates or updates a policy assignment with the given scope and name. Policy
@@ -140,11 +142,14 @@ class PolicyAssignmentsOperations(object):
         :rtype: ~azure.mgmt.resource.policy.v2019_09_01.models.PolicyAssignment
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.PolicyAssignment"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.PolicyAssignment"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-09-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self.create.metadata['url']  # type: ignore
@@ -161,14 +166,12 @@ class PolicyAssignmentsOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(parameters, 'PolicyAssignment')
         body_content_kwargs['content'] = body_content
         request = self._client.put(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
@@ -190,7 +193,7 @@ class PolicyAssignmentsOperations(object):
         policy_assignment_name,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.PolicyAssignment"
+        # type: (...) -> "_models.PolicyAssignment"
         """Retrieves a policy assignment.
 
         This operation retrieves a single policy assignment, given its name and the scope it was
@@ -209,10 +212,13 @@ class PolicyAssignmentsOperations(object):
         :rtype: ~azure.mgmt.resource.policy.v2019_09_01.models.PolicyAssignment
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.PolicyAssignment"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.PolicyAssignment"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-09-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.get.metadata['url']  # type: ignore
@@ -228,9 +234,8 @@ class PolicyAssignmentsOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -253,36 +258,43 @@ class PolicyAssignmentsOperations(object):
         filter=None,  # type: Optional[str]
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.PolicyAssignmentListResult"]
+        # type: (...) -> Iterable["_models.PolicyAssignmentListResult"]
         """Retrieves all policy assignments that apply to a resource group.
 
         This operation retrieves the list of all policy assignments associated with the given resource
-    group in the given subscription that match the optional given $filter. Valid values for $filter
-    are: 'atScope()' or 'policyDefinitionId eq '{value}''. If $filter is not provided, the
-    unfiltered list includes all policy assignments associated with the resource group, including
-    those that apply directly or apply from containing scopes, as well as any applied to resources
-    contained within the resource group. If $filter=atScope() is provided, the returned list
-    includes all policy assignments that apply to the resource group, which is everything in the
-    unfiltered list except those applied to resources contained within the resource group. If
-    $filter=policyDefinitionId eq '{value}' is provided, the returned list includes all policy
-    assignments of the policy definition whose id is {value} that apply to the resource group.
+        group in the given subscription that match the optional given $filter. Valid values for $filter
+        are: 'atScope()' or 'policyDefinitionId eq '{value}''. If $filter is not provided, the
+        unfiltered list includes all policy assignments associated with the resource group, including
+        those that apply directly or apply from containing scopes, as well as any applied to resources
+        contained within the resource group. If $filter=atScope() is provided, the returned list
+        includes all policy assignments that apply to the resource group, which is everything in the
+        unfiltered list except those applied to resources contained within the resource group. If
+        $filter=policyDefinitionId eq '{value}' is provided, the returned list includes all policy
+        assignments of the policy definition whose id is {value} that apply to the resource group.
 
         :param resource_group_name: The name of the resource group that contains policy assignments.
         :type resource_group_name: str
         :param filter: The filter to apply on the operation. Valid values for $filter are: 'atScope()'
-     or 'policyDefinitionId eq '{value}''. If $filter is not provided, no filtering is performed.
+         or 'policyDefinitionId eq '{value}''. If $filter is not provided, no filtering is performed.
         :type filter: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :return: An iterator like instance of either PolicyAssignmentListResult or the result of cls(response)
         :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.resource.policy.v2019_09_01.models.PolicyAssignmentListResult]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.PolicyAssignmentListResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.PolicyAssignmentListResult"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-09-01"
+        accept = "application/json"
 
         def prepare_request(next_link=None):
+            # Construct headers
+            header_parameters = {}  # type: Dict[str, Any]
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
+
             if not next_link:
                 # Construct URL
                 url = self.list_for_resource_group.metadata['url']  # type: ignore
@@ -297,15 +309,11 @@ class PolicyAssignmentsOperations(object):
                     query_parameters['$filter'] = self._serialize.query("filter", filter, 'str', skip_quote=True)
                 query_parameters['api-version'] = self._serialize.query("api_version", api_version, 'str')
 
+                request = self._client.get(url, query_parameters, header_parameters)
             else:
                 url = next_link
                 query_parameters = {}  # type: Dict[str, Any]
-            # Construct headers
-            header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
-
-            # Construct and send request
-            request = self._client.get(url, query_parameters, header_parameters)
+                request = self._client.get(url, query_parameters, header_parameters)
             return request
 
         def extract_data(pipeline_response):
@@ -342,58 +350,65 @@ class PolicyAssignmentsOperations(object):
         filter=None,  # type: Optional[str]
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.PolicyAssignmentListResult"]
+        # type: (...) -> Iterable["_models.PolicyAssignmentListResult"]
         """Retrieves all policy assignments that apply to a resource.
 
         This operation retrieves the list of all policy assignments associated with the specified
-    resource in the given resource group and subscription that match the optional given $filter.
-    Valid values for $filter are: 'atScope()' or 'policyDefinitionId eq '{value}''. If $filter is
-    not provided, the unfiltered list includes all policy assignments associated with the resource,
-    including those that apply directly or from all containing scopes, as well as any applied to
-    resources contained within the resource. If $filter=atScope() is provided, the returned list
-    includes all policy assignments that apply to the resource, which is everything in the
-    unfiltered list except those applied to resources contained within the resource. If
-    $filter=policyDefinitionId eq '{value}' is provided, the returned list includes all policy
-    assignments of the policy definition whose id is {value} that apply to the resource. Three
-    parameters plus the resource name are used to identify a specific resource. If the resource is
-    not part of a parent resource (the more common case), the parent resource path should not be
-    provided (or provided as ''). For example a web app could be specified as
-    ({resourceProviderNamespace} == 'Microsoft.Web', {parentResourcePath} == '', {resourceType} ==
-    'sites', {resourceName} == 'MyWebApp'). If the resource is part of a parent resource, then all
-    parameters should be provided. For example a virtual machine DNS name could be specified as
-    ({resourceProviderNamespace} == 'Microsoft.Compute', {parentResourcePath} ==
-    'virtualMachines/MyVirtualMachine', {resourceType} == 'domainNames', {resourceName} ==
-    'MyComputerName'). A convenient alternative to providing the namespace and type name separately
-    is to provide both in the {resourceType} parameter, format: ({resourceProviderNamespace} == '',
-    {parentResourcePath} == '', {resourceType} == 'Microsoft.Web/sites', {resourceName} ==
-    'MyWebApp').
+        resource in the given resource group and subscription that match the optional given $filter.
+        Valid values for $filter are: 'atScope()' or 'policyDefinitionId eq '{value}''. If $filter is
+        not provided, the unfiltered list includes all policy assignments associated with the resource,
+        including those that apply directly or from all containing scopes, as well as any applied to
+        resources contained within the resource. If $filter=atScope() is provided, the returned list
+        includes all policy assignments that apply to the resource, which is everything in the
+        unfiltered list except those applied to resources contained within the resource. If
+        $filter=policyDefinitionId eq '{value}' is provided, the returned list includes all policy
+        assignments of the policy definition whose id is {value} that apply to the resource. Three
+        parameters plus the resource name are used to identify a specific resource. If the resource is
+        not part of a parent resource (the more common case), the parent resource path should not be
+        provided (or provided as ''). For example a web app could be specified as
+        ({resourceProviderNamespace} == 'Microsoft.Web', {parentResourcePath} == '', {resourceType} ==
+        'sites', {resourceName} == 'MyWebApp'). If the resource is part of a parent resource, then all
+        parameters should be provided. For example a virtual machine DNS name could be specified as
+        ({resourceProviderNamespace} == 'Microsoft.Compute', {parentResourcePath} ==
+        'virtualMachines/MyVirtualMachine', {resourceType} == 'domainNames', {resourceName} ==
+        'MyComputerName'). A convenient alternative to providing the namespace and type name separately
+        is to provide both in the {resourceType} parameter, format: ({resourceProviderNamespace} == '',
+        {parentResourcePath} == '', {resourceType} == 'Microsoft.Web/sites', {resourceName} ==
+        'MyWebApp').
 
         :param resource_group_name: The name of the resource group containing the resource.
         :type resource_group_name: str
         :param resource_provider_namespace: The namespace of the resource provider. For example, the
-     namespace of a virtual machine is Microsoft.Compute (from Microsoft.Compute/virtualMachines).
+         namespace of a virtual machine is Microsoft.Compute (from Microsoft.Compute/virtualMachines).
         :type resource_provider_namespace: str
         :param parent_resource_path: The parent resource path. Use empty string if there is none.
         :type parent_resource_path: str
         :param resource_type: The resource type name. For example the type name of a web app is 'sites'
-     (from Microsoft.Web/sites).
+         (from Microsoft.Web/sites).
         :type resource_type: str
         :param resource_name: The name of the resource.
         :type resource_name: str
         :param filter: The filter to apply on the operation. Valid values for $filter are: 'atScope()'
-     or 'policyDefinitionId eq '{value}''. If $filter is not provided, no filtering is performed.
+         or 'policyDefinitionId eq '{value}''. If $filter is not provided, no filtering is performed.
         :type filter: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :return: An iterator like instance of either PolicyAssignmentListResult or the result of cls(response)
         :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.resource.policy.v2019_09_01.models.PolicyAssignmentListResult]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.PolicyAssignmentListResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.PolicyAssignmentListResult"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-09-01"
+        accept = "application/json"
 
         def prepare_request(next_link=None):
+            # Construct headers
+            header_parameters = {}  # type: Dict[str, Any]
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
+
             if not next_link:
                 # Construct URL
                 url = self.list_for_resource.metadata['url']  # type: ignore
@@ -412,15 +427,11 @@ class PolicyAssignmentsOperations(object):
                     query_parameters['$filter'] = self._serialize.query("filter", filter, 'str')
                 query_parameters['api-version'] = self._serialize.query("api_version", api_version, 'str')
 
+                request = self._client.get(url, query_parameters, header_parameters)
             else:
                 url = next_link
                 query_parameters = {}  # type: Dict[str, Any]
-            # Construct headers
-            header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
-
-            # Construct and send request
-            request = self._client.get(url, query_parameters, header_parameters)
+                request = self._client.get(url, query_parameters, header_parameters)
             return request
 
         def extract_data(pipeline_response):
@@ -453,33 +464,40 @@ class PolicyAssignmentsOperations(object):
         filter,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.PolicyAssignmentListResult"]
+        # type: (...) -> Iterable["_models.PolicyAssignmentListResult"]
         """Retrieves all policy assignments that apply to a management group.
 
         This operation retrieves the list of all policy assignments applicable to the management group
-    that match the given $filter. Valid values for $filter are: 'atScope()' or 'policyDefinitionId
-    eq '{value}''. If $filter=atScope() is provided, the returned list includes all policy
-    assignments that are assigned to the management group or the management group's ancestors. If
-    $filter=policyDefinitionId eq '{value}' is provided, the returned list includes all policy
-    assignments of the policy definition whose id is {value} that apply to the management group.
+        that match the given $filter. Valid values for $filter are: 'atScope()' or 'policyDefinitionId
+        eq '{value}''. If $filter=atScope() is provided, the returned list includes all policy
+        assignments that are assigned to the management group or the management group's ancestors. If
+        $filter=policyDefinitionId eq '{value}' is provided, the returned list includes all policy
+        assignments of the policy definition whose id is {value} that apply to the management group.
 
         :param management_group_id: The ID of the management group.
         :type management_group_id: str
         :param filter: The filter to apply on the operation. Valid values for $filter are: 'atScope()'
-     or 'policyDefinitionId eq '{value}''. A filter is required when listing policy assignments at
-     management group scope.
+         or 'policyDefinitionId eq '{value}''. A filter is required when listing policy assignments at
+         management group scope.
         :type filter: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :return: An iterator like instance of either PolicyAssignmentListResult or the result of cls(response)
         :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.resource.policy.v2019_09_01.models.PolicyAssignmentListResult]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.PolicyAssignmentListResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.PolicyAssignmentListResult"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-09-01"
+        accept = "application/json"
 
         def prepare_request(next_link=None):
+            # Construct headers
+            header_parameters = {}  # type: Dict[str, Any]
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
+
             if not next_link:
                 # Construct URL
                 url = self.list_for_management_group.metadata['url']  # type: ignore
@@ -492,15 +510,11 @@ class PolicyAssignmentsOperations(object):
                 query_parameters['$filter'] = self._serialize.query("filter", filter, 'str', skip_quote=True)
                 query_parameters['api-version'] = self._serialize.query("api_version", api_version, 'str')
 
+                request = self._client.get(url, query_parameters, header_parameters)
             else:
                 url = next_link
                 query_parameters = {}  # type: Dict[str, Any]
-            # Construct headers
-            header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
-
-            # Construct and send request
-            request = self._client.get(url, query_parameters, header_parameters)
+                request = self._client.get(url, query_parameters, header_parameters)
             return request
 
         def extract_data(pipeline_response):
@@ -532,34 +546,41 @@ class PolicyAssignmentsOperations(object):
         filter=None,  # type: Optional[str]
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.PolicyAssignmentListResult"]
+        # type: (...) -> Iterable["_models.PolicyAssignmentListResult"]
         """Retrieves all policy assignments that apply to a subscription.
 
         This operation retrieves the list of all policy assignments associated with the given
-    subscription that match the optional given $filter. Valid values for $filter are: 'atScope()'
-    or 'policyDefinitionId eq '{value}''. If $filter is not provided, the unfiltered list includes
-    all policy assignments associated with the subscription, including those that apply directly or
-    from management groups that contain the given subscription, as well as any applied to objects
-    contained within the subscription. If $filter=atScope() is provided, the returned list includes
-    all policy assignments that apply to the subscription, which is everything in the unfiltered
-    list except those applied to objects contained within the subscription. If
-    $filter=policyDefinitionId eq '{value}' is provided, the returned list includes all policy
-    assignments of the policy definition whose id is {value}.
+        subscription that match the optional given $filter. Valid values for $filter are: 'atScope()'
+        or 'policyDefinitionId eq '{value}''. If $filter is not provided, the unfiltered list includes
+        all policy assignments associated with the subscription, including those that apply directly or
+        from management groups that contain the given subscription, as well as any applied to objects
+        contained within the subscription. If $filter=atScope() is provided, the returned list includes
+        all policy assignments that apply to the subscription, which is everything in the unfiltered
+        list except those applied to objects contained within the subscription. If
+        $filter=policyDefinitionId eq '{value}' is provided, the returned list includes all policy
+        assignments of the policy definition whose id is {value}.
 
         :param filter: The filter to apply on the operation. Valid values for $filter are: 'atScope()'
-     or 'policyDefinitionId eq '{value}''. If $filter is not provided, no filtering is performed.
+         or 'policyDefinitionId eq '{value}''. If $filter is not provided, no filtering is performed.
         :type filter: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :return: An iterator like instance of either PolicyAssignmentListResult or the result of cls(response)
         :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.resource.policy.v2019_09_01.models.PolicyAssignmentListResult]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.PolicyAssignmentListResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.PolicyAssignmentListResult"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-09-01"
+        accept = "application/json"
 
         def prepare_request(next_link=None):
+            # Construct headers
+            header_parameters = {}  # type: Dict[str, Any]
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
+
             if not next_link:
                 # Construct URL
                 url = self.list.metadata['url']  # type: ignore
@@ -573,15 +594,11 @@ class PolicyAssignmentsOperations(object):
                     query_parameters['$filter'] = self._serialize.query("filter", filter, 'str')
                 query_parameters['api-version'] = self._serialize.query("api_version", api_version, 'str')
 
+                request = self._client.get(url, query_parameters, header_parameters)
             else:
                 url = next_link
                 query_parameters = {}  # type: Dict[str, Any]
-            # Construct headers
-            header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
-
-            # Construct and send request
-            request = self._client.get(url, query_parameters, header_parameters)
+                request = self._client.get(url, query_parameters, header_parameters)
             return request
 
         def extract_data(pipeline_response):
@@ -613,7 +630,7 @@ class PolicyAssignmentsOperations(object):
         policy_assignment_id,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.PolicyAssignment"
+        # type: (...) -> Optional["_models.PolicyAssignment"]
         """Deletes a policy assignment.
 
         This operation deletes the policy with the given ID. Policy assignment IDs have this format:
@@ -632,10 +649,13 @@ class PolicyAssignmentsOperations(object):
         :rtype: ~azure.mgmt.resource.policy.v2019_09_01.models.PolicyAssignment or None
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.PolicyAssignment"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType[Optional["_models.PolicyAssignment"]]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-09-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.delete_by_id.metadata['url']  # type: ignore
@@ -650,9 +670,8 @@ class PolicyAssignmentsOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.delete(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -674,10 +693,10 @@ class PolicyAssignmentsOperations(object):
     def create_by_id(
         self,
         policy_assignment_id,  # type: str
-        parameters,  # type: "models.PolicyAssignment"
+        parameters,  # type: "_models.PolicyAssignment"
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.PolicyAssignment"
+        # type: (...) -> "_models.PolicyAssignment"
         """Creates or updates a policy assignment.
 
         This operation creates or updates the policy assignment with the given ID. Policy assignments
@@ -701,11 +720,14 @@ class PolicyAssignmentsOperations(object):
         :rtype: ~azure.mgmt.resource.policy.v2019_09_01.models.PolicyAssignment
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.PolicyAssignment"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.PolicyAssignment"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-09-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self.create_by_id.metadata['url']  # type: ignore
@@ -721,14 +743,12 @@ class PolicyAssignmentsOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(parameters, 'PolicyAssignment')
         body_content_kwargs['content'] = body_content
         request = self._client.put(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
@@ -749,7 +769,7 @@ class PolicyAssignmentsOperations(object):
         policy_assignment_id,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.PolicyAssignment"
+        # type: (...) -> "_models.PolicyAssignment"
         """Retrieves the policy assignment with the given ID.
 
         The operation retrieves the policy assignment with the given ID. Policy assignment IDs have
@@ -769,10 +789,13 @@ class PolicyAssignmentsOperations(object):
         :rtype: ~azure.mgmt.resource.policy.v2019_09_01.models.PolicyAssignment
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.PolicyAssignment"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.PolicyAssignment"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-09-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.get_by_id.metadata['url']  # type: ignore
@@ -787,9 +810,8 @@ class PolicyAssignmentsOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response

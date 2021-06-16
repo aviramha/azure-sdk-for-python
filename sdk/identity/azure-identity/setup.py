@@ -43,6 +43,7 @@ with open("CHANGELOG.md", encoding="utf-8") as f:
 setup(
     name=PACKAGE_NAME,
     version=VERSION,
+    include_package_data=True,
     description="Microsoft Azure {} Library for Python".format(PACKAGE_PPRINT_NAME),
     long_description=README + "\n\n" + CHANGELOG,
     long_description_content_type="text/markdown",
@@ -56,10 +57,10 @@ setup(
         "Programming Language :: Python :: 2",
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "License :: OSI Approved :: MIT License",
     ],
     zip_safe=False,
@@ -73,9 +74,9 @@ setup(
     install_requires=[
         "azure-core<2.0.0,>=1.0.0",
         "cryptography>=2.1.4",
-        "msal<1.5.0,>=1.3.0",
-        "msal-extensions~=0.2.2",
-        "six>=1.6",
+        "msal<2.0.0,>=1.7.0",
+        "msal-extensions~=0.3.0",
+        "six>=1.12.0",
     ],
     extras_require={
         ":python_version<'3.0'": ["azure-nspkg"],

@@ -8,16 +8,16 @@
 from typing import TYPE_CHECKING
 import warnings
 
-from azure.core.exceptions import HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
+from azure.core.exceptions import ClientAuthenticationError, HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
 from azure.core.pipeline import PipelineResponse
 from azure.core.pipeline.transport import HttpRequest, HttpResponse
 from azure.mgmt.core.exceptions import ARMErrorFormat
 
-from .. import models
+from .. import models as _models
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,ungrouped-imports
-    from typing import Any, Callable, Dict, Generic, Optional, TypeVar
+    from typing import Any, Callable, Dict, Generic, Optional, TypeVar, Union
 
     T = TypeVar('T')
     ClsType = Optional[Callable[[PipelineResponse[HttpRequest, HttpResponse], T, Dict[str, Any]], Any]]
@@ -36,7 +36,7 @@ class ManagementPoliciesOperations(object):
     :param deserializer: An object model deserializer.
     """
 
-    models = models
+    models = _models
 
     def __init__(self, client, config, serializer, deserializer):
         self._client = client
@@ -48,28 +48,34 @@ class ManagementPoliciesOperations(object):
         self,
         resource_group_name,  # type: str
         account_name,  # type: str
+        management_policy_name,  # type: Union[str, "_models.ManagementPolicyName"]
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.ManagementPolicy"
+        # type: (...) -> "_models.ManagementPolicy"
         """Gets the managementpolicy associated with the specified storage account.
 
         :param resource_group_name: The name of the resource group within the user's subscription. The
          name is case insensitive.
         :type resource_group_name: str
         :param account_name: The name of the storage account within the specified resource group.
-         Storage account names must be between 3 and 24 characters in length and use numbers and lower-
-         case letters only.
+         Storage account names must be between 3 and 24 characters in length and use numbers and
+         lower-case letters only.
         :type account_name: str
+        :param management_policy_name: The name of the Storage Account Management Policy. It should
+         always be 'default'.
+        :type management_policy_name: str or ~azure.mgmt.storage.v2019_04_01.models.ManagementPolicyName
         :keyword callable cls: A custom type or function that will be passed the direct response
         :return: ManagementPolicy, or the result of cls(response)
         :rtype: ~azure.mgmt.storage.v2019_04_01.models.ManagementPolicy
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.ManagementPolicy"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.ManagementPolicy"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-04-01"
-        management_policy_name = "default"
+        accept = "application/json"
 
         # Construct URL
         url = self.get.metadata['url']  # type: ignore
@@ -87,7 +93,7 @@ class ManagementPoliciesOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
@@ -109,19 +115,23 @@ class ManagementPoliciesOperations(object):
         self,
         resource_group_name,  # type: str
         account_name,  # type: str
-        properties,  # type: "models.ManagementPolicy"
+        management_policy_name,  # type: Union[str, "_models.ManagementPolicyName"]
+        properties,  # type: "_models.ManagementPolicy"
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.ManagementPolicy"
+        # type: (...) -> "_models.ManagementPolicy"
         """Sets the managementpolicy to the specified storage account.
 
         :param resource_group_name: The name of the resource group within the user's subscription. The
          name is case insensitive.
         :type resource_group_name: str
         :param account_name: The name of the storage account within the specified resource group.
-         Storage account names must be between 3 and 24 characters in length and use numbers and lower-
-         case letters only.
+         Storage account names must be between 3 and 24 characters in length and use numbers and
+         lower-case letters only.
         :type account_name: str
+        :param management_policy_name: The name of the Storage Account Management Policy. It should
+         always be 'default'.
+        :type management_policy_name: str or ~azure.mgmt.storage.v2019_04_01.models.ManagementPolicyName
         :param properties: The ManagementPolicy set to a storage account.
         :type properties: ~azure.mgmt.storage.v2019_04_01.models.ManagementPolicy
         :keyword callable cls: A custom type or function that will be passed the direct response
@@ -129,12 +139,14 @@ class ManagementPoliciesOperations(object):
         :rtype: ~azure.mgmt.storage.v2019_04_01.models.ManagementPolicy
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.ManagementPolicy"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.ManagementPolicy"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-04-01"
-        management_policy_name = "default"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self.create_or_update.metadata['url']  # type: ignore
@@ -153,13 +165,12 @@ class ManagementPoliciesOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(properties, 'ManagementPolicy')
         body_content_kwargs['content'] = body_content
         request = self._client.put(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
@@ -179,6 +190,7 @@ class ManagementPoliciesOperations(object):
         self,
         resource_group_name,  # type: str
         account_name,  # type: str
+        management_policy_name,  # type: Union[str, "_models.ManagementPolicyName"]
         **kwargs  # type: Any
     ):
         # type: (...) -> None
@@ -188,19 +200,23 @@ class ManagementPoliciesOperations(object):
          name is case insensitive.
         :type resource_group_name: str
         :param account_name: The name of the storage account within the specified resource group.
-         Storage account names must be between 3 and 24 characters in length and use numbers and lower-
-         case letters only.
+         Storage account names must be between 3 and 24 characters in length and use numbers and
+         lower-case letters only.
         :type account_name: str
+        :param management_policy_name: The name of the Storage Account Management Policy. It should
+         always be 'default'.
+        :type management_policy_name: str or ~azure.mgmt.storage.v2019_04_01.models.ManagementPolicyName
         :keyword callable cls: A custom type or function that will be passed the direct response
         :return: None, or the result of cls(response)
         :rtype: None
         :raises: ~azure.core.exceptions.HttpResponseError
         """
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-04-01"
-        management_policy_name = "default"
 
         # Construct URL
         url = self.delete.metadata['url']  # type: ignore

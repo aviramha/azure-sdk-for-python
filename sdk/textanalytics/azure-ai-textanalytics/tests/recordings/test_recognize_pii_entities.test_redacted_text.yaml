@@ -14,22 +14,21 @@ interactions:
       Content-Type:
       - application/json
       User-Agent:
-      - azsdk-python-ai-textanalytics/5.0.1 Python/3.8.5 (macOS-10.13.6-x86_64-i386-64bit)
+      - azsdk-python-ai-textanalytics/5.1.0b7 Python/3.9.1 (macOS-10.16-x86_64-i386-64bit)
     method: POST
-    uri: https://cognitiveusw2dev.azure-api.net/text/analytics/v3.1-preview.2/entities/recognition/pii?showStats=false&stringIndexType=UnicodeCodePoint
+    uri: https://westus2.api.cognitive.microsoft.com/text/analytics/v3.1-preview.5/entities/recognition/pii?showStats=false&stringIndexType=UnicodeCodePoint
   response:
     body:
-      string: '{"documents":[{"redactedText":"My SSN is ***********.","id":"0","entities":[{"text":"859-98-0987","category":"U.S.
-        Social Security Number (SSN)","offset":10,"length":11,"confidenceScore":0.65}],"warnings":[]}],"errors":[],"modelVersion":"2020-07-01"}'
+      string: '{"documents":[{"redactedText":"My SSN is ***********.","id":"0","entities":[{"text":"859-98-0987","category":"USSocialSecurityNumber","offset":10,"length":11,"confidenceScore":0.65}],"warnings":[]}],"errors":[],"modelVersion":"2021-01-15"}'
     headers:
       apim-request-id:
-      - c5ba8c84-0e46-471a-b4c8-f02c411c20ec
+      - b0841aec-83c6-4fb0-b3bb-dd648e896db2
       content-type:
       - application/json; charset=utf-8
       csp-billing-usage:
-      - CognitiveServices.TextAnalytics.BatchScoring=1
+      - CognitiveServices.TextAnalytics.BatchScoring=1,CognitiveServices.TextAnalytics.TextRecords=1
       date:
-      - Mon, 31 Aug 2020 20:15:43 GMT
+      - Tue, 18 May 2021 17:48:06 GMT
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       transfer-encoding:
@@ -37,7 +36,7 @@ interactions:
       x-content-type-options:
       - nosniff
       x-envoy-upstream-service-time:
-      - '78'
+      - '25'
     status:
       code: 200
       message: OK

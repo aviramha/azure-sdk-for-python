@@ -13,7 +13,7 @@ Example to show receiving dead-lettered messages from a Service Bus Queue asynch
 
 import os
 import asyncio
-from azure.servicebus import Message
+from azure.servicebus import ServiceBusMessage, ServiceBusSubQueue
 from azure.servicebus.aio import ServiceBusClient
 
 
@@ -26,25 +26,27 @@ async def main():
 
     async with servicebus_client:
         sender = servicebus_client.get_queue_sender(queue_name=QUEUE_NAME)
-        messages = [Message("Message to be deadlettered") for _ in range(10)]
+        messages = [ServiceBusMessage("Message to be deadlettered") for _ in range(10)]
         async with sender:
             await sender.send_messages(messages)
 
         print('dead lettering messages')
         receiver = servicebus_client.get_queue_receiver(queue_name=QUEUE_NAME)
         async with receiver:
-            received_msgs = await receiver.receive_messages(max_batch_size=10, max_wait_time=5)
+            received_msgs = await receiver.receive_messages(max_message_count=10, max_wait_time=5)
             for msg in received_msgs:
                 print(str(msg))
-                await msg.dead_letter()
+                await receiver.dead_letter_message(msg)
 
         print('receiving deadlettered messages')
-        dlq_receiver = servicebus_client.get_queue_deadletter_receiver(queue_name=QUEUE_NAME, prefetch=10)
+        dlq_receiver = servicebus_client.get_queue_receiver(queue_name=QUEUE_NAME, 
+                                                            sub_queue=ServiceBusSubQueue.DEAD_LETTER,
+                                                            prefetch_count=10)
         async with dlq_receiver:
-            received_msgs = await dlq_receiver.receive_messages(max_batch_size=10, max_wait_time=5)
+            received_msgs = await dlq_receiver.receive_messages(max_message_count=10, max_wait_time=5)
             for msg in received_msgs:
                 print(str(msg))
-                await msg.complete()
+                await dlq_receiver.complete_message(msg)
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())

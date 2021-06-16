@@ -50,8 +50,12 @@ from azure.core import PipelineClient
 from azure.core.pipeline.policies import (
     SansIOHTTPPolicy,
     UserAgentPolicy,
+    DistributedTracingPolicy,
     RedirectPolicy,
-    HttpLoggingPolicy
+    RetryPolicy,
+    HttpLoggingPolicy,
+    HTTPPolicy,
+    SansIOHTTPPolicy
 )
 from azure.core.pipeline.transport._base import PipelineClientBase
 from azure.core.pipeline.transport import (
@@ -285,7 +289,7 @@ class TestClientRequest(unittest.TestCase):
         request.format_parameters({"g": "h"})
 
         self.assertIn(request.url, ["a/b/c?g=h&t=y", "a/b/c?t=y&g=h"])
-    
+
     def test_request_url_with_params_as_list(self):
 
         request = HttpRequest("GET", "/")
@@ -300,7 +304,7 @@ class TestClientRequest(unittest.TestCase):
         request.url = "a/b/c?t=y"
         with pytest.raises(ValueError):
             request.format_parameters({"g": ["h",None]})
-    
+
     def test_request_url_with_params_with_none(self):
 
         request = HttpRequest("GET", "/")
@@ -328,6 +332,107 @@ class TestClientRequest(unittest.TestCase):
         # We want a direct string
         assert request.data == "foo"
 
+    def test_repr(self):
+        request = HttpRequest("GET", "hello.com")
+        assert repr(request) == "<HttpRequest [GET], url: 'hello.com'>"
+
+    def test_add_custom_policy(self):
+        class BooPolicy(HTTPPolicy):
+            def send(*args):
+                raise AzureError('boo')
+
+        class FooPolicy(HTTPPolicy):
+            def send(*args):
+                raise AzureError('boo')
+
+        config = Configuration()
+        retry_policy = RetryPolicy()
+        config.retry_policy = retry_policy
+        boo_policy = BooPolicy()
+        foo_policy = FooPolicy()
+        client = PipelineClient(base_url="test", config=config, per_call_policies=boo_policy)
+        policies = client._pipeline._impl_policies
+        assert boo_policy in policies
+        pos_boo = policies.index(boo_policy)
+        pos_retry = policies.index(retry_policy)
+        assert pos_boo < pos_retry
+
+        client = PipelineClient(base_url="test", config=config, per_call_policies=[boo_policy])
+        policies = client._pipeline._impl_policies
+        assert boo_policy in policies
+        pos_boo = policies.index(boo_policy)
+        pos_retry = policies.index(retry_policy)
+        assert pos_boo < pos_retry
+
+        client = PipelineClient(base_url="test", config=config, per_retry_policies=boo_policy)
+        policies = client._pipeline._impl_policies
+        assert boo_policy in policies
+        pos_boo = policies.index(boo_policy)
+        pos_retry = policies.index(retry_policy)
+        assert pos_boo > pos_retry
+
+        client = PipelineClient(base_url="test", config=config, per_retry_policies=[boo_policy])
+        policies = client._pipeline._impl_policies
+        assert boo_policy in policies
+        pos_boo = policies.index(boo_policy)
+        pos_retry = policies.index(retry_policy)
+        assert pos_boo > pos_retry
+
+        client = PipelineClient(base_url="test", config=config, per_call_policies=boo_policy, per_retry_policies=foo_policy)
+        policies = client._pipeline._impl_policies
+        assert boo_policy in policies
+        assert foo_policy in policies
+        pos_boo = policies.index(boo_policy)
+        pos_foo = policies.index(foo_policy)
+        pos_retry = policies.index(retry_policy)
+        assert pos_boo < pos_retry
+        assert pos_foo > pos_retry
+
+        client = PipelineClient(base_url="test", config=config, per_call_policies=[boo_policy],
+                                per_retry_policies=[foo_policy])
+        policies = client._pipeline._impl_policies
+        assert boo_policy in policies
+        assert foo_policy in policies
+        pos_boo = policies.index(boo_policy)
+        pos_foo = policies.index(foo_policy)
+        pos_retry = policies.index(retry_policy)
+        assert pos_boo < pos_retry
+        assert pos_foo > pos_retry
+
+        policies = [UserAgentPolicy(),
+                    RetryPolicy(),
+                    DistributedTracingPolicy()]
+        client = PipelineClient(base_url="test", policies=policies, per_call_policies=boo_policy)
+        actual_policies = client._pipeline._impl_policies
+        assert boo_policy == actual_policies[0]
+        client = PipelineClient(base_url="test", policies=policies, per_call_policies=[boo_policy])
+        actual_policies = client._pipeline._impl_policies
+        assert boo_policy == actual_policies[0]
+
+        client = PipelineClient(base_url="test", policies=policies, per_retry_policies=foo_policy)
+        actual_policies = client._pipeline._impl_policies
+        assert foo_policy == actual_policies[2]
+        client = PipelineClient(base_url="test", policies=policies, per_retry_policies=[foo_policy])
+        actual_policies = client._pipeline._impl_policies
+        assert foo_policy == actual_policies[2]
+
+        client = PipelineClient(base_url="test", policies=policies, per_call_policies=boo_policy,
+                                per_retry_policies=foo_policy)
+        actual_policies = client._pipeline._impl_policies
+        assert boo_policy == actual_policies[0]
+        assert foo_policy == actual_policies[3]
+        client = PipelineClient(base_url="test", policies=policies, per_call_policies=[boo_policy],
+                                per_retry_policies=[foo_policy])
+        actual_policies = client._pipeline._impl_policies
+        assert boo_policy == actual_policies[0]
+        assert foo_policy == actual_policies[3]
+
+        policies = [UserAgentPolicy(),
+                    DistributedTracingPolicy()]
+        with pytest.raises(ValueError):
+            client = PipelineClient(base_url="test", policies=policies, per_retry_policies=foo_policy)
+        with pytest.raises(ValueError):
+            client = PipelineClient(base_url="test", policies=policies, per_retry_policies=[foo_policy])
 
 if __name__ == "__main__":
     unittest.main()

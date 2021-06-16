@@ -11,15 +11,15 @@ FILE: sample_train_model_with_labels.py
 
 DESCRIPTION:
     This sample demonstrates how to train a model with labels. For this sample, you can use the training
-    forms found in https://github.com/Azure/azure-sdk-for-python/tree/master/sdk/formrecognizer/azure-ai-formrecognizer/samples/sample_forms/training
+    forms found in https://aka.ms/azsdk/formrecognizer/sampletrainingfiles
 
     Upload the forms to your storage container and then generate a container SAS URL using these instructions:
-    https://docs.microsoft.com/azure/cognitive-services/form-recognizer/quickstarts/python-labeled-data#train-a-model-using-labeled-data
+    https://docs.microsoft.com/azure/cognitive-services/form-recognizer/quickstarts/get-started-with-form-recognizer#train--analyze-a-custom-form
     More details on setting up a container and required file structure can be found here:
     https://docs.microsoft.com/azure/cognitive-services/form-recognizer/build-training-data-set
 
     To see how to label your documents, you can use the service's labeling tool to label your documents:
-    https://docs.microsoft.com/azure/cognitive-services/form-recognizer/quickstarts/label-tool. Follow the
+    https://docs.microsoft.com/azure/cognitive-services/form-recognizer/label-tool?tabs=v2-1. Follow the
     instructions to store these labeled files in your blob container with the other form files.
     See sample_recognize_custom_forms.py to recognize forms with your custom model.
 
@@ -30,7 +30,7 @@ USAGE:
     1) AZURE_FORM_RECOGNIZER_ENDPOINT - the endpoint to your Cognitive Services resource.
     2) AZURE_FORM_RECOGNIZER_KEY - your Form Recognizer API key
     3) CONTAINER_SAS_URL - The shared access signature (SAS) Url of your Azure Blob Storage container with your labeled data.
-        See https://docs.microsoft.com/azure/cognitive-services/form-recognizer/quickstarts/python-labeled-data#train-a-model-using-labeled-data
+        See https://docs.microsoft.com/azure/cognitive-services/form-recognizer/quickstarts/get-started-with-form-recognizer#train--analyze-a-custom-form
         for more detailed descriptions on how to get it.
 """
 
@@ -48,12 +48,16 @@ class TrainModelWithLabelsSample(object):
         container_sas_url = os.environ["CONTAINER_SAS_URL"]
 
         form_training_client = FormTrainingClient(endpoint, AzureKeyCredential(key))
-        poller = form_training_client.begin_training(container_sas_url, use_training_labels=True)
+        poller = form_training_client.begin_training(
+            container_sas_url, use_training_labels=True, model_name="mymodel"
+        )
         model = poller.result()
 
         # Custom model information
         print("Model ID: {}".format(model.model_id))
         print("Status: {}".format(model.status))
+        print("Model name: {}".format(model.model_name))
+        print("Is this a composed model?: {}".format(model.properties.is_composed_model))
         print("Training started on: {}".format(model.training_started_on))
         print("Training completed on: {}".format(model.training_completed_on))
 
@@ -61,6 +65,7 @@ class TrainModelWithLabelsSample(object):
         # looping through the submodels, which contains the fields they were trained on
         # The labels are based on the ones you gave the training document.
         for submodel in model.submodels:
+            print("...The submodel has model ID: {}".format(submodel.model_id))
             print("...The submodel with form type {} has an average accuracy '{}'".format(
                 submodel.form_type, submodel.accuracy
             ))

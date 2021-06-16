@@ -8,13 +8,13 @@
 from typing import TYPE_CHECKING
 import warnings
 
-from azure.core.exceptions import HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
+from azure.core.exceptions import ClientAuthenticationError, HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
 from azure.core.paging import ItemPaged
 from azure.core.pipeline import PipelineResponse
 from azure.core.pipeline.transport import HttpRequest, HttpResponse
 from azure.mgmt.core.exceptions import ARMErrorFormat
 
-from .. import models
+from .. import models as _models
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,ungrouped-imports
@@ -37,7 +37,7 @@ class BlobContainersOperations(object):
     :param deserializer: An object model deserializer.
     """
 
-    models = models
+    models = _models
 
     def __init__(self, client, config, serializer, deserializer):
         self._client = client
@@ -51,42 +51,45 @@ class BlobContainersOperations(object):
         account_name,  # type: str
         maxpagesize=None,  # type: Optional[str]
         filter=None,  # type: Optional[str]
-        include="deleted",  # type: Optional[str]
+        include=None,  # type: Optional[Union[str, "_models.ListContainersInclude"]]
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.ListContainerItems"]
+        # type: (...) -> Iterable["_models.ListContainerItems"]
         """Lists all containers and does not support a prefix like data plane. Also SRP today does not
-    return continuation token.
+        return continuation token.
 
         :param resource_group_name: The name of the resource group within the user's subscription. The
-     name is case insensitive.
+         name is case insensitive.
         :type resource_group_name: str
         :param account_name: The name of the storage account within the specified resource group.
-     Storage account names must be between 3 and 24 characters in length and use numbers and lower-
-     case letters only.
+         Storage account names must be between 3 and 24 characters in length and use numbers and
+         lower-case letters only.
         :type account_name: str
         :param maxpagesize: Optional. Specified maximum number of containers that can be included in
-     the list.
+         the list.
         :type maxpagesize: str
         :param filter: Optional. When specified, only container names starting with the filter will be
-     listed.
+         listed.
         :type filter: str
         :param include: Optional, used to include the properties for soft deleted blob containers.
-        :type include: str
+        :type include: str or ~azure.mgmt.storage.v2019_06_01.models.ListContainersInclude
         :keyword callable cls: A custom type or function that will be passed the direct response
         :return: An iterator like instance of either ListContainerItems or the result of cls(response)
         :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.storage.v2019_06_01.models.ListContainerItems]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.ListContainerItems"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.ListContainerItems"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-06-01"
+        accept = "application/json"
 
         def prepare_request(next_link=None):
             # Construct headers
             header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
             if not next_link:
                 # Construct URL
@@ -143,10 +146,10 @@ class BlobContainersOperations(object):
         resource_group_name,  # type: str
         account_name,  # type: str
         container_name,  # type: str
-        blob_container,  # type: "models.BlobContainer"
+        blob_container,  # type: "_models.BlobContainer"
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.BlobContainer"
+        # type: (...) -> "_models.BlobContainer"
         """Creates a new container under the specified account as described by request body. The container
         resource includes metadata and properties for that container. It does not include a list of the
         blobs contained by the container.
@@ -155,8 +158,8 @@ class BlobContainersOperations(object):
          name is case insensitive.
         :type resource_group_name: str
         :param account_name: The name of the storage account within the specified resource group.
-         Storage account names must be between 3 and 24 characters in length and use numbers and lower-
-         case letters only.
+         Storage account names must be between 3 and 24 characters in length and use numbers and
+         lower-case letters only.
         :type account_name: str
         :param container_name: The name of the blob container within the specified storage account.
          Blob container names must be between 3 and 63 characters in length and use numbers, lower-case
@@ -170,11 +173,14 @@ class BlobContainersOperations(object):
         :rtype: ~azure.mgmt.storage.v2019_06_01.models.BlobContainer
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.BlobContainer"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.BlobContainer"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-06-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self.create.metadata['url']  # type: ignore
@@ -193,13 +199,12 @@ class BlobContainersOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(blob_container, 'BlobContainer')
         body_content_kwargs['content'] = body_content
         request = self._client.put(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
@@ -224,10 +229,10 @@ class BlobContainersOperations(object):
         resource_group_name,  # type: str
         account_name,  # type: str
         container_name,  # type: str
-        blob_container,  # type: "models.BlobContainer"
+        blob_container,  # type: "_models.BlobContainer"
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.BlobContainer"
+        # type: (...) -> "_models.BlobContainer"
         """Updates container properties as specified in request body. Properties not mentioned in the
         request will be unchanged. Update fails if the specified container doesn't already exist.
 
@@ -235,8 +240,8 @@ class BlobContainersOperations(object):
          name is case insensitive.
         :type resource_group_name: str
         :param account_name: The name of the storage account within the specified resource group.
-         Storage account names must be between 3 and 24 characters in length and use numbers and lower-
-         case letters only.
+         Storage account names must be between 3 and 24 characters in length and use numbers and
+         lower-case letters only.
         :type account_name: str
         :param container_name: The name of the blob container within the specified storage account.
          Blob container names must be between 3 and 63 characters in length and use numbers, lower-case
@@ -250,11 +255,14 @@ class BlobContainersOperations(object):
         :rtype: ~azure.mgmt.storage.v2019_06_01.models.BlobContainer
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.BlobContainer"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.BlobContainer"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-06-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self.update.metadata['url']  # type: ignore
@@ -273,13 +281,12 @@ class BlobContainersOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(blob_container, 'BlobContainer')
         body_content_kwargs['content'] = body_content
         request = self._client.patch(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
@@ -302,15 +309,15 @@ class BlobContainersOperations(object):
         container_name,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.BlobContainer"
+        # type: (...) -> "_models.BlobContainer"
         """Gets properties of a specified container.
 
         :param resource_group_name: The name of the resource group within the user's subscription. The
          name is case insensitive.
         :type resource_group_name: str
         :param account_name: The name of the storage account within the specified resource group.
-         Storage account names must be between 3 and 24 characters in length and use numbers and lower-
-         case letters only.
+         Storage account names must be between 3 and 24 characters in length and use numbers and
+         lower-case letters only.
         :type account_name: str
         :param container_name: The name of the blob container within the specified storage account.
          Blob container names must be between 3 and 63 characters in length and use numbers, lower-case
@@ -322,10 +329,13 @@ class BlobContainersOperations(object):
         :rtype: ~azure.mgmt.storage.v2019_06_01.models.BlobContainer
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.BlobContainer"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.BlobContainer"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-06-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.get.metadata['url']  # type: ignore
@@ -343,7 +353,7 @@ class BlobContainersOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
@@ -375,8 +385,8 @@ class BlobContainersOperations(object):
          name is case insensitive.
         :type resource_group_name: str
         :param account_name: The name of the storage account within the specified resource group.
-         Storage account names must be between 3 and 24 characters in length and use numbers and lower-
-         case letters only.
+         Storage account names must be between 3 and 24 characters in length and use numbers and
+         lower-case letters only.
         :type account_name: str
         :param container_name: The name of the blob container within the specified storage account.
          Blob container names must be between 3 and 63 characters in length and use numbers, lower-case
@@ -389,7 +399,9 @@ class BlobContainersOperations(object):
         :raises: ~azure.core.exceptions.HttpResponseError
         """
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-06-01"
 
@@ -428,10 +440,10 @@ class BlobContainersOperations(object):
         resource_group_name,  # type: str
         account_name,  # type: str
         container_name,  # type: str
-        legal_hold,  # type: "models.LegalHold"
+        legal_hold,  # type: "_models.LegalHold"
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.LegalHold"
+        # type: (...) -> "_models.LegalHold"
         """Sets legal hold tags. Setting the same tag results in an idempotent operation. SetLegalHold
         follows an append pattern and does not clear out the existing tags that are not specified in
         the request.
@@ -440,8 +452,8 @@ class BlobContainersOperations(object):
          name is case insensitive.
         :type resource_group_name: str
         :param account_name: The name of the storage account within the specified resource group.
-         Storage account names must be between 3 and 24 characters in length and use numbers and lower-
-         case letters only.
+         Storage account names must be between 3 and 24 characters in length and use numbers and
+         lower-case letters only.
         :type account_name: str
         :param container_name: The name of the blob container within the specified storage account.
          Blob container names must be between 3 and 63 characters in length and use numbers, lower-case
@@ -455,11 +467,14 @@ class BlobContainersOperations(object):
         :rtype: ~azure.mgmt.storage.v2019_06_01.models.LegalHold
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.LegalHold"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.LegalHold"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-06-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self.set_legal_hold.metadata['url']  # type: ignore
@@ -478,13 +493,12 @@ class BlobContainersOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(legal_hold, 'LegalHold')
         body_content_kwargs['content'] = body_content
         request = self._client.post(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
@@ -505,10 +519,10 @@ class BlobContainersOperations(object):
         resource_group_name,  # type: str
         account_name,  # type: str
         container_name,  # type: str
-        legal_hold,  # type: "models.LegalHold"
+        legal_hold,  # type: "_models.LegalHold"
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.LegalHold"
+        # type: (...) -> "_models.LegalHold"
         """Clears legal hold tags. Clearing the same or non-existent tag results in an idempotent
         operation. ClearLegalHold clears out only the specified tags in the request.
 
@@ -516,8 +530,8 @@ class BlobContainersOperations(object):
          name is case insensitive.
         :type resource_group_name: str
         :param account_name: The name of the storage account within the specified resource group.
-         Storage account names must be between 3 and 24 characters in length and use numbers and lower-
-         case letters only.
+         Storage account names must be between 3 and 24 characters in length and use numbers and
+         lower-case letters only.
         :type account_name: str
         :param container_name: The name of the blob container within the specified storage account.
          Blob container names must be between 3 and 63 characters in length and use numbers, lower-case
@@ -531,11 +545,14 @@ class BlobContainersOperations(object):
         :rtype: ~azure.mgmt.storage.v2019_06_01.models.LegalHold
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.LegalHold"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.LegalHold"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-06-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self.clear_legal_hold.metadata['url']  # type: ignore
@@ -554,13 +571,12 @@ class BlobContainersOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(legal_hold, 'LegalHold')
         body_content_kwargs['content'] = body_content
         request = self._client.post(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
@@ -582,10 +598,10 @@ class BlobContainersOperations(object):
         account_name,  # type: str
         container_name,  # type: str
         if_match=None,  # type: Optional[str]
-        parameters=None,  # type: Optional["models.ImmutabilityPolicy"]
+        parameters=None,  # type: Optional["_models.ImmutabilityPolicy"]
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.ImmutabilityPolicy"
+        # type: (...) -> "_models.ImmutabilityPolicy"
         """Creates or updates an unlocked immutability policy. ETag in If-Match is honored if given but
         not required for this operation.
 
@@ -593,8 +609,8 @@ class BlobContainersOperations(object):
          name is case insensitive.
         :type resource_group_name: str
         :param account_name: The name of the storage account within the specified resource group.
-         Storage account names must be between 3 and 24 characters in length and use numbers and lower-
-         case letters only.
+         Storage account names must be between 3 and 24 characters in length and use numbers and
+         lower-case letters only.
         :type account_name: str
         :param container_name: The name of the blob container within the specified storage account.
          Blob container names must be between 3 and 63 characters in length and use numbers, lower-case
@@ -613,12 +629,15 @@ class BlobContainersOperations(object):
         :rtype: ~azure.mgmt.storage.v2019_06_01.models.ImmutabilityPolicy
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.ImmutabilityPolicy"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.ImmutabilityPolicy"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         immutability_policy_name = "default"
         api_version = "2019-06-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self.create_or_update_immutability_policy.metadata['url']  # type: ignore
@@ -640,7 +659,7 @@ class BlobContainersOperations(object):
         if if_match is not None:
             header_parameters['If-Match'] = self._serialize.header("if_match", if_match, 'str')
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         body_content_kwargs = {}  # type: Dict[str, Any]
         if parameters is not None:
@@ -649,7 +668,6 @@ class BlobContainersOperations(object):
             body_content = None
         body_content_kwargs['content'] = body_content
         request = self._client.put(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
@@ -675,7 +693,7 @@ class BlobContainersOperations(object):
         if_match=None,  # type: Optional[str]
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.ImmutabilityPolicy"
+        # type: (...) -> "_models.ImmutabilityPolicy"
         """Gets the existing immutability policy along with the corresponding ETag in response headers and
         body.
 
@@ -683,8 +701,8 @@ class BlobContainersOperations(object):
          name is case insensitive.
         :type resource_group_name: str
         :param account_name: The name of the storage account within the specified resource group.
-         Storage account names must be between 3 and 24 characters in length and use numbers and lower-
-         case letters only.
+         Storage account names must be between 3 and 24 characters in length and use numbers and
+         lower-case letters only.
         :type account_name: str
         :param container_name: The name of the blob container within the specified storage account.
          Blob container names must be between 3 and 63 characters in length and use numbers, lower-case
@@ -700,11 +718,14 @@ class BlobContainersOperations(object):
         :rtype: ~azure.mgmt.storage.v2019_06_01.models.ImmutabilityPolicy
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.ImmutabilityPolicy"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.ImmutabilityPolicy"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         immutability_policy_name = "default"
         api_version = "2019-06-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.get_immutability_policy.metadata['url']  # type: ignore
@@ -725,7 +746,7 @@ class BlobContainersOperations(object):
         header_parameters = {}  # type: Dict[str, Any]
         if if_match is not None:
             header_parameters['If-Match'] = self._serialize.header("if_match", if_match, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
@@ -753,18 +774,18 @@ class BlobContainersOperations(object):
         if_match,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.ImmutabilityPolicy"
+        # type: (...) -> "_models.ImmutabilityPolicy"
         """Aborts an unlocked immutability policy. The response of delete has
         immutabilityPeriodSinceCreationInDays set to 0. ETag in If-Match is required for this
-        operation. Deleting a locked immutability policy is not allowed, only way is to delete the
-        container after deleting all blobs inside the container.
+        operation. Deleting a locked immutability policy is not allowed, the only way is to delete the
+        container after deleting all expired blobs inside the policy locked container.
 
         :param resource_group_name: The name of the resource group within the user's subscription. The
          name is case insensitive.
         :type resource_group_name: str
         :param account_name: The name of the storage account within the specified resource group.
-         Storage account names must be between 3 and 24 characters in length and use numbers and lower-
-         case letters only.
+         Storage account names must be between 3 and 24 characters in length and use numbers and
+         lower-case letters only.
         :type account_name: str
         :param container_name: The name of the blob container within the specified storage account.
          Blob container names must be between 3 and 63 characters in length and use numbers, lower-case
@@ -780,11 +801,14 @@ class BlobContainersOperations(object):
         :rtype: ~azure.mgmt.storage.v2019_06_01.models.ImmutabilityPolicy
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.ImmutabilityPolicy"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.ImmutabilityPolicy"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         immutability_policy_name = "default"
         api_version = "2019-06-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.delete_immutability_policy.metadata['url']  # type: ignore
@@ -804,7 +828,7 @@ class BlobContainersOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['If-Match'] = self._serialize.header("if_match", if_match, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         request = self._client.delete(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
@@ -832,7 +856,7 @@ class BlobContainersOperations(object):
         if_match,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.ImmutabilityPolicy"
+        # type: (...) -> "_models.ImmutabilityPolicy"
         """Sets the ImmutabilityPolicy to Locked state. The only action allowed on a Locked policy is
         ExtendImmutabilityPolicy action. ETag in If-Match is required for this operation.
 
@@ -840,8 +864,8 @@ class BlobContainersOperations(object):
          name is case insensitive.
         :type resource_group_name: str
         :param account_name: The name of the storage account within the specified resource group.
-         Storage account names must be between 3 and 24 characters in length and use numbers and lower-
-         case letters only.
+         Storage account names must be between 3 and 24 characters in length and use numbers and
+         lower-case letters only.
         :type account_name: str
         :param container_name: The name of the blob container within the specified storage account.
          Blob container names must be between 3 and 63 characters in length and use numbers, lower-case
@@ -857,10 +881,13 @@ class BlobContainersOperations(object):
         :rtype: ~azure.mgmt.storage.v2019_06_01.models.ImmutabilityPolicy
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.ImmutabilityPolicy"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.ImmutabilityPolicy"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-06-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.lock_immutability_policy.metadata['url']  # type: ignore
@@ -879,7 +906,7 @@ class BlobContainersOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['If-Match'] = self._serialize.header("if_match", if_match, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         request = self._client.post(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
@@ -905,10 +932,10 @@ class BlobContainersOperations(object):
         account_name,  # type: str
         container_name,  # type: str
         if_match,  # type: str
-        parameters=None,  # type: Optional["models.ImmutabilityPolicy"]
+        parameters=None,  # type: Optional["_models.ImmutabilityPolicy"]
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.ImmutabilityPolicy"
+        # type: (...) -> "_models.ImmutabilityPolicy"
         """Extends the immutabilityPeriodSinceCreationInDays of a locked immutabilityPolicy. The only
         action allowed on a Locked policy will be this action. ETag in If-Match is required for this
         operation.
@@ -917,8 +944,8 @@ class BlobContainersOperations(object):
          name is case insensitive.
         :type resource_group_name: str
         :param account_name: The name of the storage account within the specified resource group.
-         Storage account names must be between 3 and 24 characters in length and use numbers and lower-
-         case letters only.
+         Storage account names must be between 3 and 24 characters in length and use numbers and
+         lower-case letters only.
         :type account_name: str
         :param container_name: The name of the blob container within the specified storage account.
          Blob container names must be between 3 and 63 characters in length and use numbers, lower-case
@@ -937,11 +964,14 @@ class BlobContainersOperations(object):
         :rtype: ~azure.mgmt.storage.v2019_06_01.models.ImmutabilityPolicy
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.ImmutabilityPolicy"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.ImmutabilityPolicy"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-06-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self.extend_immutability_policy.metadata['url']  # type: ignore
@@ -961,7 +991,7 @@ class BlobContainersOperations(object):
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['If-Match'] = self._serialize.header("if_match", if_match, 'str')
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         body_content_kwargs = {}  # type: Dict[str, Any]
         if parameters is not None:
@@ -970,7 +1000,6 @@ class BlobContainersOperations(object):
             body_content = None
         body_content_kwargs['content'] = body_content
         request = self._client.post(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
@@ -993,10 +1022,10 @@ class BlobContainersOperations(object):
         resource_group_name,  # type: str
         account_name,  # type: str
         container_name,  # type: str
-        parameters=None,  # type: Optional["models.LeaseContainerRequest"]
+        parameters=None,  # type: Optional["_models.LeaseContainerRequest"]
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.LeaseContainerResponse"
+        # type: (...) -> "_models.LeaseContainerResponse"
         """The Lease Container operation establishes and manages a lock on a container for delete
         operations. The lock duration can be 15 to 60 seconds, or can be infinite.
 
@@ -1004,8 +1033,8 @@ class BlobContainersOperations(object):
          name is case insensitive.
         :type resource_group_name: str
         :param account_name: The name of the storage account within the specified resource group.
-         Storage account names must be between 3 and 24 characters in length and use numbers and lower-
-         case letters only.
+         Storage account names must be between 3 and 24 characters in length and use numbers and
+         lower-case letters only.
         :type account_name: str
         :param container_name: The name of the blob container within the specified storage account.
          Blob container names must be between 3 and 63 characters in length and use numbers, lower-case
@@ -1019,11 +1048,14 @@ class BlobContainersOperations(object):
         :rtype: ~azure.mgmt.storage.v2019_06_01.models.LeaseContainerResponse
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.LeaseContainerResponse"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.LeaseContainerResponse"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-06-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self.lease.metadata['url']  # type: ignore
@@ -1042,7 +1074,7 @@ class BlobContainersOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         body_content_kwargs = {}  # type: Dict[str, Any]
         if parameters is not None:
@@ -1051,7 +1083,6 @@ class BlobContainersOperations(object):
             body_content = None
         body_content_kwargs['content'] = body_content
         request = self._client.post(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 

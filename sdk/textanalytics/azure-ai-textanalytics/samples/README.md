@@ -28,6 +28,8 @@ These sample programs show common scenarios for the Text Analytics client's offe
 |[sample_extract_key_phrases.py][extract_key_phrases] and [sample_extract_key_phrases_async.py][extract_key_phrases_async]|Extract key phrases from documents|
 |[sample_analyze_sentiment.py][analyze_sentiment] and [sample_analyze_sentiment_async.py][analyze_sentiment_async]|Analyze the sentiment of documents|
 |[sample_alternative_document_input.py][sample_alternative_document_input] and [sample_alternative_document_input_async.py][sample_alternative_document_input_async]|Pass documents to an endpoint using dicts|
+|[sample_analyze_healthcare_entities.py][analyze_healthcare_entities_sample] and [sample_analyze_healthcare_entities_async.py][analyze_healthcare_entities_sample_async]|Analyze healthcare entities|
+|[sample_analyze_actions.py][analyze_sample] and [sample_analyze_actions_async.py][analyze_sample_async]|Run multiple analyses together in a single request|
 
 ## Prerequisites
 * Python 2.7, or 3.5 or later is required to use this package (3.5 or later if using asyncio)
@@ -39,8 +41,10 @@ These sample programs show common scenarios for the Text Analytics client's offe
 1. Install the Azure Text Analytics client library for Python with [pip][pip]:
 
 ```bash
-pip install azure-ai-textanalytics
+pip install azure-ai-textanalytics --pre
 ```
+For more information about how the versioning story of the SDK corresponds to the versioning story of the service's API, see [here][versioning_story_readme].
+
 * If authenticating with Azure Active Directory, make sure you have [azure-identity][azure_identity_pip] installed:
   ```bash
   pip install azure-identity
@@ -62,9 +66,10 @@ what you can do with the Azure Text Analytics client library.
 
 |**Advanced Sample File Name**|**Description**|
 |----------------|-------------|
-|[sample_analyze_sentiment_with_opinion_mining.py][sample_analyze_sentiment_with_opinion_mining] and [sample_analyze_sentiment_with_opinion_mining_async.py][sample_analyze_sentiment_with_opinion_mining_async]|Analyze sentiment in documents with granular analysis into individual opinions present in a sentence. Only available with API version v3.1-preview.1.|
+|[sample_analyze_sentiment_with_opinion_mining.py][sample_analyze_sentiment_with_opinion_mining] and [sample_analyze_sentiment_with_opinion_mining_async.py][sample_analyze_sentiment_with_opinion_mining_async]|Analyze sentiment in documents with granular analysis into individual opinions present in a sentence. Only available with API version v3.1-preview and up.|
 |[sample_get_detailed_diagnostics_information.py][get_detailed_diagnostics_information] and [sample_get_detailed_diagnostics_information_async.py][get_detailed_diagnostics_information_async]|Get the request batch statistics, model version, and raw response in JSON format through a callback|
 
+[versioning_story_readme]: https://github.com/Azure/azure-sdk-for-python/tree/master/sdk/textanalytics/azure-ai-textanalytics#install-the-package
 [azure_identity]: https://github.com/Azure/azure-sdk-for-python/tree/master/sdk/identity/azure-identity
 [sample_authentication]: https://github.com/Azure/azure-sdk-for-python/tree/master/sdk/textanalytics/azure-ai-textanalytics/samples/sample_authentication.py
 [sample_authentication_async]: https://github.com/Azure/azure-sdk-for-python/tree/master/sdk/textanalytics/azure-ai-textanalytics/samples/async_samples/sample_authentication_async.py
@@ -86,6 +91,10 @@ what you can do with the Azure Text Analytics client library.
 [sample_alternative_document_input_async]: https://github.com/Azure/azure-sdk-for-python/tree/master/sdk/textanalytics/azure-ai-textanalytics/samples/async_samples/sample_alternative_document_input_async.py
 [sample_analyze_sentiment_with_opinion_mining]: https://github.com/Azure/azure-sdk-for-python/tree/master/sdk/textanalytics/azure-ai-textanalytics/samples/sample_analyze_sentiment_with_opinion_mining.py
 [sample_analyze_sentiment_with_opinion_mining_async]: https://github.com/Azure/azure-sdk-for-python/tree/master/sdk/textanalytics/azure-ai-textanalytics/samples/async_samples/sample_analyze_sentiment_with_opinion_mining_async.py
+[analyze_healthcare_entities_sample]: https://github.com/Azure/azure-sdk-for-python/blob/master/sdk/textanalytics/azure-ai-textanalytics/samples/sample_analyze_healthcare_entities.py
+[analyze_healthcare_entities_sample_async]: https://github.com/Azure/azure-sdk-for-python/blob/master/sdk/textanalytics/azure-ai-textanalytics/samples/async_samples/sample_analyze_healthcare_entities_async.py
+[analyze_sample]: https://github.com/Azure/azure-sdk-for-python/blob/master/sdk/textanalytics/azure-ai-textanalytics/samples/sample_analyze_actions.py
+[analyze_sample_async]: https://github.com/Azure/azure-sdk-for-python/blob/master/sdk/textanalytics/azure-ai-textanalytics/samples/async_samples/sample_analyze_actions_async.py
 [pip]: https://pypi.org/project/pip/
 [azure_subscription]: https://azure.microsoft.com/free/
 [azure_text_analytics_account]: https://docs.microsoft.com/azure/cognitive-services/cognitive-services-apis-create-account?tabs=singleservice%2Cwindows

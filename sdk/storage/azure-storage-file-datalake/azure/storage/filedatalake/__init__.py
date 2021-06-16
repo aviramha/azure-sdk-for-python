@@ -18,7 +18,6 @@ from ._models import (
     DirectoryProperties,
     FileProperties,
     PathProperties,
-    PathPropertiesPaged,
     LeaseProperties,
     ContentSettings,
     AccountSasPermissions,
@@ -30,8 +29,21 @@ from ._models import (
     AccessPolicy,
     DelimitedTextDialect,
     DelimitedJsonDialect,
-    DataLakeFileQueryError
+    ArrowDialect,
+    ArrowType,
+    DataLakeFileQueryError,
+    AccessControlChangeResult,
+    AccessControlChangeCounters,
+    AccessControlChangeFailure,
+    AccessControlChanges,
+    AnalyticsLogging,
+    Metrics,
+    RetentionPolicy,
+    StaticWebsite,
+    CorsRule,
+    DeletedPathProperties
 )
+
 from ._shared_access_signature import generate_account_sas, generate_file_system_sas, generate_directory_sas, \
     generate_file_sas
 
@@ -60,9 +72,12 @@ __all__ = [
     'DirectoryProperties',
     'FileProperties',
     'PathProperties',
-    'PathPropertiesPaged',
     'LeaseProperties',
     'ContentSettings',
+    'AccessControlChangeResult',
+    'AccessControlChangeCounters',
+    'AccessControlChangeFailure',
+    'AccessControlChanges',
     'AccountSasPermissions',
     'FileSystemSasPermissions',
     'DirectorySasPermissions',
@@ -75,5 +90,14 @@ __all__ = [
     'StorageStreamDownloader',
     'DelimitedTextDialect',
     'DelimitedJsonDialect',
-    'DataLakeFileQueryError'
+    'DataLakeFileQueryError',
+    'ArrowDialect',
+    'ArrowType',
+    'DataLakeFileQueryError',
+    'AnalyticsLogging',
+    'Metrics',
+    'RetentionPolicy',
+    'StaticWebsite',
+    'CorsRule',
+    'DeletedPathProperties'
 ]

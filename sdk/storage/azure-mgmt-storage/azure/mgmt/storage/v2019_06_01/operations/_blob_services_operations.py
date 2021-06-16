@@ -8,13 +8,13 @@
 from typing import TYPE_CHECKING
 import warnings
 
-from azure.core.exceptions import HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
+from azure.core.exceptions import ClientAuthenticationError, HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
 from azure.core.paging import ItemPaged
 from azure.core.pipeline import PipelineResponse
 from azure.core.pipeline.transport import HttpRequest, HttpResponse
 from azure.mgmt.core.exceptions import ARMErrorFormat
 
-from .. import models
+from .. import models as _models
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,ungrouped-imports
@@ -37,7 +37,7 @@ class BlobServicesOperations(object):
     :param deserializer: An object model deserializer.
     """
 
-    models = models
+    models = _models
 
     def __init__(self, client, config, serializer, deserializer):
         self._client = client
@@ -51,30 +51,33 @@ class BlobServicesOperations(object):
         account_name,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.BlobServiceItems"]
+        # type: (...) -> Iterable["_models.BlobServiceItems"]
         """List blob services of storage account. It returns a collection of one object named default.
 
         :param resource_group_name: The name of the resource group within the user's subscription. The
-     name is case insensitive.
+         name is case insensitive.
         :type resource_group_name: str
         :param account_name: The name of the storage account within the specified resource group.
-     Storage account names must be between 3 and 24 characters in length and use numbers and lower-
-     case letters only.
+         Storage account names must be between 3 and 24 characters in length and use numbers and
+         lower-case letters only.
         :type account_name: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :return: An iterator like instance of either BlobServiceItems or the result of cls(response)
         :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.storage.v2019_06_01.models.BlobServiceItems]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.BlobServiceItems"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.BlobServiceItems"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-06-01"
+        accept = "application/json"
 
         def prepare_request(next_link=None):
             # Construct headers
             header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
             if not next_link:
                 # Construct URL
@@ -124,10 +127,10 @@ class BlobServicesOperations(object):
         self,
         resource_group_name,  # type: str
         account_name,  # type: str
-        parameters,  # type: "models.BlobServiceProperties"
+        parameters,  # type: "_models.BlobServiceProperties"
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.BlobServiceProperties"
+        # type: (...) -> "_models.BlobServiceProperties"
         """Sets the properties of a storage account’s Blob service, including properties for Storage
         Analytics and CORS (Cross-Origin Resource Sharing) rules.
 
@@ -135,8 +138,8 @@ class BlobServicesOperations(object):
          name is case insensitive.
         :type resource_group_name: str
         :param account_name: The name of the storage account within the specified resource group.
-         Storage account names must be between 3 and 24 characters in length and use numbers and lower-
-         case letters only.
+         Storage account names must be between 3 and 24 characters in length and use numbers and
+         lower-case letters only.
         :type account_name: str
         :param parameters: The properties of a storage account’s Blob service, including properties for
          Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
@@ -146,12 +149,15 @@ class BlobServicesOperations(object):
         :rtype: ~azure.mgmt.storage.v2019_06_01.models.BlobServiceProperties
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.BlobServiceProperties"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.BlobServiceProperties"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-06-01"
         blob_services_name = "default"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self.set_service_properties.metadata['url']  # type: ignore
@@ -170,13 +176,12 @@ class BlobServicesOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(parameters, 'BlobServiceProperties')
         body_content_kwargs['content'] = body_content
         request = self._client.put(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
@@ -198,7 +203,7 @@ class BlobServicesOperations(object):
         account_name,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.BlobServiceProperties"
+        # type: (...) -> "_models.BlobServiceProperties"
         """Gets the properties of a storage account’s Blob service, including properties for Storage
         Analytics and CORS (Cross-Origin Resource Sharing) rules.
 
@@ -206,19 +211,22 @@ class BlobServicesOperations(object):
          name is case insensitive.
         :type resource_group_name: str
         :param account_name: The name of the storage account within the specified resource group.
-         Storage account names must be between 3 and 24 characters in length and use numbers and lower-
-         case letters only.
+         Storage account names must be between 3 and 24 characters in length and use numbers and
+         lower-case letters only.
         :type account_name: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :return: BlobServiceProperties, or the result of cls(response)
         :rtype: ~azure.mgmt.storage.v2019_06_01.models.BlobServiceProperties
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.BlobServiceProperties"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.BlobServiceProperties"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-06-01"
         blob_services_name = "default"
+        accept = "application/json"
 
         # Construct URL
         url = self.get_service_properties.metadata['url']  # type: ignore
@@ -236,7 +244,7 @@ class BlobServicesOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)

@@ -8,11 +8,11 @@
 from typing import TYPE_CHECKING
 import warnings
 
-from azure.core.exceptions import HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
+from azure.core.exceptions import ClientAuthenticationError, HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
 from azure.core.pipeline import PipelineResponse
 from azure.core.pipeline.transport import HttpRequest, HttpResponse
 
-from .. import models
+from .. import models as _models
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,ungrouped-imports
@@ -35,7 +35,7 @@ class PipelineRunOperations(object):
     :param deserializer: An object model deserializer.
     """
 
-    models = models
+    models = _models
 
     def __init__(self, client, config, serializer, deserializer):
         self._client = client
@@ -45,10 +45,10 @@ class PipelineRunOperations(object):
 
     def query_pipeline_runs_by_workspace(
         self,
-        filter_parameters,  # type: "models.RunFilterParameters"
+        filter_parameters,  # type: "_models.RunFilterParameters"
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.PipelineRunsQueryResponse"
+        # type: (...) -> "_models.PipelineRunsQueryResponse"
         """Query pipeline runs in the workspace based on input filter conditions.
 
         :param filter_parameters: Parameters to filter the pipeline run.
@@ -58,11 +58,14 @@ class PipelineRunOperations(object):
         :rtype: ~azure.synapse.artifacts.models.PipelineRunsQueryResponse
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.PipelineRunsQueryResponse"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.PipelineRunsQueryResponse"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-06-01-preview"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self.query_pipeline_runs_by_workspace.metadata['url']  # type: ignore
@@ -78,19 +81,18 @@ class PipelineRunOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(filter_parameters, 'RunFilterParameters')
         body_content_kwargs['content'] = body_content
         request = self._client.post(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
         if response.status_code not in [200]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.CloudError, response)
+            error = self._deserialize.failsafe_deserialize(_models.CloudError, response)
             raise HttpResponseError(response=response, model=error)
 
         deserialized = self._deserialize('PipelineRunsQueryResponse', pipeline_response)
@@ -106,7 +108,7 @@ class PipelineRunOperations(object):
         run_id,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.PipelineRun"
+        # type: (...) -> "_models.PipelineRun"
         """Get a pipeline run by its run ID.
 
         :param run_id: The pipeline run identifier.
@@ -116,10 +118,13 @@ class PipelineRunOperations(object):
         :rtype: ~azure.synapse.artifacts.models.PipelineRun
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.PipelineRun"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.PipelineRun"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-06-01-preview"
+        accept = "application/json"
 
         # Construct URL
         url = self.get_pipeline_run.metadata['url']  # type: ignore
@@ -135,7 +140,7 @@ class PipelineRunOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
@@ -143,7 +148,7 @@ class PipelineRunOperations(object):
 
         if response.status_code not in [200]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.CloudError, response)
+            error = self._deserialize.failsafe_deserialize(_models.CloudError, response)
             raise HttpResponseError(response=response, model=error)
 
         deserialized = self._deserialize('PipelineRun', pipeline_response)
@@ -158,10 +163,10 @@ class PipelineRunOperations(object):
         self,
         pipeline_name,  # type: str
         run_id,  # type: str
-        filter_parameters,  # type: "models.RunFilterParameters"
+        filter_parameters,  # type: "_models.RunFilterParameters"
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.ActivityRunsQueryResponse"
+        # type: (...) -> "_models.ActivityRunsQueryResponse"
         """Query activity runs based on input filter conditions.
 
         :param pipeline_name: The pipeline name.
@@ -175,11 +180,14 @@ class PipelineRunOperations(object):
         :rtype: ~azure.synapse.artifacts.models.ActivityRunsQueryResponse
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.ActivityRunsQueryResponse"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.ActivityRunsQueryResponse"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-06-01-preview"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self.query_activity_runs.metadata['url']  # type: ignore
@@ -197,19 +205,18 @@ class PipelineRunOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(filter_parameters, 'RunFilterParameters')
         body_content_kwargs['content'] = body_content
         request = self._client.post(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
         if response.status_code not in [200]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.CloudError, response)
+            error = self._deserialize.failsafe_deserialize(_models.CloudError, response)
             raise HttpResponseError(response=response, model=error)
 
         deserialized = self._deserialize('ActivityRunsQueryResponse', pipeline_response)
@@ -240,9 +247,12 @@ class PipelineRunOperations(object):
         :raises: ~azure.core.exceptions.HttpResponseError
         """
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-06-01-preview"
+        accept = "application/json"
 
         # Construct URL
         url = self.cancel_pipeline_run.metadata['url']  # type: ignore
@@ -260,6 +270,7 @@ class PipelineRunOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         request = self._client.post(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
@@ -267,7 +278,7 @@ class PipelineRunOperations(object):
 
         if response.status_code not in [200]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.CloudError, response)
+            error = self._deserialize.failsafe_deserialize(_models.CloudError, response)
             raise HttpResponseError(response=response, model=error)
 
         if cls:

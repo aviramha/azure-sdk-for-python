@@ -113,58 +113,55 @@ class ApplicationGateway(Resource):
     :vartype operational_state: str or
      ~azure.mgmt.network.v2018_12_01.models.ApplicationGatewayOperationalState
     :param gateway_ip_configurations: Subnets of the application gateway resource. For default
-     limits, see `Application Gateway limits <https://docs.microsoft.com/azure/azure-subscription-
-     service-limits#application-gateway-limits>`_.
+     limits, see `Application Gateway limits
+     <https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits>`_.
     :type gateway_ip_configurations:
      list[~azure.mgmt.network.v2018_12_01.models.ApplicationGatewayIPConfiguration]
     :param authentication_certificates: Authentication certificates of the application gateway
      resource. For default limits, see `Application Gateway limits
-     <https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-
-     limits>`_.
+     <https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits>`_.
     :type authentication_certificates:
      list[~azure.mgmt.network.v2018_12_01.models.ApplicationGatewayAuthenticationCertificate]
     :param trusted_root_certificates: Trusted Root certificates of the application gateway
      resource. For default limits, see `Application Gateway limits
-     <https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-
-     limits>`_.
+     <https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits>`_.
     :type trusted_root_certificates:
      list[~azure.mgmt.network.v2018_12_01.models.ApplicationGatewayTrustedRootCertificate]
     :param ssl_certificates: SSL certificates of the application gateway resource. For default
-     limits, see `Application Gateway limits <https://docs.microsoft.com/azure/azure-subscription-
-     service-limits#application-gateway-limits>`_.
+     limits, see `Application Gateway limits
+     <https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits>`_.
     :type ssl_certificates:
      list[~azure.mgmt.network.v2018_12_01.models.ApplicationGatewaySslCertificate]
     :param frontend_ip_configurations: Frontend IP addresses of the application gateway resource.
-     For default limits, see `Application Gateway limits <https://docs.microsoft.com/azure/azure-
-     subscription-service-limits#application-gateway-limits>`_.
+     For default limits, see `Application Gateway limits
+     <https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits>`_.
     :type frontend_ip_configurations:
      list[~azure.mgmt.network.v2018_12_01.models.ApplicationGatewayFrontendIPConfiguration]
     :param frontend_ports: Frontend ports of the application gateway resource. For default limits,
-     see `Application Gateway limits <https://docs.microsoft.com/azure/azure-subscription-service-
-     limits#application-gateway-limits>`_.
+     see `Application Gateway limits
+     <https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits>`_.
     :type frontend_ports:
      list[~azure.mgmt.network.v2018_12_01.models.ApplicationGatewayFrontendPort]
     :param probes: Probes of the application gateway resource.
     :type probes: list[~azure.mgmt.network.v2018_12_01.models.ApplicationGatewayProbe]
     :param backend_address_pools: Backend address pool of the application gateway resource. For
-     default limits, see `Application Gateway limits <https://docs.microsoft.com/azure/azure-
-     subscription-service-limits#application-gateway-limits>`_.
+     default limits, see `Application Gateway limits
+     <https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits>`_.
     :type backend_address_pools:
      list[~azure.mgmt.network.v2018_12_01.models.ApplicationGatewayBackendAddressPool]
     :param backend_http_settings_collection: Backend http settings of the application gateway
      resource. For default limits, see `Application Gateway limits
-     <https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-
-     limits>`_.
+     <https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits>`_.
     :type backend_http_settings_collection:
      list[~azure.mgmt.network.v2018_12_01.models.ApplicationGatewayBackendHttpSettings]
     :param http_listeners: Http listeners of the application gateway resource. For default limits,
-     see `Application Gateway limits <https://docs.microsoft.com/azure/azure-subscription-service-
-     limits#application-gateway-limits>`_.
+     see `Application Gateway limits
+     <https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits>`_.
     :type http_listeners:
      list[~azure.mgmt.network.v2018_12_01.models.ApplicationGatewayHttpListener]
     :param url_path_maps: URL path map of the application gateway resource. For default limits, see
-     `Application Gateway limits <https://docs.microsoft.com/azure/azure-subscription-service-
-     limits#application-gateway-limits>`_.
+     `Application Gateway limits
+     <https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits>`_.
     :type url_path_maps: list[~azure.mgmt.network.v2018_12_01.models.ApplicationGatewayUrlPathMap]
     :param request_routing_rules: Request routing rules of the application gateway resource.
     :type request_routing_rules:
@@ -173,8 +170,8 @@ class ApplicationGateway(Resource):
     :type rewrite_rule_sets:
      list[~azure.mgmt.network.v2018_12_01.models.ApplicationGatewayRewriteRuleSet]
     :param redirect_configurations: Redirect configurations of the application gateway resource.
-     For default limits, see `Application Gateway limits <https://docs.microsoft.com/azure/azure-
-     subscription-service-limits#application-gateway-limits>`_.
+     For default limits, see `Application Gateway limits
+     <https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits>`_.
     :type redirect_configurations:
      list[~azure.mgmt.network.v2018_12_01.models.ApplicationGatewayRedirectConfiguration]
     :param web_application_firewall_configuration: Web application firewall configuration.
@@ -1806,7 +1803,7 @@ class ApplicationGatewayRewriteRuleCondition(msrest.serialization.Model):
     :param pattern: The pattern, either fixed string or regular expression, that evaluates the
      truthfulness of the condition.
     :type pattern: str
-    :param ignore_case: Setting this paramter to truth value with force the pattern to do a case
+    :param ignore_case: Setting this parameter to truth value with force the pattern to do a case
      in-sensitive comparison.
     :type ignore_case: bool
     :param negate: Setting this value as truth will force to check the negation of the condition
@@ -4654,7 +4651,7 @@ class ContainerNetworkInterface(SubResource):
      ~azure.mgmt.network.v2018_12_01.models.ContainerNetworkInterfaceConfiguration
     :param container: Reference to the container to which this container network interface is
      attached.
-    :type container: ~azure.mgmt.network.v2018_12_01.models.SubResource
+    :type container: ~azure.mgmt.network.v2018_12_01.models.Container
     :param ip_configurations: Reference to the ip configuration on this container nic.
     :type ip_configurations:
      list[~azure.mgmt.network.v2018_12_01.models.ContainerNetworkInterfaceIpConfiguration]
@@ -4673,7 +4670,7 @@ class ContainerNetworkInterface(SubResource):
         'type': {'key': 'type', 'type': 'str'},
         'etag': {'key': 'etag', 'type': 'str'},
         'container_network_interface_configuration': {'key': 'properties.containerNetworkInterfaceConfiguration', 'type': 'ContainerNetworkInterfaceConfiguration'},
-        'container': {'key': 'properties.container', 'type': 'SubResource'},
+        'container': {'key': 'properties.container', 'type': 'Container'},
         'ip_configurations': {'key': 'properties.ipConfigurations', 'type': '[ContainerNetworkInterfaceIpConfiguration]'},
         'provisioning_state': {'key': 'properties.provisioningState', 'type': 'str'},
     }
@@ -4685,7 +4682,7 @@ class ContainerNetworkInterface(SubResource):
         name: Optional[str] = None,
         etag: Optional[str] = None,
         container_network_interface_configuration: Optional["ContainerNetworkInterfaceConfiguration"] = None,
-        container: Optional["SubResource"] = None,
+        container: Optional["Container"] = None,
         ip_configurations: Optional[List["ContainerNetworkInterfaceIpConfiguration"]] = None,
         **kwargs
     ):
@@ -7575,32 +7572,26 @@ class ExpressRouteServiceProviderListResult(msrest.serialization.Model):
 class FlowLogFormatParameters(msrest.serialization.Model):
     """Parameters that define the flow log format.
 
-    Variables are only populated by the server, and will be ignored when sending a request.
-
-    :ivar type: The file type of flow log. Default value: "JSON".
-    :vartype type: str
+    :param type: The file type of flow log. Possible values include: "JSON".
+    :type type: str or ~azure.mgmt.network.v2018_12_01.models.FlowLogFormatType
     :param version: The version (revision) of the flow log.
     :type version: int
     """
-
-    _validation = {
-        'type': {'constant': True},
-    }
 
     _attribute_map = {
         'type': {'key': 'type', 'type': 'str'},
         'version': {'key': 'version', 'type': 'int'},
     }
 
-    type = "JSON"
-
     def __init__(
         self,
         *,
+        type: Optional[Union[str, "FlowLogFormatType"]] = None,
         version: Optional[int] = 0,
         **kwargs
     ):
         super(FlowLogFormatParameters, self).__init__(**kwargs)
+        self.type = type
         self.version = version
 
 
@@ -7889,19 +7880,13 @@ class GetVpnSitesConfigurationRequest(msrest.serialization.Model):
 class HTTPConfiguration(msrest.serialization.Model):
     """HTTP configuration of the connectivity check.
 
-    Variables are only populated by the server, and will be ignored when sending a request.
-
-    :ivar method: HTTP method. Default value: "Get".
-    :vartype method: str
+    :param method: HTTP method. Possible values include: "Get".
+    :type method: str or ~azure.mgmt.network.v2018_12_01.models.HTTPMethod
     :param headers: List of HTTP headers.
     :type headers: list[~azure.mgmt.network.v2018_12_01.models.HTTPHeader]
     :param valid_status_codes: Valid status codes.
     :type valid_status_codes: list[int]
     """
-
-    _validation = {
-        'method': {'constant': True},
-    }
 
     _attribute_map = {
         'method': {'key': 'method', 'type': 'str'},
@@ -7909,16 +7894,16 @@ class HTTPConfiguration(msrest.serialization.Model):
         'valid_status_codes': {'key': 'validStatusCodes', 'type': '[int]'},
     }
 
-    method = "Get"
-
     def __init__(
         self,
         *,
+        method: Optional[Union[str, "HTTPMethod"]] = None,
         headers: Optional[List["HTTPHeader"]] = None,
         valid_status_codes: Optional[List[int]] = None,
         **kwargs
     ):
         super(HTTPConfiguration, self).__init__(**kwargs)
+        self.method = method
         self.headers = headers
         self.valid_status_codes = valid_status_codes
 
@@ -11730,8 +11715,8 @@ class PacketCaptureStorageLocation(msrest.serialization.Model):
     :param storage_id: The ID of the storage account to save the packet capture session. Required
      if no local file path is provided.
     :type storage_id: str
-    :param storage_path: The URI of the storage path to save the packet capture. Must be a well-
-     formed URI describing the location to save the packet capture.
+    :param storage_path: The URI of the storage path to save the packet capture. Must be a
+     well-formed URI describing the location to save the packet capture.
     :type storage_path: str
     :param file_path: A valid local path on the targeting VM. Must include the name of the capture
      file (*.cap). For linux virtual machine it must start with /var/captures. Required if no
@@ -11836,9 +11821,9 @@ class PatchRouteFilterRule(SubResource):
     :param access: The access type of the rule. Valid values are: 'Allow', 'Deny'. Possible values
      include: "Allow", "Deny".
     :type access: str or ~azure.mgmt.network.v2018_12_01.models.Access
-    :ivar route_filter_rule_type: The rule type of the rule. Valid value is: 'Community'. Default
-     value: "Community".
-    :vartype route_filter_rule_type: str
+    :param route_filter_rule_type: The rule type of the rule. Valid value is: 'Community'. Possible
+     values include: "Community".
+    :type route_filter_rule_type: str or ~azure.mgmt.network.v2018_12_01.models.RouteFilterRuleType
     :param communities: The collection for bgp community values to filter on. e.g.
      ['12076:5010','12076:5020'].
     :type communities: list[str]
@@ -11850,7 +11835,6 @@ class PatchRouteFilterRule(SubResource):
     _validation = {
         'name': {'readonly': True},
         'etag': {'readonly': True},
-        'route_filter_rule_type': {'constant': True},
         'provisioning_state': {'readonly': True},
     }
 
@@ -11864,13 +11848,12 @@ class PatchRouteFilterRule(SubResource):
         'provisioning_state': {'key': 'properties.provisioningState', 'type': 'str'},
     }
 
-    route_filter_rule_type = "Community"
-
     def __init__(
         self,
         *,
         id: Optional[str] = None,
         access: Optional[Union[str, "Access"]] = None,
+        route_filter_rule_type: Optional[Union[str, "RouteFilterRuleType"]] = None,
         communities: Optional[List[str]] = None,
         **kwargs
     ):
@@ -11878,6 +11861,7 @@ class PatchRouteFilterRule(SubResource):
         self.name = None
         self.etag = None
         self.access = access
+        self.route_filter_rule_type = route_filter_rule_type
         self.communities = communities
         self.provisioning_state = None
 
@@ -12525,27 +12509,22 @@ class PublicIPPrefixListResult(msrest.serialization.Model):
 class PublicIPPrefixSku(msrest.serialization.Model):
     """SKU of a public IP prefix.
 
-    Variables are only populated by the server, and will be ignored when sending a request.
-
-    :ivar name: Name of a public IP prefix SKU. Default value: "Standard".
-    :vartype name: str
+    :param name: Name of a public IP prefix SKU. Possible values include: "Standard".
+    :type name: str or ~azure.mgmt.network.v2018_12_01.models.PublicIPPrefixSkuName
     """
-
-    _validation = {
-        'name': {'constant': True},
-    }
 
     _attribute_map = {
         'name': {'key': 'name', 'type': 'str'},
     }
 
-    name = "Standard"
-
     def __init__(
         self,
+        *,
+        name: Optional[Union[str, "PublicIPPrefixSkuName"]] = None,
         **kwargs
     ):
         super(PublicIPPrefixSku, self).__init__(**kwargs)
+        self.name = name
 
 
 class QueryTroubleshootingParameters(msrest.serialization.Model):
@@ -12834,9 +12813,9 @@ class RouteFilterRule(SubResource):
     :param access: The access type of the rule. Valid values are: 'Allow', 'Deny'. Possible values
      include: "Allow", "Deny".
     :type access: str or ~azure.mgmt.network.v2018_12_01.models.Access
-    :ivar route_filter_rule_type: The rule type of the rule. Valid value is: 'Community'. Default
-     value: "Community".
-    :vartype route_filter_rule_type: str
+    :param route_filter_rule_type: The rule type of the rule. Valid value is: 'Community'. Possible
+     values include: "Community".
+    :type route_filter_rule_type: str or ~azure.mgmt.network.v2018_12_01.models.RouteFilterRuleType
     :param communities: The collection for bgp community values to filter on. e.g.
      ['12076:5010','12076:5020'].
     :type communities: list[str]
@@ -12847,7 +12826,6 @@ class RouteFilterRule(SubResource):
 
     _validation = {
         'etag': {'readonly': True},
-        'route_filter_rule_type': {'constant': True},
         'provisioning_state': {'readonly': True},
     }
 
@@ -12862,8 +12840,6 @@ class RouteFilterRule(SubResource):
         'provisioning_state': {'key': 'properties.provisioningState', 'type': 'str'},
     }
 
-    route_filter_rule_type = "Community"
-
     def __init__(
         self,
         *,
@@ -12871,6 +12847,7 @@ class RouteFilterRule(SubResource):
         name: Optional[str] = None,
         location: Optional[str] = None,
         access: Optional[Union[str, "Access"]] = None,
+        route_filter_rule_type: Optional[Union[str, "RouteFilterRuleType"]] = None,
         communities: Optional[List[str]] = None,
         **kwargs
     ):
@@ -12879,6 +12856,7 @@ class RouteFilterRule(SubResource):
         self.location = location
         self.etag = None
         self.access = access
+        self.route_filter_rule_type = route_filter_rule_type
         self.communities = communities
         self.provisioning_state = None
 
@@ -14192,8 +14170,9 @@ class Usage(msrest.serialization.Model):
 
     :ivar id: Resource identifier.
     :vartype id: str
-    :ivar unit: Required. An enum describing the unit of measurement. Default value: "Count".
-    :vartype unit: str
+    :param unit: Required. An enum describing the unit of measurement. Possible values include:
+     "Count".
+    :type unit: str or ~azure.mgmt.network.v2018_12_01.models.UsageUnit
     :param current_value: Required. The current value of the usage.
     :type current_value: long
     :param limit: Required. The limit of usage.
@@ -14204,7 +14183,7 @@ class Usage(msrest.serialization.Model):
 
     _validation = {
         'id': {'readonly': True},
-        'unit': {'required': True, 'constant': True},
+        'unit': {'required': True},
         'current_value': {'required': True},
         'limit': {'required': True},
         'name': {'required': True},
@@ -14218,11 +14197,10 @@ class Usage(msrest.serialization.Model):
         'name': {'key': 'name', 'type': 'UsageName'},
     }
 
-    unit = "Count"
-
     def __init__(
         self,
         *,
+        unit: Union[str, "UsageUnit"],
         current_value: int,
         limit: int,
         name: "UsageName",
@@ -14230,6 +14208,7 @@ class Usage(msrest.serialization.Model):
     ):
         super(Usage, self).__init__(**kwargs)
         self.id = None
+        self.unit = unit
         self.current_value = current_value
         self.limit = limit
         self.name = name
@@ -15369,8 +15348,8 @@ class VirtualNetworkPeering(SubResource):
     :type use_remote_gateways: bool
     :param remote_virtual_network: The reference of the remote virtual network. The remote virtual
      network can be in the same or different region (preview). See here to register for the preview
-     and learn more (https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-create-
-     peering).
+     and learn more
+     (https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-create-peering).
     :type remote_virtual_network: ~azure.mgmt.network.v2018_12_01.models.SubResource
     :param remote_address_space: The reference of the remote virtual network address space.
     :type remote_address_space: ~azure.mgmt.network.v2018_12_01.models.AddressSpace

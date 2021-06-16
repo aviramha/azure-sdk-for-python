@@ -34,8 +34,11 @@ or [Azure CLI](https://docs.microsoft.com/azure/storage/blobs/data-lake-storage-
 # if using an existing resource group, skip this step
 az group create --name my-resource-group --location westus2
 
+# Install the extension 'Storage-Preview'
+az extension add --name storage-preview
+
 # Create the storage account
-az storage account create -n my-storage-account-name -g my-resource-group --hierarchical-namespace true
+az storage account create --name my-storage-account-name --resource-group my-resource-group --sku Standard_LRS --kind StorageV2 --hierarchical-namespace true
 ```
 
 ### Authenticate the client
@@ -124,7 +127,7 @@ from azure.storage.filedatalake import DataLakeFileClient
 data = b"abc"
 file = DataLakeFileClient.from_connection_string("my_connection_string", 
                                                  file_system_name="myfilesystem", file_path="myfile")
-
+file.create_file ()
 file.append_data(data, offset=0, length=len(data))
 file.flush_data(len(data))
 ```
@@ -160,7 +163,7 @@ for path in paths:
 ### General
 DataLake Storage clients raise exceptions defined in [Azure Core](https://github.com/Azure/azure-sdk-for-python/blob/master/sdk/core/azure-core/README.md).
 
-All DataLake service operations will throw a StorageErrorException on failure with helpful [error codes](https://docs.microsoft.com/rest/api/storageservices/blob-service-error-codes).
+This list can be used for reference to catch thrown exceptions. To get the specific error code of the exception, use the `error_code` attribute, i.e, `exception.error_code`.
 
 ### Logging
 This library uses the standard

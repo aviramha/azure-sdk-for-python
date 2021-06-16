@@ -19,11 +19,13 @@ except ImportError:
 
 from _shared.testcase import StorageTestCase, GlobalStorageAccountPreparer, GlobalResourceGroupPreparer
 from azure.core.exceptions import (
-    ResourceExistsError, ResourceModifiedError)
+    ResourceExistsError, ResourceModifiedError, HttpResponseError)
 from azure.storage.blob import (
     BlobServiceClient,
     BlobBlock, generate_account_sas, ResourceTypes, AccountSasPermissions, generate_container_sas,
     ContainerSasPermissions, BlobClient, generate_blob_sas, BlobSasPermissions)
+
+from _shared.service_versions import is_version_before, ServiceVersion
 
 #------------------------------------------------------------------------------
 
@@ -34,7 +36,7 @@ TEST_BLOB_PREFIX = 'blob'
 class StorageBlobTagsTest(StorageTestCase):
 
     def _setup(self, storage_account, key):
-        self.bsc = BlobServiceClient(self.account_url(storage_account, "blob"), credential=key)
+        self.bsc = self.create_storage_client(BlobServiceClient, self.account_url(storage_account, "blob"), credential=key)
         self.container_name = self.get_resource_name("container")
         if self.is_live:
             container = self.bsc.get_container_client(self.container_name)
@@ -90,6 +92,7 @@ class StorageBlobTagsTest(StorageTestCase):
 
     #-- test cases for blob tags ----------------------------------------------
 
+    @pytest.mark.skipif(is_version_before(ServiceVersion.V2019_12_12), reason="SV too low")
     @GlobalResourceGroupPreparer()
     @StorageAccountPreparer(random_name_enabled=True, location="canadacentral", name_prefix='pytagstorage')
     def test_set_blob_tags(self, resource_group, location, storage_account, storage_account_key):
@@ -103,6 +106,31 @@ class StorageBlobTagsTest(StorageTestCase):
         # Assert
         self.assertIsNotNone(resp)
 
+    @pytest.mark.skipif(is_version_before(ServiceVersion.V2019_12_12), reason="SV too low")
+    @pytest.mark.playback_test_only
+    @GlobalStorageAccountPreparer()
+    def test_set_blob_tags_with_lease(self, resource_group, location, storage_account, storage_account_key):
+        self._setup(storage_account, storage_account_key)
+        blob_client, _ = self._create_block_blob()
+        lease = blob_client.acquire_lease()
+
+        # Act
+        blob_tags = {"tag1": "firsttag", "tag2": "secondtag", "tag3": "thirdtag"}
+        with self.assertRaises(HttpResponseError):
+            blob_client.set_blob_tags(blob_tags)
+        blob_client.set_blob_tags(blob_tags, lease=lease)
+
+        blob_client.get_blob_tags()
+        with self.assertRaises(HttpResponseError):
+            blob_client.get_blob_tags(lease="'d92e6954-3274-4715-811c-727ca7145303'")
+        resp = blob_client.get_blob_tags(lease=lease)
+
+        self.assertIsNotNone(resp)
+        self.assertEqual(len(resp), 3)
+
+        blob_client.delete_blob(lease=lease)
+
+    @pytest.mark.skipif(is_version_before(ServiceVersion.V2019_12_12), reason="SV too low")
     @pytest.mark.playback_test_only
     @GlobalStorageAccountPreparer()
     def test_set_blob_tags_for_a_version(self, resource_group, location, storage_account, storage_account_key):
@@ -119,6 +147,7 @@ class StorageBlobTagsTest(StorageTestCase):
         # Assert
         self.assertIsNotNone(resp)
 
+    @pytest.mark.skipif(is_version_before(ServiceVersion.V2019_12_12), reason="SV too low")
     @GlobalResourceGroupPreparer()
     @StorageAccountPreparer(random_name_enabled=True, location="canadacentral", name_prefix='pytagstorage')
     def test_get_blob_tags(self, resource_group, location, storage_account, storage_account_key):
@@ -137,6 +166,7 @@ class StorageBlobTagsTest(StorageTestCase):
         for key, value in resp.items():
             self.assertEqual(tags[key], value)
 
+    @pytest.mark.skipif(is_version_before(ServiceVersion.V2019_12_12), reason="SV too low")
     @GlobalResourceGroupPreparer()
     @StorageAccountPreparer(random_name_enabled=True, location="canadacentral", name_prefix='pytagstorage')
     def test_get_blob_tags_for_a_snapshot(self, resource_group, location, storage_account, storage_account_key):
@@ -155,6 +185,7 @@ class StorageBlobTagsTest(StorageTestCase):
         for key, value in resp.items():
             self.assertEqual(tags[key], value)
 
+    @pytest.mark.skipif(is_version_before(ServiceVersion.V2019_12_12), reason="SV too low")
     @GlobalResourceGroupPreparer()
     @StorageAccountPreparer(random_name_enabled=True, location="canadacentral", name_prefix='pytagstorage')
     def test_upload_block_blob_with_tags(self, resource_group, location, storage_account, storage_account_key):
@@ -168,6 +199,7 @@ class StorageBlobTagsTest(StorageTestCase):
         self.assertIsNotNone(resp)
         self.assertEqual(len(resp), 3)
 
+    @pytest.mark.skipif(is_version_before(ServiceVersion.V2019_12_12), reason="SV too low")
     @GlobalResourceGroupPreparer()
     @StorageAccountPreparer(random_name_enabled=True, location="canadacentral", name_prefix='pytagstorage')
     def test_get_blob_properties_returns_tags_num(self, resource_group, location, storage_account, storage_account_key):
@@ -183,6 +215,7 @@ class StorageBlobTagsTest(StorageTestCase):
         self.assertEqual(resp.tag_count, len(tags))
         self.assertEqual(downloaded.properties.tag_count, len(tags))
 
+    @pytest.mark.skipif(is_version_before(ServiceVersion.V2019_12_12), reason="SV too low")
     @GlobalResourceGroupPreparer()
     @StorageAccountPreparer(random_name_enabled=True, location="canadacentral", name_prefix='pytagstorage')
     def test_create_append_blob_with_tags(self, resource_group, location, storage_account, storage_account_key):
@@ -196,6 +229,7 @@ class StorageBlobTagsTest(StorageTestCase):
         self.assertIsNotNone(resp)
         self.assertEqual(len(resp), 3)
 
+    @pytest.mark.skipif(is_version_before(ServiceVersion.V2019_12_12), reason="SV too low")
     @GlobalResourceGroupPreparer()
     @StorageAccountPreparer(random_name_enabled=True, location="canadacentral", name_prefix='pytagstorage')
     def test_create_page_blob_with_tags(self, resource_group, location, storage_account, storage_account_key):
@@ -209,6 +243,7 @@ class StorageBlobTagsTest(StorageTestCase):
         self.assertIsNotNone(resp)
         self.assertEqual(len(resp), 3)
 
+    @pytest.mark.skipif(is_version_before(ServiceVersion.V2019_12_12), reason="SV too low")
     @GlobalResourceGroupPreparer()
     @StorageAccountPreparer(random_name_enabled=True, location="canadacentral", name_prefix='pytagstorage')
     def test_commit_block_list_with_tags(self, resource_group, location, storage_account, storage_account_key):
@@ -232,6 +267,7 @@ class StorageBlobTagsTest(StorageTestCase):
         self.assertIsNotNone(resp)
         self.assertEqual(len(resp), len(tags))
 
+    @pytest.mark.skipif(is_version_before(ServiceVersion.V2019_12_12), reason="SV too low")
     @GlobalResourceGroupPreparer()
     @StorageAccountPreparer(random_name_enabled=True, location="canadacentral", name_prefix='pytagstorage')
     def test_start_copy_from_url_with_tags(self, resource_group, location, storage_account, storage_account_key):
@@ -261,6 +297,7 @@ class StorageBlobTagsTest(StorageTestCase):
         self.assertIsNotNone(resp)
         self.assertEqual(len(resp), len(tags))
 
+    @pytest.mark.skipif(is_version_before(ServiceVersion.V2019_12_12), reason="SV too low")
     @GlobalResourceGroupPreparer()
     @StorageAccountPreparer(random_name_enabled=True, location="canadacentral", name_prefix='pytagstorage')
     def test_list_blobs_returns_tags(self, resource_group, location, storage_account, storage_account_key):
@@ -276,8 +313,9 @@ class StorageBlobTagsTest(StorageTestCase):
             for key, value in blob.tags.items():
                 self.assertEqual(tags[key], value)
 
-    @GlobalResourceGroupPreparer()
-    @StorageAccountPreparer(random_name_enabled=True, location="canadacentral", name_prefix='pytagstorage')
+    @pytest.mark.skipif(is_version_before(ServiceVersion.V2019_12_12), reason="SV too low")
+    @pytest.mark.playback_test_only
+    @GlobalStorageAccountPreparer()
     def test_filter_blobs(self, resource_group, location, storage_account, storage_account_key):
         self._setup(storage_account, storage_account_key)
         container_name1 = self._create_container(prefix="container1")
@@ -292,7 +330,7 @@ class StorageBlobTagsTest(StorageTestCase):
 
         if self.is_live:
             sleep(10)
-        where = "tag1='firsttag'"
+        where = "tag1='firsttag' and tag2='secondtag'"
         blob_list = self.bsc.find_blobs_by_tags(filter_expression=where, results_per_page=2).by_page()
         first_page = next(blob_list)
         items_on_page1 = list(first_page)
@@ -301,7 +339,11 @@ class StorageBlobTagsTest(StorageTestCase):
 
         self.assertEqual(2, len(items_on_page1))
         self.assertEqual(2, len(items_on_page2))
+        self.assertEqual(len(items_on_page2[0]['tags']), 2)
+        self.assertEqual(items_on_page2[0]['tags']['tag1'], 'firsttag')
+        self.assertEqual(items_on_page2[0]['tags']['tag2'], 'secondtag')
 
+    @pytest.mark.skipif(is_version_before(ServiceVersion.V2019_12_12), reason="SV too low")
     @pytest.mark.live_test_only
     @GlobalResourceGroupPreparer()
     @StorageAccountPreparer(random_name_enabled=True, location="canadacentral", name_prefix='pytagstorage')
@@ -334,6 +376,7 @@ class StorageBlobTagsTest(StorageTestCase):
         items_on_page1 = list(first_page)
         self.assertEqual(1, len(items_on_page1))
 
+    @pytest.mark.skipif(is_version_before(ServiceVersion.V2019_12_12), reason="SV too low")
     @pytest.mark.live_test_only
     @GlobalResourceGroupPreparer()
     @StorageAccountPreparer(random_name_enabled=True, location="canadacentral", name_prefix='pytagstorage')

@@ -58,6 +58,7 @@ try:
     from ._models_py3 import ResourceReference
     from ._models_py3 import ResourcesMoveInfo
     from ._models_py3 import ScopedDeployment
+    from ._models_py3 import ScopedDeploymentWhatIf
     from ._models_py3 import Sku
     from ._models_py3 import SubResource
     from ._models_py3 import TagCount
@@ -73,6 +74,7 @@ try:
     from ._models_py3 import WhatIfChange
     from ._models_py3 import WhatIfOperationResult
     from ._models_py3 import WhatIfPropertyChange
+    from ._models_py3 import ZoneMapping
 except (SyntaxError, ImportError):
     from ._models import Alias  # type: ignore
     from ._models import AliasPath  # type: ignore
@@ -125,6 +127,7 @@ except (SyntaxError, ImportError):
     from ._models import ResourceReference  # type: ignore
     from ._models import ResourcesMoveInfo  # type: ignore
     from ._models import ScopedDeployment  # type: ignore
+    from ._models import ScopedDeploymentWhatIf  # type: ignore
     from ._models import Sku  # type: ignore
     from ._models import SubResource  # type: ignore
     from ._models import TagCount  # type: ignore
@@ -140,6 +143,7 @@ except (SyntaxError, ImportError):
     from ._models import WhatIfChange  # type: ignore
     from ._models import WhatIfOperationResult  # type: ignore
     from ._models import WhatIfPropertyChange  # type: ignore
+    from ._models import ZoneMapping  # type: ignore
 
 from ._resource_management_client_enums import (
     AliasPatternType,
@@ -150,7 +154,7 @@ from ._resource_management_client_enums import (
     PropertyChangeType,
     ProvisioningOperation,
     ResourceIdentityType,
-    TagsPatchResourceOperation,
+    TagsPatchOperation,
     WhatIfResultFormat,
 )
 
@@ -206,6 +210,7 @@ __all__ = [
     'ResourceReference',
     'ResourcesMoveInfo',
     'ScopedDeployment',
+    'ScopedDeploymentWhatIf',
     'Sku',
     'SubResource',
     'TagCount',
@@ -221,6 +226,7 @@ __all__ = [
     'WhatIfChange',
     'WhatIfOperationResult',
     'WhatIfPropertyChange',
+    'ZoneMapping',
     'AliasPatternType',
     'AliasType',
     'ChangeType',
@@ -229,6 +235,6 @@ __all__ = [
     'PropertyChangeType',
     'ProvisioningOperation',
     'ResourceIdentityType',
-    'TagsPatchResourceOperation',
+    'TagsPatchOperation',
     'WhatIfResultFormat',
 ]

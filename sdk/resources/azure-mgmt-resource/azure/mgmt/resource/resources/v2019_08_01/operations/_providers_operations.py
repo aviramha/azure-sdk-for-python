@@ -8,13 +8,13 @@
 from typing import TYPE_CHECKING
 import warnings
 
-from azure.core.exceptions import HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
+from azure.core.exceptions import ClientAuthenticationError, HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
 from azure.core.paging import ItemPaged
 from azure.core.pipeline import PipelineResponse
 from azure.core.pipeline.transport import HttpRequest, HttpResponse
 from azure.mgmt.core.exceptions import ARMErrorFormat
 
-from .. import models
+from .. import models as _models
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,ungrouped-imports
@@ -37,7 +37,7 @@ class ProvidersOperations(object):
     :param deserializer: An object model deserializer.
     """
 
-    models = models
+    models = _models
 
     def __init__(self, client, config, serializer, deserializer):
         self._client = client
@@ -50,7 +50,7 @@ class ProvidersOperations(object):
         resource_provider_namespace,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.Provider"
+        # type: (...) -> "_models.Provider"
         """Unregisters a subscription from a resource provider.
 
         :param resource_provider_namespace: The namespace of the resource provider to unregister.
@@ -60,10 +60,13 @@ class ProvidersOperations(object):
         :rtype: ~azure.mgmt.resource.resources.v2019_08_01.models.Provider
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.Provider"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.Provider"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-08-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.unregister.metadata['url']  # type: ignore
@@ -79,9 +82,8 @@ class ProvidersOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.post(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -103,7 +105,7 @@ class ProvidersOperations(object):
         resource_provider_namespace,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.Provider"
+        # type: (...) -> "_models.Provider"
         """Registers a subscription with a resource provider.
 
         :param resource_provider_namespace: The namespace of the resource provider to register.
@@ -113,10 +115,13 @@ class ProvidersOperations(object):
         :rtype: ~azure.mgmt.resource.resources.v2019_08_01.models.Provider
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.Provider"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.Provider"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-08-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.register.metadata['url']  # type: ignore
@@ -132,9 +137,8 @@ class ProvidersOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.post(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -157,26 +161,33 @@ class ProvidersOperations(object):
         expand=None,  # type: Optional[str]
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.ProviderListResult"]
+        # type: (...) -> Iterable["_models.ProviderListResult"]
         """Gets all resource providers for a subscription.
 
         :param top: The number of results to return. If null is passed returns all deployments.
         :type top: int
         :param expand: The properties to include in the results. For example, use &$expand=metadata in
-     the query string to retrieve resource provider metadata. To include property aliases in
-     response, use $expand=resourceTypes/aliases.
+         the query string to retrieve resource provider metadata. To include property aliases in
+         response, use $expand=resourceTypes/aliases.
         :type expand: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :return: An iterator like instance of either ProviderListResult or the result of cls(response)
         :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.resource.resources.v2019_08_01.models.ProviderListResult]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.ProviderListResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.ProviderListResult"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-08-01"
+        accept = "application/json"
 
         def prepare_request(next_link=None):
+            # Construct headers
+            header_parameters = {}  # type: Dict[str, Any]
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
+
             if not next_link:
                 # Construct URL
                 url = self.list.metadata['url']  # type: ignore
@@ -192,15 +203,11 @@ class ProvidersOperations(object):
                     query_parameters['$expand'] = self._serialize.query("expand", expand, 'str')
                 query_parameters['api-version'] = self._serialize.query("api_version", api_version, 'str')
 
+                request = self._client.get(url, query_parameters, header_parameters)
             else:
                 url = next_link
                 query_parameters = {}  # type: Dict[str, Any]
-            # Construct headers
-            header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
-
-            # Construct and send request
-            request = self._client.get(url, query_parameters, header_parameters)
+                request = self._client.get(url, query_parameters, header_parameters)
             return request
 
         def extract_data(pipeline_response):
@@ -233,26 +240,33 @@ class ProvidersOperations(object):
         expand=None,  # type: Optional[str]
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.ProviderListResult"]
+        # type: (...) -> Iterable["_models.ProviderListResult"]
         """Gets all resource providers for the tenant.
 
         :param top: The number of results to return. If null is passed returns all providers.
         :type top: int
         :param expand: The properties to include in the results. For example, use &$expand=metadata in
-     the query string to retrieve resource provider metadata. To include property aliases in
-     response, use $expand=resourceTypes/aliases.
+         the query string to retrieve resource provider metadata. To include property aliases in
+         response, use $expand=resourceTypes/aliases.
         :type expand: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :return: An iterator like instance of either ProviderListResult or the result of cls(response)
         :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.resource.resources.v2019_08_01.models.ProviderListResult]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.ProviderListResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.ProviderListResult"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-08-01"
+        accept = "application/json"
 
         def prepare_request(next_link=None):
+            # Construct headers
+            header_parameters = {}  # type: Dict[str, Any]
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
+
             if not next_link:
                 # Construct URL
                 url = self.list_at_tenant_scope.metadata['url']  # type: ignore
@@ -264,15 +278,11 @@ class ProvidersOperations(object):
                     query_parameters['$expand'] = self._serialize.query("expand", expand, 'str')
                 query_parameters['api-version'] = self._serialize.query("api_version", api_version, 'str')
 
+                request = self._client.get(url, query_parameters, header_parameters)
             else:
                 url = next_link
                 query_parameters = {}  # type: Dict[str, Any]
-            # Construct headers
-            header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
-
-            # Construct and send request
-            request = self._client.get(url, query_parameters, header_parameters)
+                request = self._client.get(url, query_parameters, header_parameters)
             return request
 
         def extract_data(pipeline_response):
@@ -305,7 +315,7 @@ class ProvidersOperations(object):
         expand=None,  # type: Optional[str]
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.Provider"
+        # type: (...) -> "_models.Provider"
         """Gets the specified resource provider.
 
         :param resource_provider_namespace: The namespace of the resource provider.
@@ -318,10 +328,13 @@ class ProvidersOperations(object):
         :rtype: ~azure.mgmt.resource.resources.v2019_08_01.models.Provider
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.Provider"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.Provider"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-08-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.get.metadata['url']  # type: ignore
@@ -339,9 +352,8 @@ class ProvidersOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -364,7 +376,7 @@ class ProvidersOperations(object):
         expand=None,  # type: Optional[str]
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.Provider"
+        # type: (...) -> "_models.Provider"
         """Gets the specified resource provider at the tenant level.
 
         :param resource_provider_namespace: The namespace of the resource provider.
@@ -377,10 +389,13 @@ class ProvidersOperations(object):
         :rtype: ~azure.mgmt.resource.resources.v2019_08_01.models.Provider
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.Provider"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.Provider"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-08-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.get_at_tenant_scope.metadata['url']  # type: ignore
@@ -397,9 +412,8 @@ class ProvidersOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response

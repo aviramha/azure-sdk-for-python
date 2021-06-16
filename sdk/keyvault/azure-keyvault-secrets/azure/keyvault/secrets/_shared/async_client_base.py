@@ -20,7 +20,7 @@ if TYPE_CHECKING:
         # AsyncTokenCredential is a typing_extensions.Protocol; we don't depend on that package
         pass
 
-DEFAULT_VERSION = ApiVersion.V7_1
+DEFAULT_VERSION = ApiVersion.V7_2
 
 class AsyncKeyVaultClientBase(object):
     def __init__(self, vault_url: str, credential: "AsyncTokenCredential", **kwargs: "Any") -> None:
@@ -39,7 +39,7 @@ class AsyncKeyVaultClientBase(object):
             self._client = client
             return
 
-        api_version = kwargs.pop("api_version", DEFAULT_VERSION)
+        self.api_version = kwargs.pop("api_version", DEFAULT_VERSION)
 
         pipeline = kwargs.pop("pipeline", None)
         transport = kwargs.pop("transport", None)
@@ -58,7 +58,7 @@ class AsyncKeyVaultClientBase(object):
 
         try:
             self._client = _KeyVaultClient(
-                api_version=api_version,
+                api_version=self.api_version,
                 pipeline=pipeline,
                 transport=transport,
                 authentication_policy=AsyncChallengeAuthPolicy(credential),
@@ -66,10 +66,10 @@ class AsyncKeyVaultClientBase(object):
                 http_logging_policy=http_logging_policy,
                 **kwargs
             )
-            self._models = _KeyVaultClient.models(api_version=api_version)
-        except NotImplementedError:
+            self._models = _KeyVaultClient.models(api_version=self.api_version)
+        except ValueError:
             raise NotImplementedError(
-                "This package doesn't support API version '{}'. ".format(api_version)
+                "This package doesn't support API version '{}'. ".format(self.api_version)
                 + "Supported versions: {}".format(", ".join(v.value for v in ApiVersion))
             )
 

@@ -10,7 +10,7 @@ from ._deployment_scripts_client import DeploymentScriptsClient
 __all__ = ['DeploymentScriptsClient']
 
 try:
-    from ._patch import patch_sdk
+    from ._patch import patch_sdk  # type: ignore
     patch_sdk()
 except ImportError:
     pass

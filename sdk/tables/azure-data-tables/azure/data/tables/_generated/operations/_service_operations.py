@@ -8,11 +8,11 @@
 from typing import TYPE_CHECKING
 import warnings
 
-from azure.core.exceptions import HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
+from azure.core.exceptions import ClientAuthenticationError, HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
 from azure.core.pipeline import PipelineResponse
 from azure.core.pipeline.transport import HttpRequest, HttpResponse
 
-from .. import models
+from .. import models as _models
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,ungrouped-imports
@@ -35,7 +35,7 @@ class ServiceOperations(object):
     :param deserializer: An object model deserializer.
     """
 
-    models = models
+    models = _models
 
     def __init__(self, client, config, serializer, deserializer):
         self._client = client
@@ -45,7 +45,7 @@ class ServiceOperations(object):
 
     def set_properties(
         self,
-        table_service_properties,  # type: "models.TableServiceProperties"
+        table_service_properties,  # type: "_models.TableServiceProperties"
         timeout=None,  # type: Optional[int]
         request_id_parameter=None,  # type: Optional[str]
         **kwargs  # type: Any
@@ -67,11 +67,14 @@ class ServiceOperations(object):
         :raises: ~azure.core.exceptions.HttpResponseError
         """
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         restype = "service"
         comp = "properties"
         content_type = kwargs.pop("content_type", "application/xml")
+        accept = "application/xml"
 
         # Construct URL
         url = self.set_properties.metadata['url']  # type: ignore
@@ -93,18 +96,18 @@ class ServiceOperations(object):
         if request_id_parameter is not None:
             header_parameters['x-ms-client-request-id'] = self._serialize.header("request_id_parameter", request_id_parameter, 'str')
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(table_service_properties, 'TableServiceProperties', is_xml=True)
         body_content_kwargs['content'] = body_content
         request = self._client.put(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
         if response.status_code not in [202]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.TableServiceError, response)
+            error = self._deserialize(_models.TableServiceError, response)
             raise HttpResponseError(response=response, model=error)
 
         response_headers = {}
@@ -123,7 +126,7 @@ class ServiceOperations(object):
         request_id_parameter=None,  # type: Optional[str]
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.TableServiceProperties"
+        # type: (...) -> "_models.TableServiceProperties"
         """Gets the properties of an account's Table service, including properties for Analytics and CORS
         (Cross-Origin Resource Sharing) rules.
 
@@ -137,11 +140,14 @@ class ServiceOperations(object):
         :rtype: ~azure.data.tables.models.TableServiceProperties
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.TableServiceProperties"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.TableServiceProperties"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         restype = "service"
         comp = "properties"
+        accept = "application/xml"
 
         # Construct URL
         url = self.get_properties.metadata['url']  # type: ignore
@@ -162,7 +168,7 @@ class ServiceOperations(object):
         header_parameters['x-ms-version'] = self._serialize.header("self._config.version", self._config.version, 'str')
         if request_id_parameter is not None:
             header_parameters['x-ms-client-request-id'] = self._serialize.header("request_id_parameter", request_id_parameter, 'str')
-        header_parameters['Accept'] = 'application/xml'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
@@ -170,7 +176,7 @@ class ServiceOperations(object):
 
         if response.status_code not in [200]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.TableServiceError, response)
+            error = self._deserialize(_models.TableServiceError, response)
             raise HttpResponseError(response=response, model=error)
 
         response_headers = {}
@@ -191,7 +197,7 @@ class ServiceOperations(object):
         request_id_parameter=None,  # type: Optional[str]
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.TableServiceStats"
+        # type: (...) -> "_models.TableServiceStats"
         """Retrieves statistics related to replication for the Table service. It is only available on the
         secondary location endpoint when read-access geo-redundant replication is enabled for the
         account.
@@ -206,11 +212,14 @@ class ServiceOperations(object):
         :rtype: ~azure.data.tables.models.TableServiceStats
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.TableServiceStats"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.TableServiceStats"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         restype = "service"
         comp = "stats"
+        accept = "application/xml"
 
         # Construct URL
         url = self.get_statistics.metadata['url']  # type: ignore
@@ -231,7 +240,7 @@ class ServiceOperations(object):
         header_parameters['x-ms-version'] = self._serialize.header("self._config.version", self._config.version, 'str')
         if request_id_parameter is not None:
             header_parameters['x-ms-client-request-id'] = self._serialize.header("request_id_parameter", request_id_parameter, 'str')
-        header_parameters['Accept'] = 'application/xml'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
@@ -239,7 +248,7 @@ class ServiceOperations(object):
 
         if response.status_code not in [200]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.TableServiceError, response)
+            error = self._deserialize(_models.TableServiceError, response)
             raise HttpResponseError(response=response, model=error)
 
         response_headers = {}

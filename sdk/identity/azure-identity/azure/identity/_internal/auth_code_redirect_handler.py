@@ -2,23 +2,18 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 # ------------------------------------
-try:
-    from typing import TYPE_CHECKING
-except ImportError:
-    TYPE_CHECKING = False
+from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from typing import Any, Mapping, Optional
+from six.moves.urllib_parse import parse_qs
 
 try:
     from http.server import HTTPServer, BaseHTTPRequestHandler
 except ImportError:
     from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler  # type: ignore
 
-try:
-    from urllib.parse import parse_qs
-except ImportError:
-    from urlparse import parse_qs  # type: ignore
+if TYPE_CHECKING:
+    # pylint:disable=ungrouped-imports
+    from typing import Any, Mapping
 
 
 class AuthCodeRedirectHandler(BaseHTTPRequestHandler):
@@ -32,8 +27,8 @@ class AuthCodeRedirectHandler(BaseHTTPRequestHandler):
             return
 
         query = self.path.split("?", 1)[-1]
-        query = parse_qs(query, keep_blank_values=True)
-        self.server.query_params = query
+        parsed = parse_qs(query, keep_blank_values=True)
+        self.server.query_params = {k: v[0] if isinstance(v, list) and len(v) == 1 else v for k, v in parsed.items()}
 
         self.send_response(200)
         self.send_header("Content-Type", "text/html")
@@ -46,13 +41,13 @@ class AuthCodeRedirectHandler(BaseHTTPRequestHandler):
 
 
 class AuthCodeRedirectServer(HTTPServer):
-    """HTTP server that listens on localhost for the redirect request following an authorization code authentication"""
+    """HTTP server that listens for the redirect request following an authorization code authentication"""
 
     query_params = {}  # type: Mapping[str, Any]
 
-    def __init__(self, port, timeout):
-        # type: (int, int) -> None
-        HTTPServer.__init__(self, ("localhost", port), AuthCodeRedirectHandler)
+    def __init__(self, hostname, port, timeout):
+        # type: (str, int, int) -> None
+        HTTPServer.__init__(self, (hostname, port), AuthCodeRedirectHandler)
         self.timeout = timeout
 
     def wait_for_redirect(self):
@@ -60,7 +55,7 @@ class AuthCodeRedirectServer(HTTPServer):
         while not self.query_params:
             try:
                 self.handle_request()
-            except ValueError:
+            except (IOError, ValueError):
                 # socket has been closed, probably by handle_timeout
                 break
 

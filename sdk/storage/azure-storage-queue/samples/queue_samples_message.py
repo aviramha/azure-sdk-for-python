@@ -146,10 +146,71 @@ class QueueMessageSamples(object):
             # Delete the queue
             queue.delete_queue()
 
-    def delete_and_clear_messages(self):
+    def list_message_pages(self):
         # Instantiate a queue client
         from azure.storage.queue import QueueClient
         queue = QueueClient.from_connection_string(self.connection_string, "myqueue4")
+
+        # Create the queue
+        queue.create_queue()
+
+        try:
+            queue.send_message(u"message1")
+            queue.send_message(u"message2")
+            queue.send_message(u"message3")
+            queue.send_message(u"message4")
+            queue.send_message(u"message5")
+            queue.send_message(u"message6")
+
+            # [START receive_messages_listing]
+            # Store two messages in each page
+            message_batches = queue.receive_messages(messages_per_page=2).by_page()
+
+            # Iterate through the page lists
+            print(list(next(message_batches)))
+            print(list(next(message_batches)))
+
+            # There are two iterations in the last page as well.
+            last_page = next(message_batches)
+            for message in last_page:
+                print(message)
+            # [END receive_messages_listing]
+
+        finally:
+            queue.delete_queue()
+
+    def receive_one_message_from_queue(self):
+        # Instantiate a queue client
+        from azure.storage.queue import QueueClient
+        queue = QueueClient.from_connection_string(self.connection_string, "myqueue5")
+
+        # Create the queue
+        queue.create_queue()
+
+        try:
+            queue.send_message(u"message1")
+            queue.send_message(u"message2")
+            queue.send_message(u"message3")
+
+            # [START receive_one_message]
+            # Pop two messages from the front of the queue
+            message1 = queue.receive_message()
+            message2 = queue.receive_message()
+            # We should see message 3 if we peek
+            message3 = queue.peek_messages()[0]
+
+            print(message1.content)
+            print(message2.content)
+            print(message3.content)
+            # [END receive_one_message]
+
+        finally:
+            queue.delete_queue()
+
+    def delete_and_clear_messages(self):
+        # Instantiate a queue client
+        from azure.storage.queue import QueueClient
+        queue = QueueClient.from_connection_string(self.connection_string, "myqueue6")
 
         # Create the queue
         queue.create_queue()
@@ -181,7 +242,7 @@ class QueueMessageSamples(object):
     def peek_messages(self):
         # Instantiate a queue client
         from azure.storage.queue import QueueClient
-        queue = QueueClient.from_connection_string(self.connection_string, "myqueue5")
+        queue = QueueClient.from_connection_string(self.connection_string, "myqueue7")
 
         # Create the queue
         queue.create_queue()
@@ -213,7 +274,7 @@ class QueueMessageSamples(object):
     def update_message(self):
         # Instantiate a queue client
         from azure.storage.queue import QueueClient
-        queue = QueueClient.from_connection_string(self.connection_string, "myqueue6")
+        queue = QueueClient.from_connection_string(self.connection_string, "myqueue8")
 
         # Create the queue
         queue.create_queue()
@@ -245,6 +306,8 @@ if __name__ == '__main__':
     sample.set_access_policy()
     sample.queue_metadata()
     sample.send_and_receive_messages()
+    sample.list_message_pages()
+    sample.receive_one_message_from_queue()
     sample.delete_and_clear_messages()
     sample.peek_messages()
     sample.update_message()

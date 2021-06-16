@@ -9,12 +9,22 @@
 # regenerated.
 # --------------------------------------------------------------------------
 
-from azure.mgmt.core import ARMPipelineClient
-from msrest import Serializer, Deserializer
+from typing import TYPE_CHECKING
 
+from azure.mgmt.core import ARMPipelineClient
 from azure.profiles import KnownProfiles, ProfileDefinition
 from azure.profiles.multiapiclient import MultiApiClientMixin
+from msrest import Deserializer, Serializer
+
 from ._configuration import SubscriptionClientConfiguration
+from ._operations_mixin import SubscriptionClientOperationsMixin
+
+if TYPE_CHECKING:
+    # pylint: disable=unused-import,ungrouped-imports
+    from typing import Any, Optional
+
+    from azure.core.credentials import TokenCredential
+    from azure.core.pipeline.transport import HttpRequest, HttpResponse
 
 class _SDKClient(object):
     def __init__(self, *args, **kwargs):
@@ -23,7 +33,7 @@ class _SDKClient(object):
         """
         pass
 
-class SubscriptionClient(MultiApiClientMixin, _SDKClient):
+class SubscriptionClient(SubscriptionClientOperationsMixin, MultiApiClientMixin, _SDKClient):
     """All resource groups and resources exist within subscriptions. These operation enable you get information about your subscriptions and tenants. A tenant is a dedicated instance of Azure Active Directory (Azure AD) for your organization.
 
     This ready contains multiple API versions, to help you deal with all of the Azure clouds
@@ -36,16 +46,16 @@ class SubscriptionClient(MultiApiClientMixin, _SDKClient):
 
     :param credential: Credential needed for the client to connect to Azure.
     :type credential: ~azure.core.credentials.TokenCredential
-    :param str api_version: API version to use if no profile is provided, or if
-     missing in profile.
-    :param str base_url: Service URL
+    :param api_version: API version to use if no profile is provided, or if missing in profile.
+    :type api_version: str
+    :param base_url: Service URL
+    :type base_url: str
     :param profile: A profile definition, from KnownProfiles to dict.
     :type profile: azure.profiles.KnownProfiles
-    :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
     """
 
     DEFAULT_API_VERSION = '2019-11-01'
-    _PROFILE_TAG = "azure.mgmt.resource.SubscriptionClient"
+    _PROFILE_TAG = "azure.mgmt.resource.subscriptions.SubscriptionClient"
     LATEST_PROFILE = ProfileDefinition({
         _PROFILE_TAG: {
             None: DEFAULT_API_VERSION,
@@ -56,9 +66,9 @@ class SubscriptionClient(MultiApiClientMixin, _SDKClient):
     def __init__(
         self,
         credential,  # type: "TokenCredential"
-        api_version=None,
-        base_url=None,
-        profile=KnownProfiles.default,
+        api_version=None, # type: Optional[str]
+        base_url=None,  # type: Optional[str]
+        profile=KnownProfiles.default, # type: KnownProfiles
         **kwargs  # type: Any
     ):
         if not base_url:
@@ -66,8 +76,6 @@ class SubscriptionClient(MultiApiClientMixin, _SDKClient):
         self._config = SubscriptionClientConfiguration(credential, **kwargs)
         self._client = ARMPipelineClient(base_url=base_url, config=self._config, **kwargs)
         super(SubscriptionClient, self).__init__(
-            credential,
-            self._config,
             api_version=api_version,
             profile=profile
         )
@@ -80,10 +88,10 @@ class SubscriptionClient(MultiApiClientMixin, _SDKClient):
     def models(cls, api_version=DEFAULT_API_VERSION):
         """Module depends on the API version:
 
-           * 2016-06-01: :mod:`v2016_06_01.models<azure.mgmt.resource.v2016_06_01.models>`
-           * 2018-06-01: :mod:`v2018_06_01.models<azure.mgmt.resource.v2018_06_01.models>`
-           * 2019-06-01: :mod:`v2019_06_01.models<azure.mgmt.resource.v2019_06_01.models>`
-           * 2019-11-01: :mod:`v2019_11_01.models<azure.mgmt.resource.v2019_11_01.models>`
+           * 2016-06-01: :mod:`v2016_06_01.models<azure.mgmt.resource.subscriptions.v2016_06_01.models>`
+           * 2018-06-01: :mod:`v2018_06_01.models<azure.mgmt.resource.subscriptions.v2018_06_01.models>`
+           * 2019-06-01: :mod:`v2019_06_01.models<azure.mgmt.resource.subscriptions.v2019_06_01.models>`
+           * 2019-11-01: :mod:`v2019_11_01.models<azure.mgmt.resource.subscriptions.v2019_11_01.models>`
         """
         if api_version == '2016-06-01':
             from .v2016_06_01 import models
@@ -97,16 +105,16 @@ class SubscriptionClient(MultiApiClientMixin, _SDKClient):
         elif api_version == '2019-11-01':
             from .v2019_11_01 import models
             return models
-        raise NotImplementedError("APIVersion {} is not available".format(api_version))
+        raise ValueError("API version {} is not available".format(api_version))
 
     @property
     def operations(self):
         """Instance depends on the API version:
 
-           * 2016-06-01: :class:`Operations<azure.mgmt.resource.v2016_06_01.operations.Operations>`
-           * 2018-06-01: :class:`Operations<azure.mgmt.resource.v2018_06_01.operations.Operations>`
-           * 2019-06-01: :class:`Operations<azure.mgmt.resource.v2019_06_01.operations.Operations>`
-           * 2019-11-01: :class:`Operations<azure.mgmt.resource.v2019_11_01.operations.Operations>`
+           * 2016-06-01: :class:`Operations<azure.mgmt.resource.subscriptions.v2016_06_01.operations.Operations>`
+           * 2018-06-01: :class:`Operations<azure.mgmt.resource.subscriptions.v2018_06_01.operations.Operations>`
+           * 2019-06-01: :class:`Operations<azure.mgmt.resource.subscriptions.v2019_06_01.operations.Operations>`
+           * 2019-11-01: :class:`Operations<azure.mgmt.resource.subscriptions.v2019_11_01.operations.Operations>`
         """
         api_version = self._get_api_version('operations')
         if api_version == '2016-06-01':
@@ -118,17 +126,17 @@ class SubscriptionClient(MultiApiClientMixin, _SDKClient):
         elif api_version == '2019-11-01':
             from .v2019_11_01.operations import Operations as OperationClass
         else:
-            raise NotImplementedError("APIVersion {} is not available".format(api_version))
+            raise ValueError("API version {} does not have operation group 'operations'".format(api_version))
         return OperationClass(self._client, self._config, Serializer(self._models_dict(api_version)), Deserializer(self._models_dict(api_version)))
 
     @property
     def subscriptions(self):
         """Instance depends on the API version:
 
-           * 2016-06-01: :class:`SubscriptionsOperations<azure.mgmt.resource.v2016_06_01.operations.SubscriptionsOperations>`
-           * 2018-06-01: :class:`SubscriptionsOperations<azure.mgmt.resource.v2018_06_01.operations.SubscriptionsOperations>`
-           * 2019-06-01: :class:`SubscriptionsOperations<azure.mgmt.resource.v2019_06_01.operations.SubscriptionsOperations>`
-           * 2019-11-01: :class:`SubscriptionsOperations<azure.mgmt.resource.v2019_11_01.operations.SubscriptionsOperations>`
+           * 2016-06-01: :class:`SubscriptionsOperations<azure.mgmt.resource.subscriptions.v2016_06_01.operations.SubscriptionsOperations>`
+           * 2018-06-01: :class:`SubscriptionsOperations<azure.mgmt.resource.subscriptions.v2018_06_01.operations.SubscriptionsOperations>`
+           * 2019-06-01: :class:`SubscriptionsOperations<azure.mgmt.resource.subscriptions.v2019_06_01.operations.SubscriptionsOperations>`
+           * 2019-11-01: :class:`SubscriptionsOperations<azure.mgmt.resource.subscriptions.v2019_11_01.operations.SubscriptionsOperations>`
         """
         api_version = self._get_api_version('subscriptions')
         if api_version == '2016-06-01':
@@ -140,17 +148,17 @@ class SubscriptionClient(MultiApiClientMixin, _SDKClient):
         elif api_version == '2019-11-01':
             from .v2019_11_01.operations import SubscriptionsOperations as OperationClass
         else:
-            raise NotImplementedError("APIVersion {} is not available".format(api_version))
+            raise ValueError("API version {} does not have operation group 'subscriptions'".format(api_version))
         return OperationClass(self._client, self._config, Serializer(self._models_dict(api_version)), Deserializer(self._models_dict(api_version)))
 
     @property
     def tenants(self):
         """Instance depends on the API version:
 
-           * 2016-06-01: :class:`TenantsOperations<azure.mgmt.resource.v2016_06_01.operations.TenantsOperations>`
-           * 2018-06-01: :class:`TenantsOperations<azure.mgmt.resource.v2018_06_01.operations.TenantsOperations>`
-           * 2019-06-01: :class:`TenantsOperations<azure.mgmt.resource.v2019_06_01.operations.TenantsOperations>`
-           * 2019-11-01: :class:`TenantsOperations<azure.mgmt.resource.v2019_11_01.operations.TenantsOperations>`
+           * 2016-06-01: :class:`TenantsOperations<azure.mgmt.resource.subscriptions.v2016_06_01.operations.TenantsOperations>`
+           * 2018-06-01: :class:`TenantsOperations<azure.mgmt.resource.subscriptions.v2018_06_01.operations.TenantsOperations>`
+           * 2019-06-01: :class:`TenantsOperations<azure.mgmt.resource.subscriptions.v2019_06_01.operations.TenantsOperations>`
+           * 2019-11-01: :class:`TenantsOperations<azure.mgmt.resource.subscriptions.v2019_11_01.operations.TenantsOperations>`
         """
         api_version = self._get_api_version('tenants')
         if api_version == '2016-06-01':
@@ -162,7 +170,7 @@ class SubscriptionClient(MultiApiClientMixin, _SDKClient):
         elif api_version == '2019-11-01':
             from .v2019_11_01.operations import TenantsOperations as OperationClass
         else:
-            raise NotImplementedError("APIVersion {} is not available".format(api_version))
+            raise ValueError("API version {} does not have operation group 'tenants'".format(api_version))
         return OperationClass(self._client, self._config, Serializer(self._models_dict(api_version)), Deserializer(self._models_dict(api_version)))
 
     def close(self):

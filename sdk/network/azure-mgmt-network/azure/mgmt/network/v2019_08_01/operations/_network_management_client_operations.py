@@ -8,14 +8,14 @@
 from typing import TYPE_CHECKING
 import warnings
 
-from azure.core.exceptions import HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
+from azure.core.exceptions import ClientAuthenticationError, HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
 from azure.core.pipeline import PipelineResponse
 from azure.core.pipeline.transport import HttpRequest, HttpResponse
 from azure.core.polling import LROPoller, NoPolling, PollingMethod
 from azure.mgmt.core.exceptions import ARMErrorFormat
 from azure.mgmt.core.polling.arm_polling import ARMPolling
 
-from .. import models
+from .. import models as _models
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,ungrouped-imports
@@ -32,7 +32,7 @@ class NetworkManagementClientOperationsMixin(object):
         domain_name_label,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.DnsNameAvailabilityResult"
+        # type: (...) -> "_models.DnsNameAvailabilityResult"
         """Checks whether a domain name in the cloudapp.azure.com zone is available for use.
 
         :param location: The location of the domain name.
@@ -45,10 +45,13 @@ class NetworkManagementClientOperationsMixin(object):
         :rtype: ~azure.mgmt.network.v2019_08_01.models.DnsNameAvailabilityResult
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.DnsNameAvailabilityResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.DnsNameAvailabilityResult"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-08-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.check_dns_name_availability.metadata['url']  # type: ignore
@@ -65,9 +68,8 @@ class NetworkManagementClientOperationsMixin(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -90,7 +92,7 @@ class NetworkManagementClientOperationsMixin(object):
         virtual_wan_name,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.VirtualWanSecurityProviders"
+        # type: (...) -> "_models.VirtualWanSecurityProviders"
         """Gives the supported security providers for the virtual wan.
 
         :param resource_group_name: The resource group name.
@@ -103,10 +105,13 @@ class NetworkManagementClientOperationsMixin(object):
         :rtype: ~azure.mgmt.network.v2019_08_01.models.VirtualWanSecurityProviders
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.VirtualWanSecurityProviders"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.VirtualWanSecurityProviders"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-08-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.supported_security_providers.metadata['url']  # type: ignore
@@ -123,9 +128,8 @@ class NetworkManagementClientOperationsMixin(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -146,15 +150,18 @@ class NetworkManagementClientOperationsMixin(object):
         self,
         resource_group_name,  # type: str
         virtual_wan_name,  # type: str
-        vpn_client_params,  # type: "models.VirtualWanVpnProfileParameters"
+        vpn_client_params,  # type: "_models.VirtualWanVpnProfileParameters"
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.VpnProfileResponse"
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.VpnProfileResponse"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        # type: (...) -> Optional["_models.VpnProfileResponse"]
+        cls = kwargs.pop('cls', None)  # type: ClsType[Optional["_models.VpnProfileResponse"]]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-08-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self._generatevirtualwanvpnserverconfigurationvpnprofile_initial.metadata['url']  # type: ignore
@@ -172,14 +179,12 @@ class NetworkManagementClientOperationsMixin(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(vpn_client_params, 'VirtualWanVpnProfileParameters')
         body_content_kwargs['content'] = body_content
         request = self._client.post(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
@@ -201,25 +206,25 @@ class NetworkManagementClientOperationsMixin(object):
         self,
         resource_group_name,  # type: str
         virtual_wan_name,  # type: str
-        vpn_client_params,  # type: "models.VirtualWanVpnProfileParameters"
+        vpn_client_params,  # type: "_models.VirtualWanVpnProfileParameters"
         **kwargs  # type: Any
     ):
-        # type: (...) -> LROPoller
+        # type: (...) -> LROPoller["_models.VpnProfileResponse"]
         """Generates a unique VPN profile for P2S clients for VirtualWan and associated
-    VpnServerConfiguration combination in the specified resource group.
+        VpnServerConfiguration combination in the specified resource group.
 
         :param resource_group_name: The resource group name.
         :type resource_group_name: str
         :param virtual_wan_name: The name of the VirtualWAN whose associated VpnServerConfigurations is
-     needed.
+         needed.
         :type virtual_wan_name: str
         :param vpn_client_params: Parameters supplied to the generate VirtualWan VPN profile generation
-     operation.
+         operation.
         :type vpn_client_params: ~azure.mgmt.network.v2019_08_01.models.VirtualWanVpnProfileParameters
         :keyword callable cls: A custom type or function that will be passed the direct response
         :keyword str continuation_token: A continuation token to restart a poller from a saved state.
-        :keyword polling: True for ARMPolling, False for no polling, or a
-         polling object for personal polling strategy
+        :keyword polling: Pass in True if you'd like the ARMPolling polling method,
+         False for no polling, or your own initialized polling object for a personal polling strategy.
         :paramtype polling: bool or ~azure.core.polling.PollingMethod
         :keyword int polling_interval: Default waiting time between two polls for LRO operations if no Retry-After header is present.
         :return: An instance of LROPoller that returns either VpnProfileResponse or the result of cls(response)
@@ -227,7 +232,7 @@ class NetworkManagementClientOperationsMixin(object):
         :raises ~azure.core.exceptions.HttpResponseError:
         """
         polling = kwargs.pop('polling', True)  # type: Union[bool, PollingMethod]
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.VpnProfileResponse"]
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.VpnProfileResponse"]
         lro_delay = kwargs.pop(
             'polling_interval',
             self._config.polling_interval
@@ -252,7 +257,13 @@ class NetworkManagementClientOperationsMixin(object):
                 return cls(pipeline_response, deserialized, {})
             return deserialized
 
-        if polling is True: polling_method = ARMPolling(lro_delay, lro_options={'final-state-via': 'location'},  **kwargs)
+        path_format_arguments = {
+            'subscriptionId': self._serialize.url("self._config.subscription_id", self._config.subscription_id, 'str'),
+            'resourceGroupName': self._serialize.url("resource_group_name", resource_group_name, 'str'),
+            'virtualWANName': self._serialize.url("virtual_wan_name", virtual_wan_name, 'str'),
+        }
+
+        if polling is True: polling_method = ARMPolling(lro_delay, lro_options={'final-state-via': 'location'}, path_format_arguments=path_format_arguments,  **kwargs)
         elif polling is False: polling_method = NoPolling()
         else: polling_method = polling
         if cont_token:

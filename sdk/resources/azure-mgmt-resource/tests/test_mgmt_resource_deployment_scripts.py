@@ -20,7 +20,8 @@ class MgmtResourceDeploymentScriptTest(AzureMgmtTestCase):
     def setUp(self):
         super(MgmtResourceDeploymentScriptTest, self).setUp()
         self.script_client = self.create_mgmt_client(
-            azure.mgmt.resource.DeploymentScriptsClient
+            azure.mgmt.resource.DeploymentScriptsClient,
+            api_version="2019-10-01-preview"
         )
 
         if self.is_live:
@@ -64,8 +65,8 @@ class MgmtResourceDeploymentScriptTest(AzureMgmtTestCase):
                 # "https://uri1.to.supporting.script",
                 # "https://uri2.to.supporting.script"
                 # ],
-                "retentionInterval": "P7D",
-                "timeout": "PT1H",
+                "retentionInterval": "PT26H",
+                "timeout": "PT30M",
                 "cleanupPreference": "Always"
             }
         )

@@ -43,26 +43,32 @@ with open(os.path.join(package_folder_path, '_version.py'), 'r') as fd:
 if not version:
     raise RuntimeError('Cannot find version information')
 
+with open("README.md", encoding="utf-8") as f:
+    readme = f.read()
+with open("CHANGELOG.md", encoding="utf-8") as f:
+    changelog = f.read()
+
 setup(
     name=PACKAGE_NAME,
     version=version,
+    include_package_data=True,
     description='Microsoft Azure {} Client Library for Python'.format(PACKAGE_PPRINT_NAME),
-    long_description='\n\n',
+    long_description=readme + '\n\n' + changelog,
     long_description_content_type='text/markdown',
     license='MIT License',
     author='Microsoft Corporation',
     author_email='ascl@microsoft.com',
     url='https://github.com/Azure/azure-sdk-for-python/tree/master/sdk/table/azure-table',
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
         'License :: OSI Approved :: MIT License',
     ],
     zip_safe=False,
@@ -73,9 +79,8 @@ setup(
         'azure.data',
     ]),
     install_requires=[
-        "azure-core<2.0.0,>=1.2.2",
-        "msrest>=0.6.10"
-        # azure-data-tables
+        "azure-core<2.0.0,>=1.14.0",
+        "msrest>=0.6.19"
     ],
     extras_require={
         ":python_version<'3.0'": ['futures', 'azure-data-nspkg<2.0.0,>=1.0.0'],

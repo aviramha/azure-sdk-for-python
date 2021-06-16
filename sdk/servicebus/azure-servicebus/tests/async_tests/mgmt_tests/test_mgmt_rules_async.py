@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 import pytest
 
 import msrest
-from azure.servicebus.aio.management import ServiceBusManagementClient
+from azure.servicebus.aio.management import ServiceBusAdministrationClient
 from azure.servicebus.management import RuleProperties, CorrelationRuleFilter, SqlRuleFilter, TrueRuleFilter, SqlRuleAction
 from azure.servicebus.management._constants import INT32_MAX_VALUE
 from utilities import get_logger
@@ -25,17 +25,18 @@ from mgmt_test_utilities_async import async_pageable_to_list, clear_topics
 
 _logger = get_logger(logging.DEBUG)
 
-class ServiceBusManagementClientRuleAsyncTests(AzureMgmtTestCase):
+class ServiceBusAdministrationClientRuleAsyncTests(AzureMgmtTestCase):
     @CachedResourceGroupPreparer(name_prefix='servicebustest')
     @CachedServiceBusNamespacePreparer(name_prefix='servicebustest')
     async def test_async_mgmt_rule_create(self, servicebus_namespace_connection_string, **kwargs):
-        mgmt_service = ServiceBusManagementClient.from_connection_string(servicebus_namespace_connection_string)
+        mgmt_service = ServiceBusAdministrationClient.from_connection_string(servicebus_namespace_connection_string)
         await clear_topics(mgmt_service)
         topic_name = "topic_testaddf"
         subscription_name = "sub_testkkk"
         rule_name_1 = 'test_rule_1'
         rule_name_2 = 'test_rule_2'
         rule_name_3 = 'test_rule_3'
+        rule_name_4 = 'test_rule_4'
 
         correlation_fitler = CorrelationRuleFilter(correlation_id='testcid', properties={
             "key_string": "str1",
@@ -49,8 +50,9 @@ class ServiceBusManagementClientRuleAsyncTests(AzureMgmtTestCase):
             "@param": datetime(2020, 7, 5, 11, 12, 13),
         })
 
-        sql_filter = SqlRuleFilter("Priority = @param1", parameters={
+        sql_filter = SqlRuleFilter("Priority = @param1 AND Level = @param2", parameters={
             "@param1": "str1",
+            "@param2": 1
         })
 
         bool_filter = TrueRuleFilter()
@@ -76,24 +78,30 @@ class ServiceBusManagementClientRuleAsyncTests(AzureMgmtTestCase):
             await mgmt_service.create_rule(topic_name, subscription_name, rule_name_2, filter=sql_filter)
             rule_desc = await mgmt_service.get_rule(topic_name, subscription_name, rule_name_2)
             assert type(rule_desc.filter) == SqlRuleFilter
-            assert rule_desc.filter.sql_expression == "Priority = @param1"
+            assert rule_desc.filter.sql_expression == "Priority = @param1 AND Level = @param2"
             assert rule_desc.filter.parameters["@param1"] == "str1"
+            assert rule_desc.filter.parameters["@param2"] == 1
 
             await mgmt_service.create_rule(topic_name, subscription_name, rule_name_3, filter=bool_filter)
             rule_desc = await mgmt_service.get_rule(topic_name, subscription_name, rule_name_3)
+            assert type(rule_desc.filter) == TrueRuleFilter
+
+            await mgmt_service.create_rule(topic_name, subscription_name, rule_name_4)
+            rule_desc = await mgmt_service.get_rule(topic_name, subscription_name, rule_name_4)
             assert type(rule_desc.filter) == TrueRuleFilter
 
         finally:
             await mgmt_service.delete_rule(topic_name, subscription_name, rule_name_1)
             await mgmt_service.delete_rule(topic_name, subscription_name, rule_name_2)
             await mgmt_service.delete_rule(topic_name, subscription_name, rule_name_3)
+            await mgmt_service.delete_rule(topic_name, subscription_name, rule_name_4)
             await mgmt_service.delete_subscription(topic_name, subscription_name)
             await mgmt_service.delete_topic(topic_name)
 
     @CachedResourceGroupPreparer(name_prefix='servicebustest')
     @CachedServiceBusNamespacePreparer(name_prefix='servicebustest')
     async def test_async_mgmt_rule_create_duplicate(self, servicebus_namespace_connection_string, **kwargs):
-        mgmt_service = ServiceBusManagementClient.from_connection_string(servicebus_namespace_connection_string)
+        mgmt_service = ServiceBusAdministrationClient.from_connection_string(servicebus_namespace_connection_string)
         await clear_topics(mgmt_service)
         topic_name = "dqkodq"
         subscription_name = 'kkaqo'
@@ -113,7 +121,7 @@ class ServiceBusManagementClientRuleAsyncTests(AzureMgmtTestCase):
     @CachedResourceGroupPreparer(name_prefix='servicebustest')
     @CachedServiceBusNamespacePreparer(name_prefix='servicebustest')
     async def test_async_mgmt_rule_update_success(self, servicebus_namespace_connection_string, **kwargs):
-        mgmt_service = ServiceBusManagementClient.from_connection_string(servicebus_namespace_connection_string)
+        mgmt_service = ServiceBusAdministrationClient.from_connection_string(servicebus_namespace_connection_string)
         await clear_topics(mgmt_service)
         topic_name = "fjrui"
         subscription_name = "eqkovc"
@@ -122,7 +130,7 @@ class ServiceBusManagementClientRuleAsyncTests(AzureMgmtTestCase):
 
         try:
             topic_description = await mgmt_service.create_topic(topic_name)
-            subscription_description = await mgmt_service.create_subscription(topic_description, subscription_name)
+            subscription_description = await mgmt_service.create_subscription(topic_description.name, subscription_name)
             await mgmt_service.create_rule(topic_name, subscription_name, rule_name, filter=sql_filter)
 
             rule_desc = await mgmt_service.get_rule(topic_name, subscription_name, rule_name)
@@ -135,22 +143,36 @@ class ServiceBusManagementClientRuleAsyncTests(AzureMgmtTestCase):
 
             rule_desc.filter = correlation_fitler
             rule_desc.action = sql_rule_action
-            await mgmt_service.update_rule(topic_description, subscription_description, rule_desc)
+            await mgmt_service.update_rule(topic_description.name, subscription_description.name, rule_desc)
 
             rule_desc = await mgmt_service.get_rule(topic_name, subscription_name, rule_name)
             assert type(rule_desc.filter) == CorrelationRuleFilter
             assert rule_desc.filter.correlation_id == 'testcid'
             assert rule_desc.action.sql_expression == "SET Priority = 'low'"
 
+            await mgmt_service.update_rule(
+                topic_description.name,
+                subscription_description.name,
+                rule_desc,
+                filter=CorrelationRuleFilter(correlation_id='updatedcid'),
+                action=None
+            )
+
+            rule_desc = await mgmt_service.get_rule(topic_name, subscription_name, rule_name)
+            assert type(rule_desc.filter) == CorrelationRuleFilter
+            assert rule_desc.filter.correlation_id == 'updatedcid'
+            assert rule_desc.action == None
+
         finally:
             await mgmt_service.delete_rule(topic_name, subscription_name, rule_name)
             await mgmt_service.delete_subscription(topic_name, subscription_name)
             await mgmt_service.delete_topic(topic_name)
+            await mgmt_service.close()
 
     @CachedResourceGroupPreparer(name_prefix='servicebustest')
     @CachedServiceBusNamespacePreparer(name_prefix='servicebustest')
     async def test_async_mgmt_rule_update_invalid(self, servicebus_namespace_connection_string, **kwargs):
-        mgmt_service = ServiceBusManagementClient.from_connection_string(servicebus_namespace_connection_string)
+        mgmt_service = ServiceBusAdministrationClient.from_connection_string(servicebus_namespace_connection_string)
         await clear_topics(mgmt_service)
         topic_name = "fjrui"
         subscription_name = "eqkovc"
@@ -165,23 +187,23 @@ class ServiceBusManagementClientRuleAsyncTests(AzureMgmtTestCase):
             rule_desc = await mgmt_service.get_rule(topic_name, subscription_name, rule_name)
 
             # handle a null update properly.
-            with pytest.raises(AttributeError):
+            with pytest.raises(TypeError):
                 await mgmt_service.update_rule(topic_name, subscription_name, None)
 
             # handle an invalid type update properly.
-            with pytest.raises(AttributeError):
+            with pytest.raises(TypeError):
                 await mgmt_service.update_rule(topic_name, subscription_name, Exception("test"))
 
             # change the name to a topic that doesn't exist; should fail.
             rule_desc.name = "iewdm"
             with pytest.raises(HttpResponseError):
-                await mgmt_service.update_rule(topic_name, subscription_description, rule_desc)
+                await mgmt_service.update_rule(topic_name, subscription_description.name, rule_desc)
             rule_desc.name = rule_name
 
             # change the name to a topic with an invalid name exist; should fail.
             rule_desc.name = ''
             with pytest.raises(msrest.exceptions.ValidationError):
-                await mgmt_service.update_rule(topic_name, subscription_description, rule_desc)
+                await mgmt_service.update_rule(topic_name, subscription_description.name, rule_desc)
             rule_desc.name = rule_name
 
         finally:
@@ -192,7 +214,7 @@ class ServiceBusManagementClientRuleAsyncTests(AzureMgmtTestCase):
     @CachedResourceGroupPreparer(name_prefix='servicebustest')
     @CachedServiceBusNamespacePreparer(name_prefix='servicebustest')
     async def test_async_mgmt_rule_list_and_delete(self, servicebus_namespace_connection_string):
-        mgmt_service = ServiceBusManagementClient.from_connection_string(servicebus_namespace_connection_string)
+        mgmt_service = ServiceBusAdministrationClient.from_connection_string(servicebus_namespace_connection_string)
         await clear_topics(mgmt_service)
         topic_name = "topic_testaddf"
         subscription_name = "sub_testkkk"
@@ -236,5 +258,82 @@ class ServiceBusManagementClientRuleAsyncTests(AzureMgmtTestCase):
             assert len(rules) == 1
 
         finally:
+            await mgmt_service.delete_subscription(topic_name, subscription_name)
+            await mgmt_service.delete_topic(topic_name)
+
+    @CachedResourceGroupPreparer(name_prefix='servicebustest')
+    @CachedServiceBusNamespacePreparer(name_prefix='servicebustest')
+    async def test_mgmt_rule_async_update_dict_success(self, servicebus_namespace_connection_string, **kwargs):
+        mgmt_service = ServiceBusAdministrationClient.from_connection_string(servicebus_namespace_connection_string)
+        await clear_topics(mgmt_service)
+        topic_name = "fjruid"
+        subscription_name = "eqkovcd"
+        rule_name = 'rule'
+        sql_filter = SqlRuleFilter("Priority = 'low'")
+
+        try:
+            topic_description = await mgmt_service.create_topic(topic_name)
+            subscription_description = await mgmt_service.create_subscription(topic_description.name, subscription_name)
+            await mgmt_service.create_rule(topic_name, subscription_name, rule_name, filter=sql_filter)
+
+            rule_desc = await mgmt_service.get_rule(topic_name, subscription_name, rule_name)
+
+            assert type(rule_desc.filter) == SqlRuleFilter
+            assert rule_desc.filter.sql_expression == "Priority = 'low'"
+
+            correlation_fitler = CorrelationRuleFilter(correlation_id='testcid')
+            sql_rule_action = SqlRuleAction(sql_expression="SET Priority = 'low'")
+
+            rule_desc.filter = correlation_fitler
+            rule_desc.action = sql_rule_action
+            rule_desc_dict = dict(rule_desc)
+            await mgmt_service.update_rule(topic_description.name, subscription_description.name, rule_desc_dict)
+
+            rule_desc = await mgmt_service.get_rule(topic_name, subscription_name, rule_name)
+            assert type(rule_desc.filter) == CorrelationRuleFilter
+            assert rule_desc.filter.correlation_id == 'testcid'
+            assert rule_desc.action.sql_expression == "SET Priority = 'low'"
+
+            await mgmt_service.update_rule(
+                topic_description.name,
+                subscription_description.name,
+                dict(rule_desc),
+                filter=CorrelationRuleFilter(correlation_id='updatedcid'),
+                action=None
+            )
+
+            rule_desc = await mgmt_service.get_rule(topic_name, subscription_name, rule_name)
+            assert type(rule_desc.filter) == CorrelationRuleFilter
+            assert rule_desc.filter.correlation_id == 'updatedcid'
+            assert rule_desc.action == None
+
+        finally:
+            await mgmt_service.delete_rule(topic_name, subscription_name, rule_name)
+            await mgmt_service.delete_subscription(topic_name, subscription_name)
+            await mgmt_service.delete_topic(topic_name)
+            await mgmt_service.close()
+
+    @CachedResourceGroupPreparer(name_prefix='servicebustest')
+    @CachedServiceBusNamespacePreparer(name_prefix='servicebustest')
+    async def test_mgmt_rule_async_update_dict_error(self, servicebus_namespace_connection_string, **kwargs):
+        mgmt_service = ServiceBusAdministrationClient.from_connection_string(servicebus_namespace_connection_string)
+        await clear_topics(mgmt_service)
+        topic_name = "fjrui"
+        subscription_name = "eqkovc"
+        rule_name = 'rule'
+        sql_filter = SqlRuleFilter("Priority = 'low'")
+
+        try:
+            topic_description = await mgmt_service.create_topic(topic_name)
+            subscription_description = await mgmt_service.create_subscription(topic_description.name, subscription_name)
+            await mgmt_service.create_rule(topic_name, subscription_name, rule_name, filter=sql_filter)
+
+            # send in rule dict without non-name keyword args
+            rule_description_only_name = {"name": topic_name}
+            with pytest.raises(TypeError):
+                await mgmt_service.update_rule(topic_description.name, subscription_description.name, rule_description_only_name)
+
+        finally:
+            await mgmt_service.delete_rule(topic_name, subscription_name, rule_name)
             await mgmt_service.delete_subscription(topic_name, subscription_name)
             await mgmt_service.delete_topic(topic_name)

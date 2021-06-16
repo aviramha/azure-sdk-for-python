@@ -8,13 +8,13 @@
 from typing import TYPE_CHECKING
 import warnings
 
-from azure.core.exceptions import HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
+from azure.core.exceptions import ClientAuthenticationError, HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
 from azure.core.paging import ItemPaged
 from azure.core.pipeline import PipelineResponse
 from azure.core.pipeline.transport import HttpRequest, HttpResponse
 from azure.mgmt.core.exceptions import ARMErrorFormat
 
-from .. import models
+from .. import models as _models
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,ungrouped-imports
@@ -37,7 +37,7 @@ class ProximityPlacementGroupsOperations(object):
     :param deserializer: An object model deserializer.
     """
 
-    models = models
+    models = _models
 
     def __init__(self, client, config, serializer, deserializer):
         self._client = client
@@ -49,10 +49,10 @@ class ProximityPlacementGroupsOperations(object):
         self,
         resource_group_name,  # type: str
         proximity_placement_group_name,  # type: str
-        parameters,  # type: "models.ProximityPlacementGroup"
+        parameters,  # type: "_models.ProximityPlacementGroup"
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.ProximityPlacementGroup"
+        # type: (...) -> "_models.ProximityPlacementGroup"
         """Create or update a proximity placement group.
 
         :param resource_group_name: The name of the resource group.
@@ -66,11 +66,14 @@ class ProximityPlacementGroupsOperations(object):
         :rtype: ~azure.mgmt.compute.v2019_03_01.models.ProximityPlacementGroup
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.ProximityPlacementGroup"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.ProximityPlacementGroup"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-03-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self.create_or_update.metadata['url']  # type: ignore
@@ -88,14 +91,12 @@ class ProximityPlacementGroupsOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(parameters, 'ProximityPlacementGroup')
         body_content_kwargs['content'] = body_content
         request = self._client.put(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
@@ -103,7 +104,6 @@ class ProximityPlacementGroupsOperations(object):
             map_error(status_code=response.status_code, response=response, error_map=error_map)
             raise HttpResponseError(response=response, error_format=ARMErrorFormat)
 
-        deserialized = None
         if response.status_code == 200:
             deserialized = self._deserialize('ProximityPlacementGroup', pipeline_response)
 
@@ -120,10 +120,10 @@ class ProximityPlacementGroupsOperations(object):
         self,
         resource_group_name,  # type: str
         proximity_placement_group_name,  # type: str
-        parameters,  # type: "models.UpdateResource"
+        parameters,  # type: "_models.ProximityPlacementGroupUpdate"
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.ProximityPlacementGroup"
+        # type: (...) -> "_models.ProximityPlacementGroup"
         """Update a proximity placement group.
 
         :param resource_group_name: The name of the resource group.
@@ -131,17 +131,20 @@ class ProximityPlacementGroupsOperations(object):
         :param proximity_placement_group_name: The name of the proximity placement group.
         :type proximity_placement_group_name: str
         :param parameters: Parameters supplied to the Update Proximity Placement Group operation.
-        :type parameters: ~azure.mgmt.compute.v2019_03_01.models.UpdateResource
+        :type parameters: ~azure.mgmt.compute.v2019_03_01.models.ProximityPlacementGroupUpdate
         :keyword callable cls: A custom type or function that will be passed the direct response
         :return: ProximityPlacementGroup, or the result of cls(response)
         :rtype: ~azure.mgmt.compute.v2019_03_01.models.ProximityPlacementGroup
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.ProximityPlacementGroup"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.ProximityPlacementGroup"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-03-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self.update.metadata['url']  # type: ignore
@@ -159,14 +162,12 @@ class ProximityPlacementGroupsOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         body_content_kwargs = {}  # type: Dict[str, Any]
-        body_content = self._serialize.body(parameters, 'UpdateResource')
+        body_content = self._serialize.body(parameters, 'ProximityPlacementGroupUpdate')
         body_content_kwargs['content'] = body_content
         request = self._client.patch(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
@@ -201,7 +202,9 @@ class ProximityPlacementGroupsOperations(object):
         :raises: ~azure.core.exceptions.HttpResponseError
         """
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-03-01"
 
@@ -221,7 +224,6 @@ class ProximityPlacementGroupsOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
 
-        # Construct and send request
         request = self._client.delete(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -241,7 +243,7 @@ class ProximityPlacementGroupsOperations(object):
         proximity_placement_group_name,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.ProximityPlacementGroup"
+        # type: (...) -> "_models.ProximityPlacementGroup"
         """Retrieves information about a proximity placement group .
 
         :param resource_group_name: The name of the resource group.
@@ -253,10 +255,13 @@ class ProximityPlacementGroupsOperations(object):
         :rtype: ~azure.mgmt.compute.v2019_03_01.models.ProximityPlacementGroup
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.ProximityPlacementGroup"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.ProximityPlacementGroup"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-03-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.get.metadata['url']  # type: ignore
@@ -273,9 +278,8 @@ class ProximityPlacementGroupsOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -296,7 +300,7 @@ class ProximityPlacementGroupsOperations(object):
         self,
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.ProximityPlacementGroupListResult"]
+        # type: (...) -> Iterable["_models.ProximityPlacementGroupListResult"]
         """Lists all proximity placement groups in a subscription.
 
         :keyword callable cls: A custom type or function that will be passed the direct response
@@ -304,12 +308,19 @@ class ProximityPlacementGroupsOperations(object):
         :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.compute.v2019_03_01.models.ProximityPlacementGroupListResult]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.ProximityPlacementGroupListResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.ProximityPlacementGroupListResult"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-03-01"
+        accept = "application/json"
 
         def prepare_request(next_link=None):
+            # Construct headers
+            header_parameters = {}  # type: Dict[str, Any]
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
+
             if not next_link:
                 # Construct URL
                 url = self.list_by_subscription.metadata['url']  # type: ignore
@@ -321,15 +332,11 @@ class ProximityPlacementGroupsOperations(object):
                 query_parameters = {}  # type: Dict[str, Any]
                 query_parameters['api-version'] = self._serialize.query("api_version", api_version, 'str')
 
+                request = self._client.get(url, query_parameters, header_parameters)
             else:
                 url = next_link
                 query_parameters = {}  # type: Dict[str, Any]
-            # Construct headers
-            header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
-
-            # Construct and send request
-            request = self._client.get(url, query_parameters, header_parameters)
+                request = self._client.get(url, query_parameters, header_parameters)
             return request
 
         def extract_data(pipeline_response):
@@ -361,7 +368,7 @@ class ProximityPlacementGroupsOperations(object):
         resource_group_name,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.ProximityPlacementGroupListResult"]
+        # type: (...) -> Iterable["_models.ProximityPlacementGroupListResult"]
         """Lists all proximity placement groups in a resource group.
 
         :param resource_group_name: The name of the resource group.
@@ -371,12 +378,19 @@ class ProximityPlacementGroupsOperations(object):
         :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.compute.v2019_03_01.models.ProximityPlacementGroupListResult]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.ProximityPlacementGroupListResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.ProximityPlacementGroupListResult"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-03-01"
+        accept = "application/json"
 
         def prepare_request(next_link=None):
+            # Construct headers
+            header_parameters = {}  # type: Dict[str, Any]
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
+
             if not next_link:
                 # Construct URL
                 url = self.list_by_resource_group.metadata['url']  # type: ignore
@@ -389,15 +403,11 @@ class ProximityPlacementGroupsOperations(object):
                 query_parameters = {}  # type: Dict[str, Any]
                 query_parameters['api-version'] = self._serialize.query("api_version", api_version, 'str')
 
+                request = self._client.get(url, query_parameters, header_parameters)
             else:
                 url = next_link
                 query_parameters = {}  # type: Dict[str, Any]
-            # Construct headers
-            header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
-
-            # Construct and send request
-            request = self._client.get(url, query_parameters, header_parameters)
+                request = self._client.get(url, query_parameters, header_parameters)
             return request
 
         def extract_data(pipeline_response):

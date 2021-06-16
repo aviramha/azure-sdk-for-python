@@ -1,5 +1,95 @@
 # Release History
 
+## 18.0.0 (2021-05-13)
+
+**Features**
+
+  - Model StorageAccountUpdateParameters has a new parameter allow_cross_tenant_replication
+  - Model BlobContainer has a new parameter immutable_storage_with_versioning
+  - Model FileShareItem has a new parameter lease_state
+  - Model FileShareItem has a new parameter lease_duration
+  - Model FileShareItem has a new parameter lease_status
+  - Model FileShareItem has a new parameter signed_identifiers
+  - Model FileShare has a new parameter lease_state
+  - Model FileShare has a new parameter lease_duration
+  - Model FileShare has a new parameter lease_status
+  - Model FileShare has a new parameter signed_identifiers
+  - Model StorageAccountCreateParameters has a new parameter allow_cross_tenant_replication
+  - Model AzureFilesIdentityBasedAuthentication has a new parameter default_share_permission
+  - Model StorageAccount has a new parameter allow_cross_tenant_replication
+  - Model ListContainerItem has a new parameter immutable_storage_with_versioning
+  - Added operation BlobContainersOperations.begin_object_level_worm
+  - Added operation FileSharesOperations.lease
+
+**Breaking changes**
+
+  - Operation FileSharesOperations.delete has a new signature
+  - Model BlobInventoryPolicySchema no longer has parameter destination
+  - Model BlobInventoryPolicyRule has a new required parameter destination
+  - Model BlobInventoryPolicyDefinition has a new signature
+
+## 17.1.0 (2021-04-13)
+
+**Features**
+
+  - Model StorageAccountKey has a new parameter creation_time
+  - Model StorageAccountUpdateParameters has a new parameter sas_policy
+  - Model StorageAccountUpdateParameters has a new parameter key_policy
+  - Model StorageAccountCreateParameters has a new parameter sas_policy
+  - Model StorageAccountCreateParameters has a new parameter key_policy
+  - Model StorageAccount has a new parameter sas_policy
+  - Model StorageAccount has a new parameter key_policy
+  - Model StorageAccount has a new parameter key_creation_time
+
+## 17.0.0 (2021-02-20)
+
+**Features**
+
+  - Model Encryption has a new parameter encryption_identity
+  - Model Identity has a new parameter user_assigned_identities
+  - Model ManagementPolicyBaseBlob has a new parameter enable_auto_tier_to_hot_from_cool
+  - Model EncryptionScope has a new parameter require_infrastructure_encryption
+  - Model StorageAccount has a new parameter extended_location
+  - Model StorageAccount has a new parameter allow_shared_key_access
+  - Model StorageAccount has a new parameter enable_nfs_v3
+  - Model EncryptionScopeKeyVaultProperties has a new parameter current_versioned_key_identifier
+  - Model EncryptionScopeKeyVaultProperties has a new parameter last_key_rotation_timestamp
+  - Model DateAfterModification has a new parameter days_after_last_access_time_greater_than
+  - Model StorageAccountUpdateParameters has a new parameter allow_shared_key_access
+  - Model BlobServiceProperties has a new parameter last_access_time_tracking_policy
+  - Model ChangeFeed has a new parameter retention_in_days
+  - Model FileShare has a new parameter snapshot_time
+  - Model ManagementPolicyAction has a new parameter version
+  - Model StorageAccountCreateParameters has a new parameter extended_location
+  - Model StorageAccountCreateParameters has a new parameter allow_shared_key_access
+  - Model StorageAccountCreateParameters has a new parameter enable_nfs_v3
+  - Model FileShareItem has a new parameter snapshot_time
+  - Model FileServiceProperties has a new parameter protocol_settings
+  - Model ManagementPolicySnapShot has a new parameter tier_to_archive
+  - Model ManagementPolicySnapShot has a new parameter tier_to_cool
+  - Model NetworkRuleSet has a new parameter resource_access_rules
+  - Added operation group BlobInventoryPoliciesOperations
+  - Added operation group DeletedAccountsOperations
+
+**Breaking changes**
+
+  - Operation FileSharesOperations.create has a new signature
+  - Operation FileSharesOperations.delete has a new signature
+  - Operation FileSharesOperations.get has a new signature
+  - Model ErrorResponse has a new signature
+
+## 16.0.0 (2020-09-15)
+
+**Features**
+
+  - Model RestorePolicyProperties has a new parameter min_restore_time
+
+**Breaking changes**
+
+  - Operation ManagementPoliciesOperations.create_or_update has a new signature
+  - Operation ManagementPoliciesOperations.delete has a new signature
+  - Operation ManagementPoliciesOperations.get has a new signature
+
 ## 16.0.0b2 (2020-06-29)
 
 This is beta preview version.

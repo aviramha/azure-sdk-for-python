@@ -1,10 +1,103 @@
 # Release History
 
+## 4.3.1 (Unreleased)
+
+### Features Added
+
+### Breaking Changes
+
+### Key Bugs Fixed
+
+### Fixed
+
+
+## 4.3.0 (2021-06-09)
+
+  **New Features**
+  - Added new event names related to blob inventory to the `SystemEventNames` enum.
+
+  **Bug Fixes**
+  - Replaced the `ServiceBusDeadletterMessagesAvailableWithNoListenerEventName` with the right value.
+
+## 4.2.0 (2021-05-12)
+
+  **New Features**
+  - Added new event names to the `SystemEventNames` enum.
+
+## 4.1.1 (2021-04-07)
+
+  **Bug Fixes**
+  - Improved the `repr` on `EventGridEvent` to show more meaningful text.
+
+## 4.1.0 (2021-03-23)
+
+  **New Features**
+  - Added new SystemEventNames `AcsChatThreadParticipantRemovedEventName`, `AcsChatThreadParticipantAddedEventName` and `AcsRecordingFileStatusUpdatedEventName`.
+
+## 4.0.0 (2021-03-09)
+
+  **Note:** This is the first stable release of our efforts to create a user-friendly and Pythonic client library for Azure EventGrid. Users migrating from `v1.x` are advised to view the [migration guide](https://github.com/Azure/azure-sdk-for-python/blob/master/sdk/eventgrid/azure-eventgrid/migration_guide.md).
+
+  **New Features**
+  - `azure-eventgrid` package now supports `azure.core.messaging.CloudEvent` which honors the CNCF CloudEvent spec.
+  - `azure.eventgrid.SystemEventNames` can be used to get the event model type mapping for system events.
+  - Implements the `EventGridPublisherClient` for the publish flow for EventGrid Events, CloudEvents and Custom schema events.
+
+  **Breaking Changes**
+  - `azure.eventgrid.models` namespace along with all the models in it are now removed.:
+      - JSON documentation on the events is available here: https://docs.microsoft.com/azure/event-grid/system-topics
+      - `azure.eventgrid.SystemEventNames` provides the list of available events name for easy switching.
+  - `azure.eventgrid.event_grid_client.EventGridClient` is now removed in favor of `azure.eventgrid.EventGridPublisherClient`.
+  - `azure.eventgrid.event_grid_client.EventGridClientConfiguration` is now removed.
+
+
+## 2.0.0 (2021-03-09)
+
+  **Disclaimer:** v2.0.0 is functionally equivalent to v4.0.0. Users are advised to use v4.0.0 instead of this.
+
+  **Breaking Changes**
+  - `~azure.eventgrid.CloudEvent` is now removed in favor of `~azure.core.messaging.CloudEvent`.
+  - All the `SystemEventNames` related to Azure Communication Service starting with `ACS****` are renamed to `Acs***` to honor pascal case.
+
+  **Features**
+  - Added support for two new `SystemEvents` - `ServiceBusDeadletterMessagesAvailablePeriodicNotificationsEventData` and `ServiceBusActiveMessagesAvailablePeriodicNotificationsEventData`
+
+## 2.0.0b5 (2021-02-10)
+
+  **Breaking Changes**
+  - `EventGridSharedAccessSignatureCredential` is deprecated in favor of `AzureSasCredential`.
+  - `azure.eventgrid.models` namespace along with all the models in it are now removed. `azure.eventgrid.SystemEventNames` can be used to get the event model type mapping.
+  - `topic_hostname` is renamed to `endpoint` in the `EventGridPublisherClient`.
+  - `azure.eventgrid.generate_shared_access_signature` method is now renamed to `generate_sas`.
+  - `EventGridConsumer`is now removed. Please see the samples to see how events can be deserialized.
+  - `CustomEvent` model is removed. Dictionaries must be used to send a custom schema.
+  
+  **Bug Fixes**
+  - `EventGridEvent` has two additional required positional parameters namely, `data` and `data_version`.
+  - `EventGridPublisherClient` now appropriately throws a `ValueError` if an invalid credential is passed during initialization.
+
+## 2.0.0b4 (2020-11-11)
+
+  **Bug Fixes**
+  - `TypeError` is raised when bytes are passed to an `EventGridEvent`.
+
+## 2.0.0b3 (2020-10-05)
+
+  **Feature**
+  - Added support for Keyvault Event Types
+  - Added distributed tracing support for CloudEvents
+
+## 2.0.0b2 (2020-09-24)
+
+  **Features**
+  - Added support for Azure Communication Services event types.
+
 ## 2.0.0b1 (2020-09-08)
 
   **Features**
   - Version (2.0.0b1) is the first preview of our efforts to create a user-friendly and Pythonic client library for Azure EventGrid.
   For more information about this, and preview releases of other Azure SDK libraries, please visit https://azure.github.io/azure-sdk/releases/latest/python.html.
+  - Added Support for `CloudEvents`.
   - Implements the `EventGridPublisherClient` for the publish flow for EventGrid Events, CloudEvents and CustomEvents.
   - Implements the `EventGridConsumer` for the consume flow of the events.
 

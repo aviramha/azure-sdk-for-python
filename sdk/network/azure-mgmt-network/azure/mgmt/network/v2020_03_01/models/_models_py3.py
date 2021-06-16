@@ -144,58 +144,55 @@ class ApplicationGateway(Resource):
     :vartype operational_state: str or
      ~azure.mgmt.network.v2020_03_01.models.ApplicationGatewayOperationalState
     :param gateway_ip_configurations: Subnets of the application gateway resource. For default
-     limits, see `Application Gateway limits <https://docs.microsoft.com/azure/azure-subscription-
-     service-limits#application-gateway-limits>`_.
+     limits, see `Application Gateway limits
+     <https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits>`_.
     :type gateway_ip_configurations:
      list[~azure.mgmt.network.v2020_03_01.models.ApplicationGatewayIPConfiguration]
     :param authentication_certificates: Authentication certificates of the application gateway
      resource. For default limits, see `Application Gateway limits
-     <https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-
-     limits>`_.
+     <https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits>`_.
     :type authentication_certificates:
      list[~azure.mgmt.network.v2020_03_01.models.ApplicationGatewayAuthenticationCertificate]
     :param trusted_root_certificates: Trusted Root certificates of the application gateway
      resource. For default limits, see `Application Gateway limits
-     <https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-
-     limits>`_.
+     <https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits>`_.
     :type trusted_root_certificates:
      list[~azure.mgmt.network.v2020_03_01.models.ApplicationGatewayTrustedRootCertificate]
     :param ssl_certificates: SSL certificates of the application gateway resource. For default
-     limits, see `Application Gateway limits <https://docs.microsoft.com/azure/azure-subscription-
-     service-limits#application-gateway-limits>`_.
+     limits, see `Application Gateway limits
+     <https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits>`_.
     :type ssl_certificates:
      list[~azure.mgmt.network.v2020_03_01.models.ApplicationGatewaySslCertificate]
     :param frontend_ip_configurations: Frontend IP addresses of the application gateway resource.
-     For default limits, see `Application Gateway limits <https://docs.microsoft.com/azure/azure-
-     subscription-service-limits#application-gateway-limits>`_.
+     For default limits, see `Application Gateway limits
+     <https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits>`_.
     :type frontend_ip_configurations:
      list[~azure.mgmt.network.v2020_03_01.models.ApplicationGatewayFrontendIPConfiguration]
     :param frontend_ports: Frontend ports of the application gateway resource. For default limits,
-     see `Application Gateway limits <https://docs.microsoft.com/azure/azure-subscription-service-
-     limits#application-gateway-limits>`_.
+     see `Application Gateway limits
+     <https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits>`_.
     :type frontend_ports:
      list[~azure.mgmt.network.v2020_03_01.models.ApplicationGatewayFrontendPort]
     :param probes: Probes of the application gateway resource.
     :type probes: list[~azure.mgmt.network.v2020_03_01.models.ApplicationGatewayProbe]
     :param backend_address_pools: Backend address pool of the application gateway resource. For
-     default limits, see `Application Gateway limits <https://docs.microsoft.com/azure/azure-
-     subscription-service-limits#application-gateway-limits>`_.
+     default limits, see `Application Gateway limits
+     <https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits>`_.
     :type backend_address_pools:
      list[~azure.mgmt.network.v2020_03_01.models.ApplicationGatewayBackendAddressPool]
     :param backend_http_settings_collection: Backend http settings of the application gateway
      resource. For default limits, see `Application Gateway limits
-     <https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-
-     limits>`_.
+     <https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits>`_.
     :type backend_http_settings_collection:
      list[~azure.mgmt.network.v2020_03_01.models.ApplicationGatewayBackendHttpSettings]
     :param http_listeners: Http listeners of the application gateway resource. For default limits,
-     see `Application Gateway limits <https://docs.microsoft.com/azure/azure-subscription-service-
-     limits#application-gateway-limits>`_.
+     see `Application Gateway limits
+     <https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits>`_.
     :type http_listeners:
      list[~azure.mgmt.network.v2020_03_01.models.ApplicationGatewayHttpListener]
     :param url_path_maps: URL path map of the application gateway resource. For default limits, see
-     `Application Gateway limits <https://docs.microsoft.com/azure/azure-subscription-service-
-     limits#application-gateway-limits>`_.
+     `Application Gateway limits
+     <https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits>`_.
     :type url_path_maps: list[~azure.mgmt.network.v2020_03_01.models.ApplicationGatewayUrlPathMap]
     :param request_routing_rules: Request routing rules of the application gateway resource.
     :type request_routing_rules:
@@ -204,8 +201,8 @@ class ApplicationGateway(Resource):
     :type rewrite_rule_sets:
      list[~azure.mgmt.network.v2020_03_01.models.ApplicationGatewayRewriteRuleSet]
     :param redirect_configurations: Redirect configurations of the application gateway resource.
-     For default limits, see `Application Gateway limits <https://docs.microsoft.com/azure/azure-
-     subscription-service-limits#application-gateway-limits>`_.
+     For default limits, see `Application Gateway limits
+     <https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits>`_.
     :type redirect_configurations:
      list[~azure.mgmt.network.v2020_03_01.models.ApplicationGatewayRedirectConfiguration]
     :param web_application_firewall_configuration: Web application firewall configuration.
@@ -2021,7 +2018,7 @@ class ApplicationGatewayRewriteRuleCondition(msrest.serialization.Model):
     :param pattern: The pattern, either fixed string or regular expression, that evaluates the
      truthfulness of the condition.
     :type pattern: str
-    :param ignore_case: Setting this paramter to truth value with force the pattern to do a case
+    :param ignore_case: Setting this parameter to truth value with force the pattern to do a case
      in-sensitive comparison.
     :type ignore_case: bool
     :param negate: Setting this value as truth will force to check the negation of the condition
@@ -2574,7 +2571,7 @@ class FirewallPolicyRuleCondition(msrest.serialization.Model):
         super(FirewallPolicyRuleCondition, self).__init__(**kwargs)
         self.name = name
         self.description = description
-        self.rule_condition_type: Optional[str] = None
+        self.rule_condition_type = None  # type: Optional[str]
 
 
 class ApplicationRuleCondition(FirewallPolicyRuleCondition):
@@ -2635,7 +2632,7 @@ class ApplicationRuleCondition(FirewallPolicyRuleCondition):
         **kwargs
     ):
         super(ApplicationRuleCondition, self).__init__(name=name, description=description, **kwargs)
-        self.rule_condition_type: str = 'ApplicationRuleCondition'
+        self.rule_condition_type = 'ApplicationRuleCondition'  # type: str
         self.source_addresses = source_addresses
         self.destination_addresses = destination_addresses
         self.protocols = protocols
@@ -4012,33 +4009,27 @@ class AzureFirewallRCAction(msrest.serialization.Model):
 class AzureFirewallSku(msrest.serialization.Model):
     """SKU of an Azure Firewall.
 
-    Variables are only populated by the server, and will be ignored when sending a request.
-
     :param name: Name of an Azure Firewall SKU. Possible values include: "AZFW_VNet", "AZFW_Hub".
     :type name: str or ~azure.mgmt.network.v2020_03_01.models.AzureFirewallSkuName
-    :ivar tier: Tier of an Azure Firewall. Default value: "Standard".
-    :vartype tier: str
+    :param tier: Tier of an Azure Firewall. Possible values include: "Standard".
+    :type tier: str or ~azure.mgmt.network.v2020_03_01.models.AzureFirewallSkuTier
     """
-
-    _validation = {
-        'tier': {'constant': True},
-    }
 
     _attribute_map = {
         'name': {'key': 'name', 'type': 'str'},
         'tier': {'key': 'tier', 'type': 'str'},
     }
 
-    tier = "Standard"
-
     def __init__(
         self,
         *,
         name: Optional[Union[str, "AzureFirewallSkuName"]] = None,
+        tier: Optional[Union[str, "AzureFirewallSkuTier"]] = None,
         **kwargs
     ):
         super(AzureFirewallSku, self).__init__(**kwargs)
         self.name = name
+        self.tier = tier
 
 
 class AzureReachabilityReport(msrest.serialization.Model):
@@ -4310,7 +4301,7 @@ class BastionActiveSession(msrest.serialization.Model):
     :ivar session_id: A unique id for the session.
     :vartype session_id: str
     :ivar start_time: The time when the session started.
-    :vartype start_time: object
+    :vartype start_time: str
     :ivar target_subscription_id: The subscription id for the target virtual machine.
     :vartype target_subscription_id: str
     :ivar resource_type: The type of the resource.
@@ -4348,7 +4339,7 @@ class BastionActiveSession(msrest.serialization.Model):
 
     _attribute_map = {
         'session_id': {'key': 'sessionId', 'type': 'str'},
-        'start_time': {'key': 'startTime', 'type': 'object'},
+        'start_time': {'key': 'startTime', 'type': 'str'},
         'target_subscription_id': {'key': 'targetSubscriptionId', 'type': 'str'},
         'resource_type': {'key': 'resourceType', 'type': 'str'},
         'target_host_name': {'key': 'targetHostName', 'type': 'str'},
@@ -4626,7 +4617,7 @@ class BastionShareableLink(msrest.serialization.Model):
     All required parameters must be populated in order to send to Azure.
 
     :param vm: Required. Reference of the virtual machine resource.
-    :type vm: ~azure.mgmt.network.v2020_03_01.models.Resource
+    :type vm: ~azure.mgmt.network.v2020_03_01.models.VM
     :ivar bsl: The unique Bastion Shareable Link to the virtual machine.
     :vartype bsl: str
     :ivar created_at: The time when the link was created.
@@ -4644,7 +4635,7 @@ class BastionShareableLink(msrest.serialization.Model):
     }
 
     _attribute_map = {
-        'vm': {'key': 'vm', 'type': 'Resource'},
+        'vm': {'key': 'vm', 'type': 'VM'},
         'bsl': {'key': 'bsl', 'type': 'str'},
         'created_at': {'key': 'createdAt', 'type': 'str'},
         'message': {'key': 'message', 'type': 'str'},
@@ -4653,7 +4644,7 @@ class BastionShareableLink(msrest.serialization.Model):
     def __init__(
         self,
         *,
-        vm: "Resource",
+        vm: "VM",
         **kwargs
     ):
         super(BastionShareableLink, self).__init__(**kwargs)
@@ -5193,66 +5184,55 @@ class ConnectionMonitorEndpoint(msrest.serialization.Model):
 class ConnectionMonitorEndpointFilter(msrest.serialization.Model):
     """Describes the connection monitor endpoint filter.
 
-    Variables are only populated by the server, and will be ignored when sending a request.
-
-    :ivar type: The behavior of the endpoint filter. Currently only 'Include' is supported. Default
-     value: "Include".
-    :vartype type: str
+    :param type: The behavior of the endpoint filter. Currently only 'Include' is supported.
+     Possible values include: "Include".
+    :type type: str or ~azure.mgmt.network.v2020_03_01.models.ConnectionMonitorEndpointFilterType
     :param items: List of items in the filter.
     :type items: list[~azure.mgmt.network.v2020_03_01.models.ConnectionMonitorEndpointFilterItem]
     """
-
-    _validation = {
-        'type': {'constant': True},
-    }
 
     _attribute_map = {
         'type': {'key': 'type', 'type': 'str'},
         'items': {'key': 'items', 'type': '[ConnectionMonitorEndpointFilterItem]'},
     }
 
-    type = "Include"
-
     def __init__(
         self,
         *,
+        type: Optional[Union[str, "ConnectionMonitorEndpointFilterType"]] = None,
         items: Optional[List["ConnectionMonitorEndpointFilterItem"]] = None,
         **kwargs
     ):
         super(ConnectionMonitorEndpointFilter, self).__init__(**kwargs)
+        self.type = type
         self.items = items
 
 
 class ConnectionMonitorEndpointFilterItem(msrest.serialization.Model):
     """Describes the connection monitor endpoint filter item.
 
-    Variables are only populated by the server, and will be ignored when sending a request.
-
-    :ivar type: The type of item included in the filter. Currently only 'AgentAddress' is
-     supported. Default value: "AgentAddress".
-    :vartype type: str
+    :param type: The type of item included in the filter. Currently only 'AgentAddress' is
+     supported. Possible values include: "AgentAddress".
+    :type type: str or
+     ~azure.mgmt.network.v2020_03_01.models.ConnectionMonitorEndpointFilterItemType
     :param address: The address of the filter item.
     :type address: str
     """
-
-    _validation = {
-        'type': {'constant': True},
-    }
 
     _attribute_map = {
         'type': {'key': 'type', 'type': 'str'},
         'address': {'key': 'address', 'type': 'str'},
     }
 
-    type = "AgentAddress"
-
     def __init__(
         self,
         *,
+        type: Optional[Union[str, "ConnectionMonitorEndpointFilterItemType"]] = None,
         address: Optional[str] = None,
         **kwargs
     ):
         super(ConnectionMonitorEndpointFilterItem, self).__init__(**kwargs)
+        self.type = type
         self.address = address
 
 
@@ -5350,35 +5330,29 @@ class ConnectionMonitorListResult(msrest.serialization.Model):
 class ConnectionMonitorOutput(msrest.serialization.Model):
     """Describes a connection monitor output destination.
 
-    Variables are only populated by the server, and will be ignored when sending a request.
-
-    :ivar type: Connection monitor output destination type. Currently, only "Workspace" is
-     supported. Default value: "Workspace".
-    :vartype type: str
+    :param type: Connection monitor output destination type. Currently, only "Workspace" is
+     supported. Possible values include: "Workspace".
+    :type type: str or ~azure.mgmt.network.v2020_03_01.models.OutputType
     :param workspace_settings: Describes the settings for producing output into a log analytics
      workspace.
     :type workspace_settings:
      ~azure.mgmt.network.v2020_03_01.models.ConnectionMonitorWorkspaceSettings
     """
 
-    _validation = {
-        'type': {'constant': True},
-    }
-
     _attribute_map = {
         'type': {'key': 'type', 'type': 'str'},
         'workspace_settings': {'key': 'workspaceSettings', 'type': 'ConnectionMonitorWorkspaceSettings'},
     }
 
-    type = "Workspace"
-
     def __init__(
         self,
         *,
+        type: Optional[Union[str, "OutputType"]] = None,
         workspace_settings: Optional["ConnectionMonitorWorkspaceSettings"] = None,
         **kwargs
     ):
         super(ConnectionMonitorOutput, self).__init__(**kwargs)
+        self.type = type
         self.workspace_settings = workspace_settings
 
 
@@ -6334,7 +6308,7 @@ class ContainerNetworkInterface(SubResource):
      ~azure.mgmt.network.v2020_03_01.models.ContainerNetworkInterfaceConfiguration
     :param container: Reference to the container to which this container network interface is
      attached.
-    :type container: ~azure.mgmt.network.v2020_03_01.models.SubResource
+    :type container: ~azure.mgmt.network.v2020_03_01.models.Container
     :ivar ip_configurations: Reference to the ip configuration on this container nic.
     :vartype ip_configurations:
      list[~azure.mgmt.network.v2020_03_01.models.ContainerNetworkInterfaceIpConfiguration]
@@ -6357,7 +6331,7 @@ class ContainerNetworkInterface(SubResource):
         'type': {'key': 'type', 'type': 'str'},
         'etag': {'key': 'etag', 'type': 'str'},
         'container_network_interface_configuration': {'key': 'properties.containerNetworkInterfaceConfiguration', 'type': 'ContainerNetworkInterfaceConfiguration'},
-        'container': {'key': 'properties.container', 'type': 'SubResource'},
+        'container': {'key': 'properties.container', 'type': 'Container'},
         'ip_configurations': {'key': 'properties.ipConfigurations', 'type': '[ContainerNetworkInterfaceIpConfiguration]'},
         'provisioning_state': {'key': 'properties.provisioningState', 'type': 'str'},
     }
@@ -6367,7 +6341,7 @@ class ContainerNetworkInterface(SubResource):
         *,
         id: Optional[str] = None,
         name: Optional[str] = None,
-        container: Optional["SubResource"] = None,
+        container: Optional["Container"] = None,
         **kwargs
     ):
         super(ContainerNetworkInterface, self).__init__(id=id, **kwargs)
@@ -9366,10 +9340,6 @@ class FirewallPolicy(Resource):
      "Alert", "Deny", "Off".
     :type threat_intel_mode: str or
      ~azure.mgmt.network.v2020_03_01.models.AzureFirewallThreatIntelMode
-    :param intrusion_system_mode: The operation mode for Intrusion system. Possible values include:
-     "Enabled", "Disabled".
-    :type intrusion_system_mode: str or
-     ~azure.mgmt.network.v2020_03_01.models.FirewallPolicyIntrusionSystemMode
     """
 
     _validation = {
@@ -9395,7 +9365,6 @@ class FirewallPolicy(Resource):
         'firewalls': {'key': 'properties.firewalls', 'type': '[SubResource]'},
         'child_policies': {'key': 'properties.childPolicies', 'type': '[SubResource]'},
         'threat_intel_mode': {'key': 'properties.threatIntelMode', 'type': 'str'},
-        'intrusion_system_mode': {'key': 'properties.intrusionSystemMode', 'type': 'str'},
     }
 
     def __init__(
@@ -9406,7 +9375,6 @@ class FirewallPolicy(Resource):
         tags: Optional[Dict[str, str]] = None,
         base_policy: Optional["SubResource"] = None,
         threat_intel_mode: Optional[Union[str, "AzureFirewallThreatIntelMode"]] = None,
-        intrusion_system_mode: Optional[Union[str, "FirewallPolicyIntrusionSystemMode"]] = None,
         **kwargs
     ):
         super(FirewallPolicy, self).__init__(id=id, location=location, tags=tags, **kwargs)
@@ -9417,7 +9385,6 @@ class FirewallPolicy(Resource):
         self.firewalls = None
         self.child_policies = None
         self.threat_intel_mode = threat_intel_mode
-        self.intrusion_system_mode = intrusion_system_mode
 
 
 class FirewallPolicyRule(msrest.serialization.Model):
@@ -9460,7 +9427,7 @@ class FirewallPolicyRule(msrest.serialization.Model):
         **kwargs
     ):
         super(FirewallPolicyRule, self).__init__(**kwargs)
-        self.rule_type: Optional[str] = None
+        self.rule_type = None  # type: Optional[str]
         self.name = name
         self.priority = priority
 
@@ -9506,7 +9473,7 @@ class FirewallPolicyFilterRule(FirewallPolicyRule):
         **kwargs
     ):
         super(FirewallPolicyFilterRule, self).__init__(name=name, priority=priority, **kwargs)
-        self.rule_type: str = 'FirewallPolicyFilterRule'
+        self.rule_type = 'FirewallPolicyFilterRule'  # type: str
         self.action = action
         self.rule_conditions = rule_conditions
 
@@ -9607,7 +9574,7 @@ class FirewallPolicyNatRule(FirewallPolicyRule):
         **kwargs
     ):
         super(FirewallPolicyNatRule, self).__init__(name=name, priority=priority, **kwargs)
-        self.rule_type: str = 'FirewallPolicyNatRule'
+        self.rule_type = 'FirewallPolicyNatRule'  # type: str
         self.action = action
         self.translated_address = translated_address
         self.translated_port = translated_port
@@ -9617,27 +9584,22 @@ class FirewallPolicyNatRule(FirewallPolicyRule):
 class FirewallPolicyNatRuleAction(msrest.serialization.Model):
     """Properties of the FirewallPolicyNatRuleAction.
 
-    Variables are only populated by the server, and will be ignored when sending a request.
-
-    :ivar type: The type of action. Default value: "DNAT".
-    :vartype type: str
+    :param type: The type of action. Possible values include: "DNAT".
+    :type type: str or ~azure.mgmt.network.v2020_03_01.models.FirewallPolicyNatRuleActionType
     """
-
-    _validation = {
-        'type': {'constant': True},
-    }
 
     _attribute_map = {
         'type': {'key': 'type', 'type': 'str'},
     }
 
-    type = "DNAT"
-
     def __init__(
         self,
+        *,
+        type: Optional[Union[str, "FirewallPolicyNatRuleActionType"]] = None,
         **kwargs
     ):
         super(FirewallPolicyNatRuleAction, self).__init__(**kwargs)
+        self.type = type
 
 
 class FirewallPolicyRuleConditionApplicationProtocol(msrest.serialization.Model):
@@ -9847,32 +9809,26 @@ class FlowLog(Resource):
 class FlowLogFormatParameters(msrest.serialization.Model):
     """Parameters that define the flow log format.
 
-    Variables are only populated by the server, and will be ignored when sending a request.
-
-    :ivar type: The file type of flow log. Default value: "JSON".
-    :vartype type: str
+    :param type: The file type of flow log. Possible values include: "JSON".
+    :type type: str or ~azure.mgmt.network.v2020_03_01.models.FlowLogFormatType
     :param version: The version (revision) of the flow log.
     :type version: int
     """
-
-    _validation = {
-        'type': {'constant': True},
-    }
 
     _attribute_map = {
         'type': {'key': 'type', 'type': 'str'},
         'version': {'key': 'version', 'type': 'int'},
     }
 
-    type = "JSON"
-
     def __init__(
         self,
         *,
+        type: Optional[Union[str, "FlowLogFormatType"]] = None,
         version: Optional[int] = 0,
         **kwargs
     ):
         super(FlowLogFormatParameters, self).__init__(**kwargs)
+        self.type = type
         self.version = version
 
 
@@ -10210,19 +10166,13 @@ class GetVpnSitesConfigurationRequest(msrest.serialization.Model):
 class HTTPConfiguration(msrest.serialization.Model):
     """HTTP configuration of the connectivity check.
 
-    Variables are only populated by the server, and will be ignored when sending a request.
-
-    :ivar method: HTTP method. Default value: "Get".
-    :vartype method: str
+    :param method: HTTP method. Possible values include: "Get".
+    :type method: str or ~azure.mgmt.network.v2020_03_01.models.HTTPMethod
     :param headers: List of HTTP headers.
     :type headers: list[~azure.mgmt.network.v2020_03_01.models.HTTPHeader]
     :param valid_status_codes: Valid status codes.
     :type valid_status_codes: list[int]
     """
-
-    _validation = {
-        'method': {'constant': True},
-    }
 
     _attribute_map = {
         'method': {'key': 'method', 'type': 'str'},
@@ -10230,16 +10180,16 @@ class HTTPConfiguration(msrest.serialization.Model):
         'valid_status_codes': {'key': 'validStatusCodes', 'type': '[int]'},
     }
 
-    method = "Get"
-
     def __init__(
         self,
         *,
+        method: Optional[Union[str, "HTTPMethod"]] = None,
         headers: Optional[List["HTTPHeader"]] = None,
         valid_status_codes: Optional[List[int]] = None,
         **kwargs
     ):
         super(HTTPConfiguration, self).__init__(**kwargs)
+        self.method = method
         self.headers = headers
         self.valid_status_codes = valid_status_codes
 
@@ -12051,20 +12001,17 @@ class ManagedRuleGroupOverride(msrest.serialization.Model):
 class ManagedRuleOverride(msrest.serialization.Model):
     """Defines a managed rule group override setting.
 
-    Variables are only populated by the server, and will be ignored when sending a request.
-
     All required parameters must be populated in order to send to Azure.
 
     :param rule_id: Required. Identifier for the managed rule.
     :type rule_id: str
-    :ivar state: The state of the managed rule. Defaults to Disabled if not specified. Default
-     value: "Disabled".
-    :vartype state: str
+    :param state: The state of the managed rule. Defaults to Disabled if not specified. Possible
+     values include: "Disabled".
+    :type state: str or ~azure.mgmt.network.v2020_03_01.models.ManagedRuleEnabledState
     """
 
     _validation = {
         'rule_id': {'required': True},
-        'state': {'constant': True},
     }
 
     _attribute_map = {
@@ -12072,16 +12019,16 @@ class ManagedRuleOverride(msrest.serialization.Model):
         'state': {'key': 'state', 'type': 'str'},
     }
 
-    state = "Disabled"
-
     def __init__(
         self,
         *,
         rule_id: str,
+        state: Optional[Union[str, "ManagedRuleEnabledState"]] = None,
         **kwargs
     ):
         super(ManagedRuleOverride, self).__init__(**kwargs)
         self.rule_id = rule_id
+        self.state = state
 
 
 class ManagedRulesDefinition(msrest.serialization.Model):
@@ -12523,27 +12470,22 @@ class NatGatewayListResult(msrest.serialization.Model):
 class NatGatewaySku(msrest.serialization.Model):
     """SKU of nat gateway.
 
-    Variables are only populated by the server, and will be ignored when sending a request.
-
-    :ivar name: Name of Nat Gateway SKU. Default value: "Standard".
-    :vartype name: str
+    :param name: Name of Nat Gateway SKU. Possible values include: "Standard".
+    :type name: str or ~azure.mgmt.network.v2020_03_01.models.NatGatewaySkuName
     """
-
-    _validation = {
-        'name': {'constant': True},
-    }
 
     _attribute_map = {
         'name': {'key': 'name', 'type': 'str'},
     }
 
-    name = "Standard"
-
     def __init__(
         self,
+        *,
+        name: Optional[Union[str, "NatGatewaySkuName"]] = None,
         **kwargs
     ):
         super(NatGatewaySku, self).__init__(**kwargs)
+        self.name = name
 
 
 class NatRuleCondition(FirewallPolicyRuleCondition):
@@ -12600,7 +12542,7 @@ class NatRuleCondition(FirewallPolicyRuleCondition):
         **kwargs
     ):
         super(NatRuleCondition, self).__init__(name=name, description=description, **kwargs)
-        self.rule_condition_type: str = 'NatRuleCondition'
+        self.rule_condition_type = 'NatRuleCondition'  # type: str
         self.ip_protocols = ip_protocols
         self.source_addresses = source_addresses
         self.destination_addresses = destination_addresses
@@ -13510,7 +13452,7 @@ class NetworkRuleCondition(FirewallPolicyRuleCondition):
         **kwargs
     ):
         super(NetworkRuleCondition, self).__init__(name=name, description=description, **kwargs)
-        self.rule_condition_type: str = 'NetworkRuleCondition'
+        self.rule_condition_type = 'NetworkRuleCondition'  # type: str
         self.ip_protocols = ip_protocols
         self.source_addresses = source_addresses
         self.destination_addresses = destination_addresses
@@ -14809,8 +14751,8 @@ class PacketCaptureStorageLocation(msrest.serialization.Model):
     :param storage_id: The ID of the storage account to save the packet capture session. Required
      if no local file path is provided.
     :type storage_id: str
-    :param storage_path: The URI of the storage path to save the packet capture. Must be a well-
-     formed URI describing the location to save the packet capture.
+    :param storage_path: The URI of the storage path to save the packet capture. Must be a
+     well-formed URI describing the location to save the packet capture.
     :type storage_path: str
     :param file_path: A valid local path on the targeting VM. Must include the name of the capture
      file (*.cap). For linux virtual machine it must start with /var/captures. Required if no
@@ -14919,8 +14861,8 @@ class PatchRouteFilterRule(SubResource):
     :vartype etag: str
     :param access: The access type of the rule. Possible values include: "Allow", "Deny".
     :type access: str or ~azure.mgmt.network.v2020_03_01.models.Access
-    :ivar route_filter_rule_type: The rule type of the rule. Default value: "Community".
-    :vartype route_filter_rule_type: str
+    :param route_filter_rule_type: The rule type of the rule. Possible values include: "Community".
+    :type route_filter_rule_type: str or ~azure.mgmt.network.v2020_03_01.models.RouteFilterRuleType
     :param communities: The collection for bgp community values to filter on. e.g.
      ['12076:5010','12076:5020'].
     :type communities: list[str]
@@ -14932,7 +14874,6 @@ class PatchRouteFilterRule(SubResource):
     _validation = {
         'name': {'readonly': True},
         'etag': {'readonly': True},
-        'route_filter_rule_type': {'constant': True},
         'provisioning_state': {'readonly': True},
     }
 
@@ -14946,13 +14887,12 @@ class PatchRouteFilterRule(SubResource):
         'provisioning_state': {'key': 'properties.provisioningState', 'type': 'str'},
     }
 
-    route_filter_rule_type = "Community"
-
     def __init__(
         self,
         *,
         id: Optional[str] = None,
         access: Optional[Union[str, "Access"]] = None,
+        route_filter_rule_type: Optional[Union[str, "RouteFilterRuleType"]] = None,
         communities: Optional[List[str]] = None,
         **kwargs
     ):
@@ -14960,6 +14900,7 @@ class PatchRouteFilterRule(SubResource):
         self.name = None
         self.etag = None
         self.access = access
+        self.route_filter_rule_type = route_filter_rule_type
         self.communities = communities
         self.provisioning_state = None
 
@@ -15509,9 +15450,10 @@ class PrivateLinkService(Resource):
     :vartype private_endpoint_connections:
      list[~azure.mgmt.network.v2020_03_01.models.PrivateEndpointConnection]
     :param visibility: The visibility list of the private link service.
-    :type visibility: ~azure.mgmt.network.v2020_03_01.models.ResourceSet
+    :type visibility: ~azure.mgmt.network.v2020_03_01.models.PrivateLinkServicePropertiesVisibility
     :param auto_approval: The auto-approval list of the private link service.
-    :type auto_approval: ~azure.mgmt.network.v2020_03_01.models.ResourceSet
+    :type auto_approval:
+     ~azure.mgmt.network.v2020_03_01.models.PrivateLinkServicePropertiesAutoApproval
     :param fqdns: The list of Fqdn.
     :type fqdns: list[str]
     :ivar alias: The alias of the private link service.
@@ -15543,8 +15485,8 @@ class PrivateLinkService(Resource):
         'network_interfaces': {'key': 'properties.networkInterfaces', 'type': '[NetworkInterface]'},
         'provisioning_state': {'key': 'properties.provisioningState', 'type': 'str'},
         'private_endpoint_connections': {'key': 'properties.privateEndpointConnections', 'type': '[PrivateEndpointConnection]'},
-        'visibility': {'key': 'properties.visibility', 'type': 'ResourceSet'},
-        'auto_approval': {'key': 'properties.autoApproval', 'type': 'ResourceSet'},
+        'visibility': {'key': 'properties.visibility', 'type': 'PrivateLinkServicePropertiesVisibility'},
+        'auto_approval': {'key': 'properties.autoApproval', 'type': 'PrivateLinkServicePropertiesAutoApproval'},
         'fqdns': {'key': 'properties.fqdns', 'type': '[str]'},
         'alias': {'key': 'properties.alias', 'type': 'str'},
         'enable_proxy_protocol': {'key': 'properties.enableProxyProtocol', 'type': 'bool'},
@@ -15558,8 +15500,8 @@ class PrivateLinkService(Resource):
         tags: Optional[Dict[str, str]] = None,
         load_balancer_frontend_ip_configurations: Optional[List["FrontendIPConfiguration"]] = None,
         ip_configurations: Optional[List["PrivateLinkServiceIpConfiguration"]] = None,
-        visibility: Optional["ResourceSet"] = None,
-        auto_approval: Optional["ResourceSet"] = None,
+        visibility: Optional["PrivateLinkServicePropertiesVisibility"] = None,
+        auto_approval: Optional["PrivateLinkServicePropertiesAutoApproval"] = None,
         fqdns: Optional[List[str]] = None,
         enable_proxy_protocol: Optional[bool] = None,
         **kwargs
@@ -16350,27 +16292,22 @@ class PublicIPPrefixListResult(msrest.serialization.Model):
 class PublicIPPrefixSku(msrest.serialization.Model):
     """SKU of a public IP prefix.
 
-    Variables are only populated by the server, and will be ignored when sending a request.
-
-    :ivar name: Name of a public IP prefix SKU. Default value: "Standard".
-    :vartype name: str
+    :param name: Name of a public IP prefix SKU. Possible values include: "Standard".
+    :type name: str or ~azure.mgmt.network.v2020_03_01.models.PublicIPPrefixSkuName
     """
-
-    _validation = {
-        'name': {'constant': True},
-    }
 
     _attribute_map = {
         'name': {'key': 'name', 'type': 'str'},
     }
 
-    name = "Standard"
-
     def __init__(
         self,
+        *,
+        name: Optional[Union[str, "PublicIPPrefixSkuName"]] = None,
         **kwargs
     ):
         super(PublicIPPrefixSku, self).__init__(**kwargs)
+        self.name = name
 
 
 class QueryTroubleshootingParameters(msrest.serialization.Model):
@@ -16793,8 +16730,8 @@ class RouteFilterRule(SubResource):
     :vartype etag: str
     :param access: The access type of the rule. Possible values include: "Allow", "Deny".
     :type access: str or ~azure.mgmt.network.v2020_03_01.models.Access
-    :ivar route_filter_rule_type: The rule type of the rule. Default value: "Community".
-    :vartype route_filter_rule_type: str
+    :param route_filter_rule_type: The rule type of the rule. Possible values include: "Community".
+    :type route_filter_rule_type: str or ~azure.mgmt.network.v2020_03_01.models.RouteFilterRuleType
     :param communities: The collection for bgp community values to filter on. e.g.
      ['12076:5010','12076:5020'].
     :type communities: list[str]
@@ -16805,7 +16742,6 @@ class RouteFilterRule(SubResource):
 
     _validation = {
         'etag': {'readonly': True},
-        'route_filter_rule_type': {'constant': True},
         'provisioning_state': {'readonly': True},
     }
 
@@ -16820,8 +16756,6 @@ class RouteFilterRule(SubResource):
         'provisioning_state': {'key': 'properties.provisioningState', 'type': 'str'},
     }
 
-    route_filter_rule_type = "Community"
-
     def __init__(
         self,
         *,
@@ -16829,6 +16763,7 @@ class RouteFilterRule(SubResource):
         name: Optional[str] = None,
         location: Optional[str] = None,
         access: Optional[Union[str, "Access"]] = None,
+        route_filter_rule_type: Optional[Union[str, "RouteFilterRuleType"]] = None,
         communities: Optional[List[str]] = None,
         **kwargs
     ):
@@ -16837,6 +16772,7 @@ class RouteFilterRule(SubResource):
         self.location = location
         self.etag = None
         self.access = access
+        self.route_filter_rule_type = route_filter_rule_type
         self.communities = communities
         self.provisioning_state = None
 
@@ -18511,8 +18447,9 @@ class Usage(msrest.serialization.Model):
 
     :ivar id: Resource identifier.
     :vartype id: str
-    :ivar unit: Required. An enum describing the unit of measurement. Default value: "Count".
-    :vartype unit: str
+    :param unit: Required. An enum describing the unit of measurement. Possible values include:
+     "Count".
+    :type unit: str or ~azure.mgmt.network.v2020_03_01.models.UsageUnit
     :param current_value: Required. The current value of the usage.
     :type current_value: long
     :param limit: Required. The limit of usage.
@@ -18523,7 +18460,7 @@ class Usage(msrest.serialization.Model):
 
     _validation = {
         'id': {'readonly': True},
-        'unit': {'required': True, 'constant': True},
+        'unit': {'required': True},
         'current_value': {'required': True},
         'limit': {'required': True},
         'name': {'required': True},
@@ -18537,11 +18474,10 @@ class Usage(msrest.serialization.Model):
         'name': {'key': 'name', 'type': 'UsageName'},
     }
 
-    unit = "Count"
-
     def __init__(
         self,
         *,
+        unit: Union[str, "UsageUnit"],
         current_value: int,
         limit: int,
         name: "UsageName",
@@ -18549,6 +18485,7 @@ class Usage(msrest.serialization.Model):
     ):
         super(Usage, self).__init__(**kwargs)
         self.id = None
+        self.unit = unit
         self.current_value = current_value
         self.limit = limit
         self.name = name
@@ -19977,8 +19914,8 @@ class VirtualNetworkPeering(SubResource):
     :type use_remote_gateways: bool
     :param remote_virtual_network: The reference to the remote virtual network. The remote virtual
      network can be in the same or different region (preview). See here to register for the preview
-     and learn more (https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-create-
-     peering).
+     and learn more
+     (https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-create-peering).
     :type remote_virtual_network: ~azure.mgmt.network.v2020_03_01.models.SubResource
     :param remote_address_space: The reference to the remote virtual network address space.
     :type remote_address_space: ~azure.mgmt.network.v2020_03_01.models.AddressSpace

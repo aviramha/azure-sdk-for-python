@@ -8,12 +8,12 @@
 from typing import TYPE_CHECKING
 import warnings
 
-from azure.core.exceptions import HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
+from azure.core.exceptions import ClientAuthenticationError, HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
 from azure.core.pipeline import PipelineResponse
 from azure.core.pipeline.transport import HttpRequest, HttpResponse
 from azure.mgmt.core.exceptions import ARMErrorFormat
 
-from .. import models
+from .. import models as _models
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,ungrouped-imports
@@ -36,7 +36,7 @@ class VMInsightsOperations(object):
     :param deserializer: An object model deserializer.
     """
 
-    models = models
+    models = _models
 
     def __init__(self, client, config, serializer, deserializer):
         self._client = client
@@ -49,7 +49,7 @@ class VMInsightsOperations(object):
         resource_uri,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.VMInsightsOnboardingStatus"
+        # type: (...) -> "_models.VMInsightsOnboardingStatus"
         """Retrieves the VM Insights onboarding status for the specified resource or resource scope.
 
         :param resource_uri: The fully qualified Azure Resource manager identifier of the resource, or
@@ -60,10 +60,13 @@ class VMInsightsOperations(object):
         :rtype: ~$(python-base-namespace).v2018_11_27_preview.models.VMInsightsOnboardingStatus
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.VMInsightsOnboardingStatus"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.VMInsightsOnboardingStatus"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2018-11-27-preview"
+        accept = "application/json"
 
         # Construct URL
         url = self.get_onboarding_status.metadata['url']  # type: ignore
@@ -78,16 +81,15 @@ class VMInsightsOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
         if response.status_code not in [200]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.ResponseWithError, response)
+            error = self._deserialize(_models.ResponseWithError, response)
             raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
 
         deserialized = self._deserialize('VMInsightsOnboardingStatus', pipeline_response)

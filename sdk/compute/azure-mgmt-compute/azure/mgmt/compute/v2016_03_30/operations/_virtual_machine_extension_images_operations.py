@@ -8,12 +8,12 @@
 from typing import TYPE_CHECKING
 import warnings
 
-from azure.core.exceptions import HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
+from azure.core.exceptions import ClientAuthenticationError, HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
 from azure.core.pipeline import PipelineResponse
 from azure.core.pipeline.transport import HttpRequest, HttpResponse
 from azure.mgmt.core.exceptions import ARMErrorFormat
 
-from .. import models
+from .. import models as _models
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,ungrouped-imports
@@ -36,7 +36,7 @@ class VirtualMachineExtensionImagesOperations(object):
     :param deserializer: An object model deserializer.
     """
 
-    models = models
+    models = _models
 
     def __init__(self, client, config, serializer, deserializer):
         self._client = client
@@ -52,7 +52,7 @@ class VirtualMachineExtensionImagesOperations(object):
         version,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.VirtualMachineExtensionImage"
+        # type: (...) -> "_models.VirtualMachineExtensionImage"
         """Gets a virtual machine extension image.
 
         :param location: The name of a supported Azure region.
@@ -68,10 +68,13 @@ class VirtualMachineExtensionImagesOperations(object):
         :rtype: ~azure.mgmt.compute.v2016_03_30.models.VirtualMachineExtensionImage
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.VirtualMachineExtensionImage"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.VirtualMachineExtensionImage"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2016-03-30"
+        accept = "application/json"
 
         # Construct URL
         url = self.get.metadata['url']  # type: ignore
@@ -90,9 +93,8 @@ class VirtualMachineExtensionImagesOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -115,7 +117,7 @@ class VirtualMachineExtensionImagesOperations(object):
         publisher_name,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> List["models.VirtualMachineExtensionImage"]
+        # type: (...) -> List["_models.VirtualMachineExtensionImage"]
         """Gets a list of virtual machine extension image types.
 
         :param location: The name of a supported Azure region.
@@ -127,10 +129,13 @@ class VirtualMachineExtensionImagesOperations(object):
         :rtype: list[~azure.mgmt.compute.v2016_03_30.models.VirtualMachineExtensionImage]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType[List["models.VirtualMachineExtensionImage"]]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType[List["_models.VirtualMachineExtensionImage"]]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2016-03-30"
+        accept = "application/json"
 
         # Construct URL
         url = self.list_types.metadata['url']  # type: ignore
@@ -147,9 +152,8 @@ class VirtualMachineExtensionImagesOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
@@ -176,7 +180,7 @@ class VirtualMachineExtensionImagesOperations(object):
         orderby=None,  # type: Optional[str]
         **kwargs  # type: Any
     ):
-        # type: (...) -> List["models.VirtualMachineExtensionImage"]
+        # type: (...) -> List["_models.VirtualMachineExtensionImage"]
         """Gets a list of virtual machine extension image versions.
 
         :param location: The name of a supported Azure region.
@@ -196,10 +200,13 @@ class VirtualMachineExtensionImagesOperations(object):
         :rtype: list[~azure.mgmt.compute.v2016_03_30.models.VirtualMachineExtensionImage]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType[List["models.VirtualMachineExtensionImage"]]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType[List["_models.VirtualMachineExtensionImage"]]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2016-03-30"
+        accept = "application/json"
 
         # Construct URL
         url = self.list_versions.metadata['url']  # type: ignore
@@ -223,9 +230,8 @@ class VirtualMachineExtensionImagesOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
-        # Construct and send request
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response

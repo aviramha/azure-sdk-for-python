@@ -7,23 +7,43 @@
 # --------------------------------------------------------------------------
 
 try:
+    from ._models_py3 import AcsChatEventBaseProperties
+    from ._models_py3 import AcsChatEventInThreadBaseProperties
+    from ._models_py3 import AcsChatMessageDeletedEventData
+    from ._models_py3 import AcsChatMessageDeletedInThreadEventData
+    from ._models_py3 import AcsChatMessageEditedEventData
+    from ._models_py3 import AcsChatMessageEditedInThreadEventData
+    from ._models_py3 import AcsChatMessageEventBaseProperties
+    from ._models_py3 import AcsChatMessageEventInThreadBaseProperties
+    from ._models_py3 import AcsChatMessageReceivedEventData
+    from ._models_py3 import AcsChatMessageReceivedInThreadEventData
+    from ._models_py3 import AcsChatParticipantAddedToThreadEventData
+    from ._models_py3 import AcsChatParticipantAddedToThreadWithUserEventData
+    from ._models_py3 import AcsChatParticipantRemovedFromThreadEventData
+    from ._models_py3 import AcsChatParticipantRemovedFromThreadWithUserEventData
+    from ._models_py3 import AcsChatThreadCreatedEventData
+    from ._models_py3 import AcsChatThreadCreatedWithUserEventData
+    from ._models_py3 import AcsChatThreadDeletedEventData
+    from ._models_py3 import AcsChatThreadEventBaseProperties
+    from ._models_py3 import AcsChatThreadEventInThreadBaseProperties
+    from ._models_py3 import AcsChatThreadParticipantProperties
+    from ._models_py3 import AcsChatThreadPropertiesUpdatedEventData
+    from ._models_py3 import AcsChatThreadPropertiesUpdatedPerUserEventData
+    from ._models_py3 import AcsChatThreadWithUserDeletedEventData
+    from ._models_py3 import AcsRecordingChunkInfoProperties
+    from ._models_py3 import AcsRecordingFileStatusUpdatedEventData
+    from ._models_py3 import AcsRecordingStorageInfoProperties
+    from ._models_py3 import AcsSmsDeliveryAttemptProperties
+    from ._models_py3 import AcsSmsDeliveryReportReceivedEventData
+    from ._models_py3 import AcsSmsEventBaseProperties
+    from ._models_py3 import AcsSmsReceivedEventData
     from ._models_py3 import AppConfigurationKeyValueDeletedEventData
     from ._models_py3 import AppConfigurationKeyValueModifiedEventData
     from ._models_py3 import AppEventTypeDetail
     from ._models_py3 import AppServicePlanEventTypeDetail
-    from ._models_py3 import ChatEventBaseProperties
-    from ._models_py3 import ChatMemberAddedToThreadWithUserEventData
-    from ._models_py3 import ChatMemberRemovedFromThreadForWithUserEventData
-    from ._models_py3 import ChatMessageDeletedEventData
-    from ._models_py3 import ChatMessageEditedEventData
-    from ._models_py3 import ChatMessageEventBaseProperties
-    from ._models_py3 import ChatMessageReceivedEventData
-    from ._models_py3 import ChatThreadCreatedWithUserEventData
-    from ._models_py3 import ChatThreadEventBaseProperties
-    from ._models_py3 import ChatThreadMemberProperties
-    from ._models_py3 import ChatThreadPropertiesUpdatedPerUserEventData
-    from ._models_py3 import ChatThreadWithUserDeletedEventData
     from ._models_py3 import CloudEvent
+    from ._models_py3 import CommunicationIdentifierModel
+    from ._models_py3 import CommunicationUserIdentifierModel
     from ._models_py3 import ContainerRegistryArtifactEventData
     from ._models_py3 import ContainerRegistryArtifactEventTarget
     from ._models_py3 import ContainerRegistryChartDeletedEventData
@@ -51,6 +71,7 @@ try:
     from ._models_py3 import IotHubDeviceDeletedEventData
     from ._models_py3 import IotHubDeviceDisconnectedEventData
     from ._models_py3 import IotHubDeviceTelemetryEventData
+    from ._models_py3 import KeyVaultAccessPolicyChangedEventData
     from ._models_py3 import KeyVaultCertificateExpiredEventData
     from ._models_py3 import KeyVaultCertificateNearExpiryEventData
     from ._models_py3 import KeyVaultCertificateNewVersionCreatedEventData
@@ -98,6 +119,11 @@ try:
     from ._models_py3 import MediaLiveEventIncomingVideoStreamsOutOfSyncEventData
     from ._models_py3 import MediaLiveEventIngestHeartbeatEventData
     from ._models_py3 import MediaLiveEventTrackDiscontinuityDetectedEventData
+    from ._models_py3 import MicrosoftTeamsUserIdentifierModel
+    from ._models_py3 import PhoneNumberIdentifierModel
+    from ._models_py3 import PolicyInsightsPolicyStateChangedEventData
+    from ._models_py3 import PolicyInsightsPolicyStateCreatedEventData
+    from ._models_py3 import PolicyInsightsPolicyStateDeletedEventData
     from ._models_py3 import RedisExportRDBCompletedEventData
     from ._models_py3 import RedisImportRDBCompletedEventData
     from ._models_py3 import RedisPatchingCompletedEventData
@@ -111,17 +137,18 @@ try:
     from ._models_py3 import ResourceWriteCancelData
     from ._models_py3 import ResourceWriteFailureData
     from ._models_py3 import ResourceWriteSuccessData
-    from ._models_py3 import SMSDeliveryAttemptProperties
-    from ._models_py3 import SMSDeliveryReportReceivedEventData
-    from ._models_py3 import SMSEventBaseProperties
-    from ._models_py3 import SMSReceivedEventData
+    from ._models_py3 import ServiceBusActiveMessagesAvailablePeriodicNotificationsEventData
     from ._models_py3 import ServiceBusActiveMessagesAvailableWithNoListenersEventData
+    from ._models_py3 import ServiceBusDeadletterMessagesAvailablePeriodicNotificationsEventData
     from ._models_py3 import ServiceBusDeadletterMessagesAvailableWithNoListenersEventData
     from ._models_py3 import SignalRServiceClientConnectionConnectedEventData
     from ._models_py3 import SignalRServiceClientConnectionDisconnectedEventData
+    from ._models_py3 import StorageAsyncOperationInitiatedEventData
     from ._models_py3 import StorageBlobCreatedEventData
     from ._models_py3 import StorageBlobDeletedEventData
+    from ._models_py3 import StorageBlobInventoryPolicyCompletedEventData
     from ._models_py3 import StorageBlobRenamedEventData
+    from ._models_py3 import StorageBlobTierChangedEventData
     from ._models_py3 import StorageDirectoryCreatedEventData
     from ._models_py3 import StorageDirectoryDeletedEventData
     from ._models_py3 import StorageDirectoryRenamedEventData
@@ -145,23 +172,43 @@ try:
     from ._models_py3 import WebSlotSwapWithPreviewCancelledEventData
     from ._models_py3 import WebSlotSwapWithPreviewStartedEventData
 except (SyntaxError, ImportError):
+    from ._models import AcsChatEventBaseProperties  # type: ignore
+    from ._models import AcsChatEventInThreadBaseProperties  # type: ignore
+    from ._models import AcsChatMessageDeletedEventData  # type: ignore
+    from ._models import AcsChatMessageDeletedInThreadEventData  # type: ignore
+    from ._models import AcsChatMessageEditedEventData  # type: ignore
+    from ._models import AcsChatMessageEditedInThreadEventData  # type: ignore
+    from ._models import AcsChatMessageEventBaseProperties  # type: ignore
+    from ._models import AcsChatMessageEventInThreadBaseProperties  # type: ignore
+    from ._models import AcsChatMessageReceivedEventData  # type: ignore
+    from ._models import AcsChatMessageReceivedInThreadEventData  # type: ignore
+    from ._models import AcsChatParticipantAddedToThreadEventData  # type: ignore
+    from ._models import AcsChatParticipantAddedToThreadWithUserEventData  # type: ignore
+    from ._models import AcsChatParticipantRemovedFromThreadEventData  # type: ignore
+    from ._models import AcsChatParticipantRemovedFromThreadWithUserEventData  # type: ignore
+    from ._models import AcsChatThreadCreatedEventData  # type: ignore
+    from ._models import AcsChatThreadCreatedWithUserEventData  # type: ignore
+    from ._models import AcsChatThreadDeletedEventData  # type: ignore
+    from ._models import AcsChatThreadEventBaseProperties  # type: ignore
+    from ._models import AcsChatThreadEventInThreadBaseProperties  # type: ignore
+    from ._models import AcsChatThreadParticipantProperties  # type: ignore
+    from ._models import AcsChatThreadPropertiesUpdatedEventData  # type: ignore
+    from ._models import AcsChatThreadPropertiesUpdatedPerUserEventData  # type: ignore
+    from ._models import AcsChatThreadWithUserDeletedEventData  # type: ignore
+    from ._models import AcsRecordingChunkInfoProperties  # type: ignore
+    from ._models import AcsRecordingFileStatusUpdatedEventData  # type: ignore
+    from ._models import AcsRecordingStorageInfoProperties  # type: ignore
+    from ._models import AcsSmsDeliveryAttemptProperties  # type: ignore
+    from ._models import AcsSmsDeliveryReportReceivedEventData  # type: ignore
+    from ._models import AcsSmsEventBaseProperties  # type: ignore
+    from ._models import AcsSmsReceivedEventData  # type: ignore
     from ._models import AppConfigurationKeyValueDeletedEventData  # type: ignore
     from ._models import AppConfigurationKeyValueModifiedEventData  # type: ignore
     from ._models import AppEventTypeDetail  # type: ignore
     from ._models import AppServicePlanEventTypeDetail  # type: ignore
-    from ._models import ChatEventBaseProperties  # type: ignore
-    from ._models import ChatMemberAddedToThreadWithUserEventData  # type: ignore
-    from ._models import ChatMemberRemovedFromThreadForWithUserEventData  # type: ignore
-    from ._models import ChatMessageDeletedEventData  # type: ignore
-    from ._models import ChatMessageEditedEventData  # type: ignore
-    from ._models import ChatMessageEventBaseProperties  # type: ignore
-    from ._models import ChatMessageReceivedEventData  # type: ignore
-    from ._models import ChatThreadCreatedWithUserEventData  # type: ignore
-    from ._models import ChatThreadEventBaseProperties  # type: ignore
-    from ._models import ChatThreadMemberProperties  # type: ignore
-    from ._models import ChatThreadPropertiesUpdatedPerUserEventData  # type: ignore
-    from ._models import ChatThreadWithUserDeletedEventData  # type: ignore
     from ._models import CloudEvent  # type: ignore
+    from ._models import CommunicationIdentifierModel  # type: ignore
+    from ._models import CommunicationUserIdentifierModel  # type: ignore
     from ._models import ContainerRegistryArtifactEventData  # type: ignore
     from ._models import ContainerRegistryArtifactEventTarget  # type: ignore
     from ._models import ContainerRegistryChartDeletedEventData  # type: ignore
@@ -189,6 +236,7 @@ except (SyntaxError, ImportError):
     from ._models import IotHubDeviceDeletedEventData  # type: ignore
     from ._models import IotHubDeviceDisconnectedEventData  # type: ignore
     from ._models import IotHubDeviceTelemetryEventData  # type: ignore
+    from ._models import KeyVaultAccessPolicyChangedEventData  # type: ignore
     from ._models import KeyVaultCertificateExpiredEventData  # type: ignore
     from ._models import KeyVaultCertificateNearExpiryEventData  # type: ignore
     from ._models import KeyVaultCertificateNewVersionCreatedEventData  # type: ignore
@@ -236,6 +284,11 @@ except (SyntaxError, ImportError):
     from ._models import MediaLiveEventIncomingVideoStreamsOutOfSyncEventData  # type: ignore
     from ._models import MediaLiveEventIngestHeartbeatEventData  # type: ignore
     from ._models import MediaLiveEventTrackDiscontinuityDetectedEventData  # type: ignore
+    from ._models import MicrosoftTeamsUserIdentifierModel  # type: ignore
+    from ._models import PhoneNumberIdentifierModel  # type: ignore
+    from ._models import PolicyInsightsPolicyStateChangedEventData  # type: ignore
+    from ._models import PolicyInsightsPolicyStateCreatedEventData  # type: ignore
+    from ._models import PolicyInsightsPolicyStateDeletedEventData  # type: ignore
     from ._models import RedisExportRDBCompletedEventData  # type: ignore
     from ._models import RedisImportRDBCompletedEventData  # type: ignore
     from ._models import RedisPatchingCompletedEventData  # type: ignore
@@ -249,17 +302,18 @@ except (SyntaxError, ImportError):
     from ._models import ResourceWriteCancelData  # type: ignore
     from ._models import ResourceWriteFailureData  # type: ignore
     from ._models import ResourceWriteSuccessData  # type: ignore
-    from ._models import SMSDeliveryAttemptProperties  # type: ignore
-    from ._models import SMSDeliveryReportReceivedEventData  # type: ignore
-    from ._models import SMSEventBaseProperties  # type: ignore
-    from ._models import SMSReceivedEventData  # type: ignore
+    from ._models import ServiceBusActiveMessagesAvailablePeriodicNotificationsEventData  # type: ignore
     from ._models import ServiceBusActiveMessagesAvailableWithNoListenersEventData  # type: ignore
+    from ._models import ServiceBusDeadletterMessagesAvailablePeriodicNotificationsEventData  # type: ignore
     from ._models import ServiceBusDeadletterMessagesAvailableWithNoListenersEventData  # type: ignore
     from ._models import SignalRServiceClientConnectionConnectedEventData  # type: ignore
     from ._models import SignalRServiceClientConnectionDisconnectedEventData  # type: ignore
+    from ._models import StorageAsyncOperationInitiatedEventData  # type: ignore
     from ._models import StorageBlobCreatedEventData  # type: ignore
     from ._models import StorageBlobDeletedEventData  # type: ignore
+    from ._models import StorageBlobInventoryPolicyCompletedEventData  # type: ignore
     from ._models import StorageBlobRenamedEventData  # type: ignore
+    from ._models import StorageBlobTierChangedEventData  # type: ignore
     from ._models import StorageDirectoryCreatedEventData  # type: ignore
     from ._models import StorageDirectoryDeletedEventData  # type: ignore
     from ._models import StorageDirectoryRenamedEventData  # type: ignore
@@ -287,6 +341,7 @@ from ._event_grid_publisher_client_enums import (
     AppAction,
     AppServicePlanAction,
     AsyncStatus,
+    CommunicationCloudEnvironmentModel,
     MediaJobErrorCategory,
     MediaJobErrorCode,
     MediaJobRetry,
@@ -295,23 +350,43 @@ from ._event_grid_publisher_client_enums import (
 )
 
 __all__ = [
+    'AcsChatEventBaseProperties',
+    'AcsChatEventInThreadBaseProperties',
+    'AcsChatMessageDeletedEventData',
+    'AcsChatMessageDeletedInThreadEventData',
+    'AcsChatMessageEditedEventData',
+    'AcsChatMessageEditedInThreadEventData',
+    'AcsChatMessageEventBaseProperties',
+    'AcsChatMessageEventInThreadBaseProperties',
+    'AcsChatMessageReceivedEventData',
+    'AcsChatMessageReceivedInThreadEventData',
+    'AcsChatParticipantAddedToThreadEventData',
+    'AcsChatParticipantAddedToThreadWithUserEventData',
+    'AcsChatParticipantRemovedFromThreadEventData',
+    'AcsChatParticipantRemovedFromThreadWithUserEventData',
+    'AcsChatThreadCreatedEventData',
+    'AcsChatThreadCreatedWithUserEventData',
+    'AcsChatThreadDeletedEventData',
+    'AcsChatThreadEventBaseProperties',
+    'AcsChatThreadEventInThreadBaseProperties',
+    'AcsChatThreadParticipantProperties',
+    'AcsChatThreadPropertiesUpdatedEventData',
+    'AcsChatThreadPropertiesUpdatedPerUserEventData',
+    'AcsChatThreadWithUserDeletedEventData',
+    'AcsRecordingChunkInfoProperties',
+    'AcsRecordingFileStatusUpdatedEventData',
+    'AcsRecordingStorageInfoProperties',
+    'AcsSmsDeliveryAttemptProperties',
+    'AcsSmsDeliveryReportReceivedEventData',
+    'AcsSmsEventBaseProperties',
+    'AcsSmsReceivedEventData',
     'AppConfigurationKeyValueDeletedEventData',
     'AppConfigurationKeyValueModifiedEventData',
     'AppEventTypeDetail',
     'AppServicePlanEventTypeDetail',
-    'ChatEventBaseProperties',
-    'ChatMemberAddedToThreadWithUserEventData',
-    'ChatMemberRemovedFromThreadForWithUserEventData',
-    'ChatMessageDeletedEventData',
-    'ChatMessageEditedEventData',
-    'ChatMessageEventBaseProperties',
-    'ChatMessageReceivedEventData',
-    'ChatThreadCreatedWithUserEventData',
-    'ChatThreadEventBaseProperties',
-    'ChatThreadMemberProperties',
-    'ChatThreadPropertiesUpdatedPerUserEventData',
-    'ChatThreadWithUserDeletedEventData',
     'CloudEvent',
+    'CommunicationIdentifierModel',
+    'CommunicationUserIdentifierModel',
     'ContainerRegistryArtifactEventData',
     'ContainerRegistryArtifactEventTarget',
     'ContainerRegistryChartDeletedEventData',
@@ -339,6 +414,7 @@ __all__ = [
     'IotHubDeviceDeletedEventData',
     'IotHubDeviceDisconnectedEventData',
     'IotHubDeviceTelemetryEventData',
+    'KeyVaultAccessPolicyChangedEventData',
     'KeyVaultCertificateExpiredEventData',
     'KeyVaultCertificateNearExpiryEventData',
     'KeyVaultCertificateNewVersionCreatedEventData',
@@ -386,6 +462,11 @@ __all__ = [
     'MediaLiveEventIncomingVideoStreamsOutOfSyncEventData',
     'MediaLiveEventIngestHeartbeatEventData',
     'MediaLiveEventTrackDiscontinuityDetectedEventData',
+    'MicrosoftTeamsUserIdentifierModel',
+    'PhoneNumberIdentifierModel',
+    'PolicyInsightsPolicyStateChangedEventData',
+    'PolicyInsightsPolicyStateCreatedEventData',
+    'PolicyInsightsPolicyStateDeletedEventData',
     'RedisExportRDBCompletedEventData',
     'RedisImportRDBCompletedEventData',
     'RedisPatchingCompletedEventData',
@@ -399,17 +480,18 @@ __all__ = [
     'ResourceWriteCancelData',
     'ResourceWriteFailureData',
     'ResourceWriteSuccessData',
-    'SMSDeliveryAttemptProperties',
-    'SMSDeliveryReportReceivedEventData',
-    'SMSEventBaseProperties',
-    'SMSReceivedEventData',
+    'ServiceBusActiveMessagesAvailablePeriodicNotificationsEventData',
     'ServiceBusActiveMessagesAvailableWithNoListenersEventData',
+    'ServiceBusDeadletterMessagesAvailablePeriodicNotificationsEventData',
     'ServiceBusDeadletterMessagesAvailableWithNoListenersEventData',
     'SignalRServiceClientConnectionConnectedEventData',
     'SignalRServiceClientConnectionDisconnectedEventData',
+    'StorageAsyncOperationInitiatedEventData',
     'StorageBlobCreatedEventData',
     'StorageBlobDeletedEventData',
+    'StorageBlobInventoryPolicyCompletedEventData',
     'StorageBlobRenamedEventData',
+    'StorageBlobTierChangedEventData',
     'StorageDirectoryCreatedEventData',
     'StorageDirectoryDeletedEventData',
     'StorageDirectoryRenamedEventData',
@@ -435,6 +517,7 @@ __all__ = [
     'AppAction',
     'AppServicePlanAction',
     'AsyncStatus',
+    'CommunicationCloudEnvironmentModel',
     'MediaJobErrorCategory',
     'MediaJobErrorCode',
     'MediaJobRetry',

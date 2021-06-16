@@ -8,11 +8,11 @@
 from typing import TYPE_CHECKING
 import warnings
 
-from azure.core.exceptions import HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
+from azure.core.exceptions import ClientAuthenticationError, HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
 from azure.core.pipeline import PipelineResponse
 from azure.core.pipeline.transport import HttpRequest, HttpResponse
 
-from .. import models
+from .. import models as _models
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,ungrouped-imports
@@ -35,7 +35,7 @@ class TableOperations(object):
     :param deserializer: An object model deserializer.
     """
 
-    models = models
+    models = _models
 
     def __init__(self, client, config, serializer, deserializer):
         self._client = client
@@ -47,10 +47,10 @@ class TableOperations(object):
         self,
         request_id_parameter=None,  # type: Optional[str]
         next_table_name=None,  # type: Optional[str]
-        query_options=None,  # type: Optional["models.QueryOptions"]
+        query_options=None,  # type: Optional["_models.QueryOptions"]
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.TableQueryResponse"
+        # type: (...) -> "_models.TableQueryResponse"
         """Queries tables under the given account.
 
         :param request_id_parameter: Provides a client-generated, opaque value with a 1 KB character
@@ -65,8 +65,10 @@ class TableOperations(object):
         :rtype: ~azure.data.tables.models.TableQueryResponse
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.TableQueryResponse"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.TableQueryResponse"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         
         _format = None
@@ -79,6 +81,7 @@ class TableOperations(object):
             _select = query_options.select
             _filter = query_options.filter
         data_service_version = "3.0"
+        accept = "application/json;odata=minimalmetadata"
 
         # Construct URL
         url = self.query.metadata['url']  # type: ignore
@@ -106,7 +109,7 @@ class TableOperations(object):
         if request_id_parameter is not None:
             header_parameters['x-ms-client-request-id'] = self._serialize.header("request_id_parameter", request_id_parameter, 'str')
         header_parameters['DataServiceVersion'] = self._serialize.header("data_service_version", data_service_version, 'str')
-        header_parameters['Accept'] = 'application/json;odata=minimalmetadata'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
@@ -114,8 +117,7 @@ class TableOperations(object):
 
         if response.status_code not in [200]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.TableServiceError, response)
-            raise HttpResponseError(response=response, model=error)
+            raise HttpResponseError(response=response)
 
         response_headers = {}
         response_headers['x-ms-client-request-id']=self._deserialize('str', response.headers.get('x-ms-client-request-id'))
@@ -133,13 +135,13 @@ class TableOperations(object):
 
     def create(
         self,
-        table_properties,  # type: "models.TableProperties"
+        table_properties,  # type: "_models.TableProperties"
         request_id_parameter=None,  # type: Optional[str]
-        response_preference=None,  # type: Optional[Union[str, "models.ResponseFormat"]]
-        query_options=None,  # type: Optional["models.QueryOptions"]
+        response_preference=None,  # type: Optional[Union[str, "_models.ResponseFormat"]]
+        query_options=None,  # type: Optional["_models.QueryOptions"]
         **kwargs  # type: Any
     ):
-        # type: (...) -> Optional["models.TableResponse"]
+        # type: (...) -> Optional["_models.TableResponse"]
         """Creates a new table under the given account.
 
         :param table_properties: The Table properties.
@@ -157,8 +159,10 @@ class TableOperations(object):
         :rtype: ~azure.data.tables.models.TableResponse or None
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType[Optional["models.TableResponse"]]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType[Optional["_models.TableResponse"]]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         
         _format = None
@@ -166,6 +170,7 @@ class TableOperations(object):
             _format = query_options.format
         data_service_version = "3.0"
         content_type = kwargs.pop("content_type", "application/json;odata=nometadata")
+        accept = "application/json;odata=minimalmetadata"
 
         # Construct URL
         url = self.create.metadata['url']  # type: ignore
@@ -188,19 +193,18 @@ class TableOperations(object):
         if response_preference is not None:
             header_parameters['Prefer'] = self._serialize.header("response_preference", response_preference, 'str')
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json;odata=minimalmetadata'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(table_properties, 'TableProperties')
         body_content_kwargs['content'] = body_content
         request = self._client.post(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
         if response.status_code not in [201, 204]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.TableServiceError, response)
+            error = self._deserialize(_models.TableServiceError, response)
             raise HttpResponseError(response=response, model=error)
 
         response_headers = {}
@@ -246,8 +250,11 @@ class TableOperations(object):
         :raises: ~azure.core.exceptions.HttpResponseError
         """
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
+        accept = "application/json"
 
         # Construct URL
         url = self.delete.metadata['url']  # type: ignore
@@ -265,6 +272,7 @@ class TableOperations(object):
         header_parameters['x-ms-version'] = self._serialize.header("self._config.version", self._config.version, 'str')
         if request_id_parameter is not None:
             header_parameters['x-ms-client-request-id'] = self._serialize.header("request_id_parameter", request_id_parameter, 'str')
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         request = self._client.delete(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
@@ -272,7 +280,7 @@ class TableOperations(object):
 
         if response.status_code not in [204]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.TableServiceError, response)
+            error = self._deserialize(_models.TableServiceError, response)
             raise HttpResponseError(response=response, model=error)
 
         response_headers = {}
@@ -293,10 +301,10 @@ class TableOperations(object):
         request_id_parameter=None,  # type: Optional[str]
         next_partition_key=None,  # type: Optional[str]
         next_row_key=None,  # type: Optional[str]
-        query_options=None,  # type: Optional["models.QueryOptions"]
+        query_options=None,  # type: Optional["_models.QueryOptions"]
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.TableEntityQueryResponse"
+        # type: (...) -> "_models.TableEntityQueryResponse"
         """Queries entities in a table.
 
         :param table: The name of the table.
@@ -317,8 +325,10 @@ class TableOperations(object):
         :rtype: ~azure.data.tables.models.TableEntityQueryResponse
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.TableEntityQueryResponse"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.TableEntityQueryResponse"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         
         _format = None
@@ -331,6 +341,7 @@ class TableOperations(object):
             _select = query_options.select
             _filter = query_options.filter
         data_service_version = "3.0"
+        accept = "application/json;odata=minimalmetadata"
 
         # Construct URL
         url = self.query_entities.metadata['url']  # type: ignore
@@ -363,7 +374,7 @@ class TableOperations(object):
         if request_id_parameter is not None:
             header_parameters['x-ms-client-request-id'] = self._serialize.header("request_id_parameter", request_id_parameter, 'str')
         header_parameters['DataServiceVersion'] = self._serialize.header("data_service_version", data_service_version, 'str')
-        header_parameters['Accept'] = 'application/json;odata=minimalmetadata'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
@@ -371,7 +382,7 @@ class TableOperations(object):
 
         if response.status_code not in [200]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.TableServiceError, response)
+            error = self._deserialize(_models.TableServiceError, response)
             raise HttpResponseError(response=response, model=error)
 
         response_headers = {}
@@ -389,18 +400,18 @@ class TableOperations(object):
         return deserialized
     query_entities.metadata = {'url': '/{table}()'}  # type: ignore
 
-    def query_entities_with_partition_and_row_key(
+    def query_entity_with_partition_and_row_key(
         self,
         table,  # type: str
         partition_key,  # type: str
         row_key,  # type: str
         timeout=None,  # type: Optional[int]
         request_id_parameter=None,  # type: Optional[str]
-        query_options=None,  # type: Optional["models.QueryOptions"]
+        query_options=None,  # type: Optional["_models.QueryOptions"]
         **kwargs  # type: Any
     ):
         # type: (...) -> Dict[str, object]
-        """Queries entities in a table.
+        """Queries a single entity in a table.
 
         :param table: The name of the table.
         :type table: str
@@ -421,7 +432,9 @@ class TableOperations(object):
         :raises: ~azure.core.exceptions.HttpResponseError
         """
         cls = kwargs.pop('cls', None)  # type: ClsType[Dict[str, object]]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         
         _format = None
@@ -432,9 +445,10 @@ class TableOperations(object):
             _select = query_options.select
             _filter = query_options.filter
         data_service_version = "3.0"
+        accept = "application/json;odata=minimalmetadata"
 
         # Construct URL
-        url = self.query_entities_with_partition_and_row_key.metadata['url']  # type: ignore
+        url = self.query_entity_with_partition_and_row_key.metadata['url']  # type: ignore
         path_format_arguments = {
             'url': self._serialize.url("self._config.url", self._config.url, 'str', skip_quote=True),
             'table': self._serialize.url("table", table, 'str'),
@@ -460,7 +474,7 @@ class TableOperations(object):
         if request_id_parameter is not None:
             header_parameters['x-ms-client-request-id'] = self._serialize.header("request_id_parameter", request_id_parameter, 'str')
         header_parameters['DataServiceVersion'] = self._serialize.header("data_service_version", data_service_version, 'str')
-        header_parameters['Accept'] = 'application/json;odata=minimalmetadata'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
@@ -468,7 +482,7 @@ class TableOperations(object):
 
         if response.status_code not in [200]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.TableServiceError, response)
+            error = self._deserialize(_models.TableServiceError, response)
             raise HttpResponseError(response=response, model=error)
 
         response_headers = {}
@@ -485,7 +499,7 @@ class TableOperations(object):
             return cls(pipeline_response, deserialized, response_headers)
 
         return deserialized
-    query_entities_with_partition_and_row_key.metadata = {'url': '/{table}(PartitionKey=\'{partitionKey}\',RowKey=\'{rowKey}\')'}  # type: ignore
+    query_entity_with_partition_and_row_key.metadata = {'url': '/{table}(PartitionKey=\'{partitionKey}\',RowKey=\'{rowKey}\')'}  # type: ignore
 
     def update_entity(
         self,
@@ -496,7 +510,7 @@ class TableOperations(object):
         request_id_parameter=None,  # type: Optional[str]
         if_match=None,  # type: Optional[str]
         table_entity_properties=None,  # type: Optional[Dict[str, object]]
-        query_options=None,  # type: Optional["models.QueryOptions"]
+        query_options=None,  # type: Optional["_models.QueryOptions"]
         **kwargs  # type: Any
     ):
         # type: (...) -> None
@@ -528,7 +542,9 @@ class TableOperations(object):
         :raises: ~azure.core.exceptions.HttpResponseError
         """
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         
         _format = None
@@ -536,6 +552,7 @@ class TableOperations(object):
             _format = query_options.format
         data_service_version = "3.0"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self.update_entity.metadata['url']  # type: ignore
@@ -563,6 +580,7 @@ class TableOperations(object):
         if if_match is not None:
             header_parameters['If-Match'] = self._serialize.header("if_match", if_match, 'str')
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         body_content_kwargs = {}  # type: Dict[str, Any]
         if table_entity_properties is not None:
@@ -571,13 +589,12 @@ class TableOperations(object):
             body_content = None
         body_content_kwargs['content'] = body_content
         request = self._client.put(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
         if response.status_code not in [204]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.TableServiceError, response)
+            error = self._deserialize(_models.TableServiceError, response)
             raise HttpResponseError(response=response, model=error)
 
         response_headers = {}
@@ -601,7 +618,7 @@ class TableOperations(object):
         request_id_parameter=None,  # type: Optional[str]
         if_match=None,  # type: Optional[str]
         table_entity_properties=None,  # type: Optional[Dict[str, object]]
-        query_options=None,  # type: Optional["models.QueryOptions"]
+        query_options=None,  # type: Optional["_models.QueryOptions"]
         **kwargs  # type: Any
     ):
         # type: (...) -> None
@@ -633,7 +650,9 @@ class TableOperations(object):
         :raises: ~azure.core.exceptions.HttpResponseError
         """
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         
         _format = None
@@ -641,6 +660,7 @@ class TableOperations(object):
             _format = query_options.format
         data_service_version = "3.0"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self.merge_entity.metadata['url']  # type: ignore
@@ -668,6 +688,7 @@ class TableOperations(object):
         if if_match is not None:
             header_parameters['If-Match'] = self._serialize.header("if_match", if_match, 'str')
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         body_content_kwargs = {}  # type: Dict[str, Any]
         if table_entity_properties is not None:
@@ -676,13 +697,12 @@ class TableOperations(object):
             body_content = None
         body_content_kwargs['content'] = body_content
         request = self._client.patch(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
         if response.status_code not in [204]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.TableServiceError, response)
+            error = self._deserialize(_models.TableServiceError, response)
             raise HttpResponseError(response=response, model=error)
 
         response_headers = {}
@@ -705,7 +725,7 @@ class TableOperations(object):
         if_match,  # type: str
         timeout=None,  # type: Optional[int]
         request_id_parameter=None,  # type: Optional[str]
-        query_options=None,  # type: Optional["models.QueryOptions"]
+        query_options=None,  # type: Optional["_models.QueryOptions"]
         **kwargs  # type: Any
     ):
         # type: (...) -> None
@@ -734,13 +754,16 @@ class TableOperations(object):
         :raises: ~azure.core.exceptions.HttpResponseError
         """
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         
         _format = None
         if query_options is not None:
             _format = query_options.format
         data_service_version = "3.0"
+        accept = "application/json;odata=minimalmetadata"
 
         # Construct URL
         url = self.delete_entity.metadata['url']  # type: ignore
@@ -766,6 +789,7 @@ class TableOperations(object):
             header_parameters['x-ms-client-request-id'] = self._serialize.header("request_id_parameter", request_id_parameter, 'str')
         header_parameters['DataServiceVersion'] = self._serialize.header("data_service_version", data_service_version, 'str')
         header_parameters['If-Match'] = self._serialize.header("if_match", if_match, 'str')
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         request = self._client.delete(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
@@ -773,7 +797,7 @@ class TableOperations(object):
 
         if response.status_code not in [204]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.TableServiceError, response)
+            error = self._deserialize(_models.TableServiceError, response)
             raise HttpResponseError(response=response, model=error)
 
         response_headers = {}
@@ -792,9 +816,9 @@ class TableOperations(object):
         table,  # type: str
         timeout=None,  # type: Optional[int]
         request_id_parameter=None,  # type: Optional[str]
-        response_preference=None,  # type: Optional[Union[str, "models.ResponseFormat"]]
+        response_preference=None,  # type: Optional[Union[str, "_models.ResponseFormat"]]
         table_entity_properties=None,  # type: Optional[Dict[str, object]]
-        query_options=None,  # type: Optional["models.QueryOptions"]
+        query_options=None,  # type: Optional["_models.QueryOptions"]
         **kwargs  # type: Any
     ):
         # type: (...) -> Optional[Dict[str, object]]
@@ -820,7 +844,9 @@ class TableOperations(object):
         :raises: ~azure.core.exceptions.HttpResponseError
         """
         cls = kwargs.pop('cls', None)  # type: ClsType[Optional[Dict[str, object]]]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         
         _format = None
@@ -828,6 +854,7 @@ class TableOperations(object):
             _format = query_options.format
         data_service_version = "3.0"
         content_type = kwargs.pop("content_type", "application/json;odata=nometadata")
+        accept = "application/json;odata=minimalmetadata"
 
         # Construct URL
         url = self.insert_entity.metadata['url']  # type: ignore
@@ -853,7 +880,7 @@ class TableOperations(object):
         if response_preference is not None:
             header_parameters['Prefer'] = self._serialize.header("response_preference", response_preference, 'str')
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json;odata=minimalmetadata'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         body_content_kwargs = {}  # type: Dict[str, Any]
         if table_entity_properties is not None:
@@ -862,13 +889,12 @@ class TableOperations(object):
             body_content = None
         body_content_kwargs['content'] = body_content
         request = self._client.post(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
         if response.status_code not in [201, 204]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.TableServiceError, response)
+            error = self._deserialize(_models.TableServiceError, response)
             raise HttpResponseError(response=response, model=error)
 
         response_headers = {}
@@ -905,7 +931,7 @@ class TableOperations(object):
         request_id_parameter=None,  # type: Optional[str]
         **kwargs  # type: Any
     ):
-        # type: (...) -> List["models.SignedIdentifier"]
+        # type: (...) -> List["_models.SignedIdentifier"]
         """Retrieves details about any stored access policies specified on the table that may be used with
         Shared Access Signatures.
 
@@ -921,10 +947,13 @@ class TableOperations(object):
         :rtype: list[~azure.data.tables.models.SignedIdentifier]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType[List["models.SignedIdentifier"]]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType[List["_models.SignedIdentifier"]]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         comp = "acl"
+        accept = "application/xml"
 
         # Construct URL
         url = self.get_access_policy.metadata['url']  # type: ignore
@@ -945,7 +974,7 @@ class TableOperations(object):
         header_parameters['x-ms-version'] = self._serialize.header("self._config.version", self._config.version, 'str')
         if request_id_parameter is not None:
             header_parameters['x-ms-client-request-id'] = self._serialize.header("request_id_parameter", request_id_parameter, 'str')
-        header_parameters['Accept'] = 'application/xml'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
@@ -953,7 +982,7 @@ class TableOperations(object):
 
         if response.status_code not in [200]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.TableServiceError, response)
+            error = self._deserialize(_models.TableServiceError, response)
             raise HttpResponseError(response=response, model=error)
 
         response_headers = {}
@@ -974,7 +1003,7 @@ class TableOperations(object):
         table,  # type: str
         timeout=None,  # type: Optional[int]
         request_id_parameter=None,  # type: Optional[str]
-        table_acl=None,  # type: Optional[List["models.SignedIdentifier"]]
+        table_acl=None,  # type: Optional[List["_models.SignedIdentifier"]]
         **kwargs  # type: Any
     ):
         # type: (...) -> None
@@ -995,10 +1024,13 @@ class TableOperations(object):
         :raises: ~azure.core.exceptions.HttpResponseError
         """
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         comp = "acl"
         content_type = kwargs.pop("content_type", "application/xml")
+        accept = "application/xml"
 
         # Construct URL
         url = self.set_access_policy.metadata['url']  # type: ignore
@@ -1020,6 +1052,7 @@ class TableOperations(object):
         if request_id_parameter is not None:
             header_parameters['x-ms-client-request-id'] = self._serialize.header("request_id_parameter", request_id_parameter, 'str')
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         body_content_kwargs = {}  # type: Dict[str, Any]
         serialization_ctxt = {'xml': {'name': 'SignedIdentifiers', 'wrapped': True, 'itemsName': 'SignedIdentifier'}}
@@ -1029,13 +1062,12 @@ class TableOperations(object):
             body_content = None
         body_content_kwargs['content'] = body_content
         request = self._client.put(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
         if response.status_code not in [204]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.TableServiceError, response)
+            error = self._deserialize(_models.TableServiceError, response)
             raise HttpResponseError(response=response, model=error)
 
         response_headers = {}

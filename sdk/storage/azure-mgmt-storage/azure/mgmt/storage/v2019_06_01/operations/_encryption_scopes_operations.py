@@ -8,13 +8,13 @@
 from typing import TYPE_CHECKING
 import warnings
 
-from azure.core.exceptions import HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
+from azure.core.exceptions import ClientAuthenticationError, HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
 from azure.core.paging import ItemPaged
 from azure.core.pipeline import PipelineResponse
 from azure.core.pipeline.transport import HttpRequest, HttpResponse
 from azure.mgmt.core.exceptions import ARMErrorFormat
 
-from .. import models
+from .. import models as _models
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,ungrouped-imports
@@ -37,7 +37,7 @@ class EncryptionScopesOperations(object):
     :param deserializer: An object model deserializer.
     """
 
-    models = models
+    models = _models
 
     def __init__(self, client, config, serializer, deserializer):
         self._client = client
@@ -50,10 +50,10 @@ class EncryptionScopesOperations(object):
         resource_group_name,  # type: str
         account_name,  # type: str
         encryption_scope_name,  # type: str
-        encryption_scope,  # type: "models.EncryptionScope"
+        encryption_scope,  # type: "_models.EncryptionScope"
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.EncryptionScope"
+        # type: (...) -> "_models.EncryptionScope"
         """Synchronously creates or updates an encryption scope under the specified storage account. If an
         encryption scope is already created and a subsequent request is issued with different
         properties, the encryption scope properties will be updated per the specified request.
@@ -62,8 +62,8 @@ class EncryptionScopesOperations(object):
          name is case insensitive.
         :type resource_group_name: str
         :param account_name: The name of the storage account within the specified resource group.
-         Storage account names must be between 3 and 24 characters in length and use numbers and lower-
-         case letters only.
+         Storage account names must be between 3 and 24 characters in length and use numbers and
+         lower-case letters only.
         :type account_name: str
         :param encryption_scope_name: The name of the encryption scope within the specified storage
          account. Encryption scope names must be between 3 and 63 characters in length and use numbers,
@@ -77,11 +77,14 @@ class EncryptionScopesOperations(object):
         :rtype: ~azure.mgmt.storage.v2019_06_01.models.EncryptionScope
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.EncryptionScope"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.EncryptionScope"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-06-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self.put.metadata['url']  # type: ignore
@@ -100,19 +103,18 @@ class EncryptionScopesOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(encryption_scope, 'EncryptionScope')
         body_content_kwargs['content'] = body_content
         request = self._client.put(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
         if response.status_code not in [200, 201]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.ErrorResponse, response)
+            error = self._deserialize.failsafe_deserialize(_models.ErrorResponse, response)
             raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
 
         if response.status_code == 200:
@@ -132,10 +134,10 @@ class EncryptionScopesOperations(object):
         resource_group_name,  # type: str
         account_name,  # type: str
         encryption_scope_name,  # type: str
-        encryption_scope,  # type: "models.EncryptionScope"
+        encryption_scope,  # type: "_models.EncryptionScope"
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.EncryptionScope"
+        # type: (...) -> "_models.EncryptionScope"
         """Update encryption scope properties as specified in the request body. Update fails if the
         specified encryption scope does not already exist.
 
@@ -143,8 +145,8 @@ class EncryptionScopesOperations(object):
          name is case insensitive.
         :type resource_group_name: str
         :param account_name: The name of the storage account within the specified resource group.
-         Storage account names must be between 3 and 24 characters in length and use numbers and lower-
-         case letters only.
+         Storage account names must be between 3 and 24 characters in length and use numbers and
+         lower-case letters only.
         :type account_name: str
         :param encryption_scope_name: The name of the encryption scope within the specified storage
          account. Encryption scope names must be between 3 and 63 characters in length and use numbers,
@@ -158,11 +160,14 @@ class EncryptionScopesOperations(object):
         :rtype: ~azure.mgmt.storage.v2019_06_01.models.EncryptionScope
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.EncryptionScope"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.EncryptionScope"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-06-01"
         content_type = kwargs.pop("content_type", "application/json")
+        accept = "application/json"
 
         # Construct URL
         url = self.patch.metadata['url']  # type: ignore
@@ -181,19 +186,18 @@ class EncryptionScopesOperations(object):
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(encryption_scope, 'EncryptionScope')
         body_content_kwargs['content'] = body_content
         request = self._client.patch(url, query_parameters, header_parameters, **body_content_kwargs)
-
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
         if response.status_code not in [200]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.ErrorResponse, response)
+            error = self._deserialize.failsafe_deserialize(_models.ErrorResponse, response)
             raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
 
         deserialized = self._deserialize('EncryptionScope', pipeline_response)
@@ -211,15 +215,15 @@ class EncryptionScopesOperations(object):
         encryption_scope_name,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> "models.EncryptionScope"
+        # type: (...) -> "_models.EncryptionScope"
         """Returns the properties for the specified encryption scope.
 
         :param resource_group_name: The name of the resource group within the user's subscription. The
          name is case insensitive.
         :type resource_group_name: str
         :param account_name: The name of the storage account within the specified resource group.
-         Storage account names must be between 3 and 24 characters in length and use numbers and lower-
-         case letters only.
+         Storage account names must be between 3 and 24 characters in length and use numbers and
+         lower-case letters only.
         :type account_name: str
         :param encryption_scope_name: The name of the encryption scope within the specified storage
          account. Encryption scope names must be between 3 and 63 characters in length and use numbers,
@@ -231,10 +235,13 @@ class EncryptionScopesOperations(object):
         :rtype: ~azure.mgmt.storage.v2019_06_01.models.EncryptionScope
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.EncryptionScope"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.EncryptionScope"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-06-01"
+        accept = "application/json"
 
         # Construct URL
         url = self.get.metadata['url']  # type: ignore
@@ -252,7 +259,7 @@ class EncryptionScopesOperations(object):
 
         # Construct headers
         header_parameters = {}  # type: Dict[str, Any]
-        header_parameters['Accept'] = 'application/json'
+        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
@@ -260,7 +267,7 @@ class EncryptionScopesOperations(object):
 
         if response.status_code not in [200]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(models.ErrorResponse, response)
+            error = self._deserialize.failsafe_deserialize(_models.ErrorResponse, response)
             raise HttpResponseError(response=response, model=error, error_format=ARMErrorFormat)
 
         deserialized = self._deserialize('EncryptionScope', pipeline_response)
@@ -277,30 +284,33 @@ class EncryptionScopesOperations(object):
         account_name,  # type: str
         **kwargs  # type: Any
     ):
-        # type: (...) -> Iterable["models.EncryptionScopeListResult"]
+        # type: (...) -> Iterable["_models.EncryptionScopeListResult"]
         """Lists all the encryption scopes available under the specified storage account.
 
         :param resource_group_name: The name of the resource group within the user's subscription. The
-     name is case insensitive.
+         name is case insensitive.
         :type resource_group_name: str
         :param account_name: The name of the storage account within the specified resource group.
-     Storage account names must be between 3 and 24 characters in length and use numbers and lower-
-     case letters only.
+         Storage account names must be between 3 and 24 characters in length and use numbers and
+         lower-case letters only.
         :type account_name: str
         :keyword callable cls: A custom type or function that will be passed the direct response
         :return: An iterator like instance of either EncryptionScopeListResult or the result of cls(response)
         :rtype: ~azure.core.paging.ItemPaged[~azure.mgmt.storage.v2019_06_01.models.EncryptionScopeListResult]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["models.EncryptionScopeListResult"]
-        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
+        cls = kwargs.pop('cls', None)  # type: ClsType["_models.EncryptionScopeListResult"]
+        error_map = {
+            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
+        }
         error_map.update(kwargs.pop('error_map', {}))
         api_version = "2019-06-01"
+        accept = "application/json"
 
         def prepare_request(next_link=None):
             # Construct headers
             header_parameters = {}  # type: Dict[str, Any]
-            header_parameters['Accept'] = 'application/json'
+            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
             if not next_link:
                 # Construct URL

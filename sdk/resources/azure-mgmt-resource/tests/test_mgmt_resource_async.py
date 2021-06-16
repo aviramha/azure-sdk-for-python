@@ -10,7 +10,7 @@
 import unittest
 
 import azure.mgmt.resource.resources.v2019_10_01
-import azure.common.exceptions
+
 from devtools_testutils import AzureMgmtTestCase, RandomNameResourceGroupPreparer
 
 from _aio_testcase import AzureMgmtAsyncTestCase
@@ -25,6 +25,7 @@ class MgmtResourceAioTest(AzureMgmtAsyncTestCase):
             ResourceManagementClient
         )
 
+    @unittest.skip('hard to test')
     def test_resource_groups(self):
         group_name = "test_mgmt_resource_test_resource_groups457f1050"
         # Create or update

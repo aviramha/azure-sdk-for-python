@@ -7,10 +7,13 @@
 # --------------------------------------------------------------------------
 
 from ._key_vault_management_client import KeyVaultManagementClient
+from ._version import VERSION
+
+__version__ = VERSION
 __all__ = ['KeyVaultManagementClient']
 
 try:
-    from ._patch import patch_sdk
+    from ._patch import patch_sdk  # type: ignore
     patch_sdk()
 except ImportError:
     pass
